@@ -1,0 +1,38 @@
+package com.scube.chargingstation.exception;
+/**
+ * Created by Keshav Patel.
+ */
+public enum EntityType {
+    USER,
+    DEPARTMENT,
+    ROLE,
+    EMPLOYEE,
+    STATE,
+    CITY,
+    DESIGNATION,
+    DOCUMENT,
+    QUALIFICATION,
+    GENDER,
+    BLOODGROUP,
+    GRADE,
+    EMPLOYMENTTYPE,
+    NOTICEPERIOD,
+    LOCATION,
+    BANK,
+    COUNTRY,
+    WORKSTATUS,
+    WORKSTATUSDETAIL,
+    CHECKOUT,
+    FILESIZE,
+    HOLIDAY,
+    LEAVE,
+    LEAVEQUOTA,
+    VARIABLE,
+    COMPANY,
+    EMAIL,
+    NUMERIC,
+    SALARYPARAMETERDETAIL,
+    PAYSLIP,
+    SALARYADJ,
+    EMPTAX,
+}
