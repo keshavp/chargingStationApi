@@ -1,4 +1,4 @@
-package com.scube.chargingstation.model;
+package com.scube.chargingstation.entity;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;

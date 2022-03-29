@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * Created by keshav Patel
  */
 @Component
-//@PropertySource("classpath:custom.properties")
+@PropertySource("classpath:custom.properties")
 public class PropertiesConfig {
     @Autowired
     private Environment env;

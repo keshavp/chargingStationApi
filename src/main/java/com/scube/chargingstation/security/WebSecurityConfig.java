@@ -1,4 +1,4 @@
-/*package com.scube.chargingstation.security;
+package com.scube.chargingstation.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -57,12 +57,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 			.authorizeRequests()
 				
+				/*
 				 * .antMatchers("/api/v1/auth/**").permitAll()
 				 * .antMatchers("/api/v1/paymentprocess/downloadBankAdvice/**").permitAll()
 				 * .antMatchers("/api/v1/empinfo/saveDocument/**").permitAll()
-				 
-			.antMatchers("/api/**//**").permitAll()
-/*			.anyRequest().authenticated();
+				 */	 
+			.antMatchers("/api/**").permitAll()
+			.anyRequest().authenticated();
 		
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -70,6 +71,3 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	
 }
-
-
-*/

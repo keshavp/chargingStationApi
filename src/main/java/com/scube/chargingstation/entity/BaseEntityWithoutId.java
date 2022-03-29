@@ -1,30 +1,20 @@
-package com.scube.chargingstation.model;
-
-import java.time.Instant;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
-
+package com.scube.chargingstation.entity;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.*;
+import java.time.Instant;
+
+
 @MappedSuperclass
 @Getter @Setter @ToString
-public class BaseEntityWithIntId {
-	
-	@Id
-	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-	
+public abstract class BaseEntityWithoutId {
+
 	@CreationTimestamp
 	@Column(name = "created_at", updatable = false, nullable = false)
 	protected Instant createdAt;

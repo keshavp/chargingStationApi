@@ -1,5 +1,4 @@
-package com.scube.chargingstation.dto;
-
+package com.scube.chargingstation.dto.incoming;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -16,12 +15,7 @@ import lombok.experimental.Accessors;
 @ToString
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AuthUserDto {
-	
+public class UserLoginIncomingDto {
 	private String username;
-	private String role;
-	private String accessToken;
-	private String tokenType;
-	private String refreshToken;
-
+	private String password;
 }
