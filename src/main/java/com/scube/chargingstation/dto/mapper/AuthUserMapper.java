@@ -11,7 +11,7 @@ public class AuthUserMapper {
         return new AuthUserDto()
         		//.setUserid(userInfo.getId())
         		.setUsername(userInfo.getUsername())
-        		.setRole(userInfo.getRole().getName())
+        		.setRole(userInfo.getRole().getNameCode())
         		.setRefreshToken(refreshToken)
         		.setTokenType("Bearer")
         		.setAccessToken(jwt);
