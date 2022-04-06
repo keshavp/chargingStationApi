@@ -19,6 +19,7 @@ import com.scube.chargingstation.entity.ConnectorEntity;
 import com.scube.chargingstation.entity.TransactionsEntity;
 import com.scube.chargingstation.repository.ChargingRequestRepository;
 import com.scube.chargingstation.repository.TransactionsRepository;
+import com.scube.chargingstation.util.PayslipPdfExporter;
 
 @Service
 public class TransactionsServiceImpl implements TransactionsService {
@@ -30,10 +31,13 @@ public class TransactionsServiceImpl implements TransactionsService {
 	TransactionsRepository	transactionsRepository; 
 	
 	@Autowired
-	ChargingRequestRepository	chargingRequestRepository; 
+	ChargingRequestRepository chargingRequestRepository;
 	
 	@Autowired
 	ChargingPointConnectorRateService chargingPointConnectorRateService;
+	
+	@Autowired
+	ChargingRequestService	chargingRequestService;
 	
 	@Autowired
 	ConnectorService	connectorService;
@@ -41,7 +45,11 @@ public class TransactionsServiceImpl implements TransactionsService {
 	@Autowired
 	ChargingPointService	chargingPointService;
 	
-	/* update status using file 
+	@Autowired
+	PayslipPdfExporter	payslipPdfExporter;
+	
+	// update status using file 
+	/*
 	 * @Override public void updateStartResultInitiated() { // TODO Auto-generated
 	 * method stub
 	 * 
@@ -57,16 +65,15 @@ public class TransactionsServiceImpl implements TransactionsService {
 	 * File file; try { file = ResourceUtils.getFile("classpath:data.txt");
 	 * 
 	 * if(file.exists()) { byte[] fileData = Files.readAllBytes(file.toPath());
-	 * fileContent = new String(fileData);
-	 * 
-	 * }
-	 * 
+	 * fileContent = new String(fileData); }
 	 * 
 	 * for(TransactionsEntity transactionsEntity : transactionsEntitys) {
 	 * 
 	 * transactionsEntity.setStartResult(fileContent);
 	 * 
-	 * transactionsRepository.save(transactionsEntity); }
+	 * transactionsRepository.save(transactionsEntity);
+	 * 
+	 * }
 	 * 
 	 * } catch (Exception e) { // TODO Auto-generated catch block
 	 * e.printStackTrace(); } }
@@ -89,9 +96,8 @@ public class TransactionsServiceImpl implements TransactionsService {
 			
 			ConnectorEntity	connectorEntity = connectorService.getConnectorEntityByIdAndChargingPointEntity( String.valueOf(transactionsEntity.getConnectorId()) ,chargingPointEntity) ;
 			
+			ChargingRequestEntity chargingRequestEntity = chargingRequestService.findChargingRequestEntityByChargingPointEntityAndConnectorEntityAndStatus(chargingPointEntity, connectorEntity,"REQUESTED");
 			
-			ChargingRequestEntity chargingRequestEntity = chargingRequestRepository.findByChargingPointEntityAndConnectorEntityAndStatus(chargingPointEntity, connectorEntity,"REQUESTED");
-		
 				if(chargingRequestEntity != null) {
 					
 					
@@ -105,9 +111,50 @@ public class TransactionsServiceImpl implements TransactionsService {
 					
 					
 					chargingRequestEntity.setStatus("Approved");
+					chargingRequestEntity.setChargingStatus("Starting");
+					chargingRequestEntity.setTransactionsEntity(transactionsEntity);
 					chargingRequestRepository.save(chargingRequestEntity);
 				}
 			
+		}
+	}
+	
+	
+	
+	@Override
+	public void chargingRequestedBill() throws Exception {
+		// TODO Auto-generated method stub
+		
+		List<ChargingRequestEntity> chargingRequestEntities = chargingRequestService.findChargingRequestEntityByChargingStatus("Starting");
+		
+		
+		for(ChargingRequestEntity chargingRequestEntity : chargingRequestEntities) {
+		
+			if(chargingRequestEntity != null) {
+				
+				
+				TransactionsEntity transactionsEntity =  transactionsRepository.findByTransactionId(chargingRequestEntity.getTransactionsEntity().getTransactionId());
+				
+				
+				if(transactionsEntity.getMeterStop()>0 && transactionsEntity.getStopTime() != null ) {
+				
+					chargingRequestEntity.setChargingStatus("Done");
+					chargingRequestEntity.setStartTime(transactionsEntity.getStartTime());
+					chargingRequestEntity.setMeterStart(transactionsEntity.getMeterStart());
+					chargingRequestEntity.setStopTime(transactionsEntity.getStopTime());
+					chargingRequestEntity.setMeterStop(transactionsEntity.getMeterStop());
+				
+					
+					String filename =  payslipPdfExporter.generatePdf(chargingRequestEntity);
+				
+					chargingRequestEntity.setInvoiceFilePath(filename);
+					
+					chargingRequestRepository.save(chargingRequestEntity);
+					
+					
+					
+				}
+			}
 		}
 	}
 	

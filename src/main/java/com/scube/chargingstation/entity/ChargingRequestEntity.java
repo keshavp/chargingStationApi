@@ -1,5 +1,7 @@
 package com.scube.chargingstation.entity;
 
+import java.time.Instant;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -32,5 +34,27 @@ public class ChargingRequestEntity extends BaseEntity {
 	
 	@Column(name = "request_amount")
 	private String  requestAmount;
+	
+	@OneToOne
+    @JoinColumn(name = "fk_transactions")
+    private TransactionsEntity transactionsEntity;
+	
+	@Column(name = "StartTime")
+	private Instant  startTime;
+	
+	@Column(name = "MeterStart" , columnDefinition = "double default 0")
+	private double  meterStart;
+
+	@Column(name = "StopTime")
+	private Instant  stopTime;
+
+	@Column(name = "MeterStop" , columnDefinition = "double default 0")
+	private double  meterStop;
+	
+	@Column(name = "charging_status")
+	private String  chargingStatus;
+	
+	@Column(name = "invoice_file_path")
+	private String  invoiceFilePath;
 	
 }

@@ -29,6 +29,7 @@ public class Schedulers {
 		
 	 	transactionsService.updateStartResultInitiated();
 	 	
+	 	transactionsService.chargingRequestedBill();
 	 	
 		return 0;
 	}

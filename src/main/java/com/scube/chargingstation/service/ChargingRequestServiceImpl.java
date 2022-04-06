@@ -3,6 +3,7 @@ package com.scube.chargingstation.service;
 import static com.scube.chargingstation.exception.ExceptionType.DUPLICATE_ENTITY;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,6 +82,21 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			return true;
 			
 		}
+
+	@Override
+	public List<ChargingRequestEntity> findChargingRequestEntityByChargingStatus(String chargingStatus) {
+		// TODO Auto-generated method stub
+		
+		return chargingRequestRepository.findByChargingStatus("Starting");
+	}
+
+	@Override
+	public ChargingRequestEntity findChargingRequestEntityByChargingPointEntityAndConnectorEntityAndStatus(
+			ChargingPointEntity chargingPointEntity, ConnectorEntity connectorEntity, String string) {
+		// TODO Auto-generated method stub
+		
+		return chargingRequestRepository.findByChargingPointEntityAndConnectorEntityAndStatus(chargingPointEntity, connectorEntity,"REQUESTED");
+	}
 	
 	
 	

@@ -11,6 +11,8 @@ import com.scube.chargingstation.entity.TransactionsEntity;
 public interface TransactionsRepository extends JpaRepository<TransactionsEntity, Long>  {
 
 	List<TransactionsEntity> findByStartResult(String string);
+
+	TransactionsEntity findByTransactionId(int transactionId);
 	
 //	TransactionsEntity findByStartResult(String string);
 

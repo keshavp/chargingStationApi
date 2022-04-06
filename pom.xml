@@ -150,11 +150,25 @@
 	      <version>3.12</version>
 	    </dependency>
 	    
+	    <!-- 
 	    <dependency>
 	        <groupId>com.github.librepdf</groupId>
 	        <artifactId>openpdf</artifactId>
 	        <version>1.3.22</version>
 	    </dependency>
+	     -->
+	    <dependency>
+		    <groupId>com.itextpdf</groupId>
+		    <artifactId>kernel</artifactId>
+		    <version>7.0.0</version>
+		</dependency>
+
+       <!-- https://mvnrepository.com/artifact/com.itextpdf/layout -->
+       <dependency>
+           <groupId>com.itextpdf</groupId>
+           <artifactId>layout</artifactId>
+           <version>7.0.0</version>
+       </dependency>
 <!-- 				<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
