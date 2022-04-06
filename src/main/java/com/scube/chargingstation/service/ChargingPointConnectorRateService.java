@@ -8,5 +8,5 @@ public interface ChargingPointConnectorRateService {
 	
 	ChargingPointConnectorRateDto getConnectorByChargingPointNameAndConnectorNameAndAmount( String chargingPointName, String connectorName , String amount);
 	
-	ChargingPointConnectorRateDto getConnectorByChargingPointNameAndConnectorIdAndAmount( String chargingPointName, int connectorId , String amount);
+	ChargingPointConnectorRateDto getConnectorByChargingPointNameAndConnectorIdAndAmount( String chargingPointName, String connectorId , String amount);
 }

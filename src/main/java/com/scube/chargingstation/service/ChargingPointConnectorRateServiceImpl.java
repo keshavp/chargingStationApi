@@ -49,11 +49,11 @@ public class ChargingPointConnectorRateServiceImpl implements ChargingPointConne
 	}
 
 	@Override
-	public ChargingPointConnectorRateDto getConnectorByChargingPointNameAndConnectorIdAndAmount(String chargingPointName, int connectorId, String amount) {
+	public ChargingPointConnectorRateDto getConnectorByChargingPointNameAndConnectorIdAndAmount(String chargingPointName, String connectorId, String amount) {
 		// TODO Auto-generated method stub
 		ChargingPointEntity	chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(chargingPointName);
 		
-		ConnectorEntity	connectorEntity = connectorService.getConnectorEntityByIdAndChargingPointEntity(String.valueOf(connectorId) ,chargingPointEntity) ;
+		ConnectorEntity	connectorEntity = connectorService.getConnectorEntityByIdAndChargingPointEntity(connectorId ,chargingPointEntity) ;
 		
 		ChargingPointConnectorRateEntity chargingPointConnectorRateEntity = chargingPointConnectorRateRepository.findByChargingPointEntityAndConnectorEntityAndAmount(chargingPointEntity,connectorEntity,amount);
 		

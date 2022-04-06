@@ -13,7 +13,9 @@ import org.springframework.util.ResourceUtils;
 
 import com.scube.chargingstation.controller.UserInfoController;
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
+import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
+import com.scube.chargingstation.entity.ConnectorEntity;
 import com.scube.chargingstation.entity.TransactionsEntity;
 import com.scube.chargingstation.repository.ChargingRequestRepository;
 import com.scube.chargingstation.repository.TransactionsRepository;
@@ -33,6 +35,11 @@ public class TransactionsServiceImpl implements TransactionsService {
 	@Autowired
 	ChargingPointConnectorRateService chargingPointConnectorRateService;
 	
+	@Autowired
+	ConnectorService	connectorService;
+	
+	@Autowired
+	ChargingPointService	chargingPointService;
 	
 	/* update status using file 
 	 * @Override public void updateStartResultInitiated() { // TODO Auto-generated
@@ -78,12 +85,19 @@ public class TransactionsServiceImpl implements TransactionsService {
 		
 		for(TransactionsEntity transactionsEntity : transactionsEntitys) {
 		
-			ChargingRequestEntity chargingRequestEntity = chargingRequestRepository.findByChargePointIdAndConnectorIdAndStatus(transactionsEntity.getChargePointId(), transactionsEntity.getConnectorId(),"REQUESTED");
+			ChargingPointEntity	chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(transactionsEntity.getChargePointId());
+			
+			ConnectorEntity	connectorEntity = connectorService.getConnectorEntityByIdAndChargingPointEntity( String.valueOf(transactionsEntity.getConnectorId()) ,chargingPointEntity) ;
+			
+			
+			ChargingRequestEntity chargingRequestEntity = chargingRequestRepository.findByChargingPointEntityAndConnectorEntityAndStatus(chargingPointEntity, connectorEntity,"REQUESTED");
 		
 				if(chargingRequestEntity != null) {
 					
 					
-					ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(chargingRequestEntity.getChargePointId(),chargingRequestEntity.getConnectorId(),chargingRequestEntity.getRequestAmount());
+					//ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(chargingRequestEntity.getChargePointId(),chargingRequestEntity.getConnectorId(),chargingRequestEntity.getRequestAmount());
+					
+					ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getConnectorId(),chargingRequestEntity.getRequestAmount());
 					
 					transactionsEntity.setAllowedCharge(chargingPointConnectorRateDto.getKWh());
 					transactionsEntity.setStartResult("Approved");
