@@ -74,9 +74,9 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			
 			chargingRequestRepository.save(chargingRequestEntity);
 			
-			//resp="success";
+			//resp="success";  test
 			
-			//temp chnge
+			//temp chnge  
 			
 			return true;
 			
