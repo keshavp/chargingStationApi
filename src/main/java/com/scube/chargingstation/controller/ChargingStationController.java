@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
 import com.scube.chargingstation.dto.incoming.UserInfoIncomingDto;
+import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
 import com.scube.chargingstation.dto.response.Response;
 import com.scube.chargingstation.service.ChargingRequestService;
 
@@ -43,8 +46,15 @@ public class ChargingStationController {
 	Map<String, Object> map = new HashMap<String, Object>();
 	
 	Map<String, Object> jsonObjectData = null; 
+	Map<String, Object> jsonCtypeData = null; 
+
+	
 	List<Map<String, Object>> jsonArrayData = new ArrayList<Map<String, Object>>();
 
+	List<Map<String, Object>> mapCtypeData = new ArrayList<Map<String, Object>>();
+
+	
+	
 	 ArrayList<String> ctlist=new ArrayList<String>();//Creating arraylist    
 	 ctlist.add("CCS2");//Adding object in arraylist    
 	 ctlist.add("GB/T");    
@@ -56,6 +66,39 @@ public class ChargingStationController {
 	 amenties.add("Washrooms");    
 	 amenties.add("Cafe");  
 	 String address="";
+	 
+	 
+	 for (int i=1;i<4;i++)
+	 {
+	 		jsonCtypeData = new HashMap<String, Object>();
+
+	 		if(i==1)
+	 		{
+	 			String path="C:/var/lib/tomcat9/webapps/chargerImages/CCS2.png";
+	 			jsonCtypeData.put("imagePath", path);
+	 			jsonCtypeData.put("name", "CCS2");			
+	 			jsonCtypeData.put("connectorId", "1");
+	 				
+	 			
+	 		}
+	 		else if(i==2)
+	 		{
+	 			jsonCtypeData.put("imagePath", "C:/var/lib/tomcat9/webapps/chargerImages/GBT.png");
+	 			jsonCtypeData.put("name", "GB/T");			
+	 			jsonCtypeData.put("connectorId", "1");
+	 		}
+	 		else if(i==3)
+	 		{
+	 			jsonCtypeData.put("imagePath", "C:/var/lib/tomcat9/webapps/chargerImages/CHAdeMo.png");
+	 			jsonCtypeData.put("name", "CHAdeMo");			
+	 			jsonCtypeData.put("connectorId", "1");
+	 		}
+	 		
+	 	
+	 		
+	 		mapCtypeData.add(jsonCtypeData);
+
+	 	}
 	
 	for (int i=1;i<5;i++)
 	{
@@ -110,8 +153,10 @@ public class ChargingStationController {
 		jsonObjectData.put("id", ""+i);
 		
 		jsonObjectData.put("address", address);
+		jsonObjectData.put("chargingPointId", "TACW2242321G0285");
 
-		jsonObjectData.put("chargertypes", ctlist);
+
+		jsonObjectData.put("chargertypes", ctlist);//ctlist  //mapCtypeData
 		jsonObjectData.put("amenties", amenties);
 		
 		jsonArrayData.add(jsonObjectData);
@@ -128,15 +173,36 @@ public class ChargingStationController {
 	@PostMapping( value = "/addChargingRequest" , consumes = APPLICATION_JSON_VALUE)
 	public Response addChargingRequest(@Valid @RequestBody ChargingRequestDto chargingRequestDto) {
 		logger.info("***addChargingRequest***");
-	
-		
 		
 				return Response.ok().setPayload(chargingRequestService.addChargingRequest(chargingRequestDto));
-			
 		
+	}
+	
+	@PostMapping( value = "/processWalletMoney" , consumes = APPLICATION_JSON_VALUE)
+	public Response processWalletMoney(@Valid @RequestBody UserWalletRequestDto userWalletRequestDto) {
+		logger.info("***processWalletMoney***");
+		
+				return Response.ok().setPayload(chargingRequestService.processWalletMoney(userWalletRequestDto));
 		
 		
 	}
-
+	
+	
+	@PostMapping( value = "/getMyWalletBalance" , consumes = APPLICATION_JSON_VALUE)
+	public Response getMyWalletBalance(@Valid @RequestBody UserWalletRequestDto userWalletRequestDto) {
+		logger.info("***getMyWalletBalance***");
+		
+				return Response.ok().setPayload(chargingRequestService.getMyWalletBalance(userWalletRequestDto));
+		
+	}
+	
+	
+	@GetMapping("/getNearByChargingStations11")
+	public Response getNearByChargingStations11(@RequestBody ChargingStationDto chargingStationDto) throws Exception {
+		
+		chargingRequestService.getNearByChargingStations11(chargingStationDto);
+		return null;
+	
+	}
 	
 }
