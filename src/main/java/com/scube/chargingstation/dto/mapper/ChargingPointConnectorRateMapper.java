@@ -11,7 +11,7 @@ public class ChargingPointConnectorRateMapper {
 				.setAmount(chargingPointEntity.getAmount())
 	//			.setChargingPointCode(null)
 	//			.setConnectorCode(null)
-				.setKWh(chargingPointEntity.getKWh());
+				.setKWh(chargingPointEntity.getKwh());
 	}
 
 }

@@ -23,7 +23,7 @@ public class ChargingPointConnectorRateServiceImpl implements ChargingPointConne
 	ChargingPointService	chargingPointService;
 	
 	@Override
-	public ChargingPointConnectorRateDto getConnectorByChargingPointIdAndConnectorIdAndAmount( String chargingPoint, String connector, String amount) {
+	public ChargingPointConnectorRateDto getConnectorByChargingPointIdAndConnectorIdAndAmount( String chargingPoint, String connector, double amount) {
 		// TODO Auto-generated method stub
 		
 		ChargingPointEntity	chargingPointEntity = chargingPointService.getChargingPointEntityById(chargingPoint);
@@ -36,7 +36,7 @@ public class ChargingPointConnectorRateServiceImpl implements ChargingPointConne
 	}
 
 	@Override
-	public ChargingPointConnectorRateDto getConnectorByChargingPointNameAndConnectorNameAndAmount(String chargingPointName, String connectorName, String amount) {
+	public ChargingPointConnectorRateDto getConnectorByChargingPointNameAndConnectorNameAndAmount(String chargingPointName, String connectorName, double amount) {
 		// TODO Auto-generated method stub
 		
 		ChargingPointEntity	chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(chargingPointName);
@@ -49,13 +49,25 @@ public class ChargingPointConnectorRateServiceImpl implements ChargingPointConne
 	}
 
 	@Override
-	public ChargingPointConnectorRateDto getConnectorByChargingPointNameAndConnectorIdAndAmount(String chargingPointName, String connectorId, String amount) {
+	public ChargingPointConnectorRateDto getConnectorByChargingPointNameAndConnectorIdAndAmount(String chargingPointName, String connectorId, double amount) {
 		// TODO Auto-generated method stub
 		ChargingPointEntity	chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(chargingPointName);
 		
 		ConnectorEntity	connectorEntity = connectorService.getConnectorEntityByIdAndChargingPointEntity(connectorId ,chargingPointEntity) ;
 		
 		ChargingPointConnectorRateEntity chargingPointConnectorRateEntity = chargingPointConnectorRateRepository.findByChargingPointEntityAndConnectorEntityAndAmount(chargingPointEntity,connectorEntity,amount);
+		
+		return ChargingPointConnectorRateMapper.toChargingPointConnectorRateDto(chargingPointConnectorRateEntity);
+	}
+	
+	@Override
+	public ChargingPointConnectorRateDto getConnectorByChargingPointNameAndConnectorIdAndKwh(String chargingPointName, String connectorId, double kwh) {
+		// TODO Auto-generated method stub
+		ChargingPointEntity	chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(chargingPointName);
+		
+		ConnectorEntity	connectorEntity = connectorService.getConnectorEntityByIdAndChargingPointEntity(connectorId ,chargingPointEntity) ;
+		
+		ChargingPointConnectorRateEntity chargingPointConnectorRateEntity = chargingPointConnectorRateRepository.findByChargingPointEntityAndConnectorEntityAndKwh(chargingPointEntity,connectorEntity,kwh);
 		
 		return ChargingPointConnectorRateMapper.toChargingPointConnectorRateDto(chargingPointConnectorRateEntity);
 	}

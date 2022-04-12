@@ -4,6 +4,7 @@ package com.scube.chargingstation.exception;
  */
 public enum EntityType {
     USER,
+    MOBILE,
     DEPARTMENT,
     ROLE,
     EMPLOYEE,

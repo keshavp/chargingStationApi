@@ -139,12 +139,12 @@ public class PayslipPdfExporter {
         
 	    
 	    table1.addCell(new Paragraph("Charging fee :")).setBold();
-	    table1.addCell(new Paragraph(chargingRequestEntity.getRequestAmount()));
+	    table1.addCell(new Paragraph(String.valueOf(chargingRequestEntity.getRequestAmount())));
 	   // layoutDocument.add(table1);
 	    
 	    
 	    table1.addCell(new Paragraph("Total Cost")).setBold();
-	    table1.addCell(new Paragraph(chargingRequestEntity.getRequestAmount()));
+	    table1.addCell(new Paragraph(String.valueOf(chargingRequestEntity.getRequestAmount())));
 	   // layoutDocument.add(table1);
 	    
 	    table1.addCell(new Paragraph("Payment status")).setBold();

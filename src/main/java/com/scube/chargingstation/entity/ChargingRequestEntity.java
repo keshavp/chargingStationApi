@@ -29,15 +29,33 @@ public class ChargingRequestEntity extends BaseEntity {
     @JoinColumn(name = "fk_user")
     private UserInfoEntity userInfoEntity;
 	
-	@Column(name = "status")
-	private String  status;
-	
-	@Column(name = "request_amount")
-	private String  requestAmount;
-	
 	@OneToOne
     @JoinColumn(name = "fk_transactions")
     private TransactionsEntity transactionsEntity;
+	
+	@Column(name = "status")
+	private String  status;
+	
+	@Column(name = "request_amount", columnDefinition = "double default 0")
+	private double  requestAmount;
+	
+	@Column(name = "request_kwh", columnDefinition = "double default 0")
+	private double  requestKwh;
+	
+	@Column(name = "difference_kwh", columnDefinition = "double default 0")
+	private double  differenceKwh;
+	
+	@Column(name = "difference_amount", columnDefinition = "double default 0")
+	private double  differenceAmount;
+	
+	@Column(name = "final_amount", columnDefinition = "double default 0")
+	private double  finalAmount;
+	
+	@Column(name = "final_kwh", columnDefinition = "double default 0")
+	private double  finalKwh;
+	
+	@Column(name = "amount_credit_debit_status")
+	private String  amountCrDrStatus;
 	
 	@Column(name = "StartTime")
 	private Instant  startTime;
@@ -50,6 +68,9 @@ public class ChargingRequestEntity extends BaseEntity {
 
 	@Column(name = "MeterStop" , columnDefinition = "double default 0")
 	private double  meterStop;
+	
+	@Column(name = "MeterStopAmount" , columnDefinition = "double default 0")
+	private double  meterStopAmount;
 	
 	@Column(name = "charging_status")
 	private String  chargingStatus;

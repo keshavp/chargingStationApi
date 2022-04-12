@@ -98,7 +98,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 
 			
 			chargingRequestEntity.setStatus(chargingRequestDto.getStatus());
-			chargingRequestEntity.setRequestAmount(chargingRequestDto.getRequestAmount());
+			chargingRequestEntity.setRequestAmount(Double.valueOf(chargingRequestDto.getRequestAmount()));
 			chargingRequestEntity.setIsdeleted("N");
 			
 			chargingRequestRepository.save(chargingRequestEntity);

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scube.chargingstation.dto.incoming.OtpVerificationIncomingDto;
 import com.scube.chargingstation.dto.incoming.UserInfoIncomingDto;
 import com.scube.chargingstation.dto.response.Response;
 import com.scube.chargingstation.service.UserInfoService;
@@ -38,6 +39,15 @@ public class UserInfoController {
 		logger.info("***UserInfoController addUser***");
 	//	logger.info(NEW_ORDER_LOG, createdUser.toString());
 		return Response.ok().setPayload(userInfoService.addUserInfo(userInfoIncomingDto));
+		
+	}
+	
+	
+	@PostMapping( value = "/mobileOtpVerification" , consumes = APPLICATION_JSON_VALUE)
+	public Response mobileOtpVerification(@Valid @RequestBody OtpVerificationIncomingDto otpVerificationIncomingDto) {
+		logger.info("***UserInfoController addUser***");
+	//	logger.info(NEW_ORDER_LOG, createdUser.toString());
+		return Response.ok().setPayload(userInfoService.moblieOtpVerify(otpVerificationIncomingDto));
 		
 	}
 }

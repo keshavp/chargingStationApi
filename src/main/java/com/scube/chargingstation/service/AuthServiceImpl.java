@@ -78,6 +78,12 @@ public class AuthServiceImpl implements AuthService {
 			 throw BRSException.throwException("Error: The Username provided is not registered to your organization!"); 
 		 }
 		 
+		 if(masterEntity.getVerified().equalsIgnoreCase("N")) {
+			 
+			 throw BRSException.throwException("Error: The Username is not Verified!"); 
+		 }
+		 
+		 
 		 if(masterEntity.getStatus().equalsIgnoreCase("Inactive")){
 			 throw BRSException.throwException("Error: User status is inactive.");
 		 }

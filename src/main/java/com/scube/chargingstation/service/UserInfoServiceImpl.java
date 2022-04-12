@@ -10,11 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.scube.chargingstation.dto.ConnectorDto;
+import com.scube.chargingstation.dto.UserInfoOtpDto;
+import com.scube.chargingstation.dto.incoming.OtpVerificationIncomingDto;
 import com.scube.chargingstation.dto.incoming.UserInfoIncomingDto;
 import com.scube.chargingstation.entity.UserInfoEntity;
+import com.scube.chargingstation.entity.UserInfoOtpEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.exception.EntityType;
 import com.scube.chargingstation.repository.UserInfoRepository;
+import com.scube.chargingstation.util.RandomNumber;
 
 @Service
 public class UserInfoServiceImpl implements UserInfoService {
@@ -27,12 +32,33 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Autowired
 	UserInfoRepository userInfoRepository;
 	
+	@Autowired
+	UserInfoOtpService userInfoOtpService;
+	
+	
 	BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 	
 	@Override
 	public boolean addUserInfo(@Valid UserInfoIncomingDto userInfoIncomingDto) {
 		
 		logger.info("********UserInfoServiceImpl addUserInfo********");
+		
+		UserInfoOtpDto userInfoOtpDto = new UserInfoOtpDto();
+		
+		if(userInfoIncomingDto.getMobilenumber() == "") {
+			
+			throw BRSException.throwException("user Mobile Number can't be blank");
+		}
+		
+		if(userInfoIncomingDto.getRole() == "") {
+			
+			throw BRSException.throwException("user role can't be blank");
+		}
+		
+		if(userInfoIncomingDto.getPassword() == "") {
+			
+			throw BRSException.throwException("user password can't be blank");
+		}
 		
 		
 		UserInfoEntity userCodeDuplicateCheck = userInfoRepository.findByUsername(userInfoIncomingDto.getUsername());
@@ -66,10 +92,32 @@ public class UserInfoServiceImpl implements UserInfoService {
 		userInfoEntity.setResetpasswordcount(0);
 		userInfoEntity.setVersion(1);
 		userInfoEntity.setResetpassword("N");
+		userInfoEntity.setVerified("N");
+		
+		userInfoEntity = userInfoRepository.save(userInfoEntity);
 
-		userInfoRepository.save(userInfoEntity);
-
+		String otpCode = "";
+		
+//		otpCode	= RandomNumber.getRandomNumberString();
+		otpCode	= "123456";
+		
+		UserInfoOtpEntity	userInfoOtpEntity = new UserInfoOtpEntity();
+		
+		userInfoOtpEntity.setMobilenumber(userInfoIncomingDto.getMobilenumber());
+		userInfoOtpEntity.setOtpCode(otpCode);
+		userInfoOtpEntity.setUserInfoEntity(userInfoEntity);
+		userInfoOtpEntity.setStatus("open");
+		
+		userInfoOtpService.insertOtpDate(userInfoOtpEntity);
+		
 		return true;
+	}
+
+	@Override
+	public boolean moblieOtpVerify(@Valid OtpVerificationIncomingDto otpVerificationIncomingDto) {
+		// TODO Auto-generated method stub
+		
+		return userInfoOtpService.moblieOtpVerify(otpVerificationIncomingDto);
 	}
 
 }

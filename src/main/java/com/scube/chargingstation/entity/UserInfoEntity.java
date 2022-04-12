@@ -28,6 +28,7 @@ public class UserInfoEntity extends BaseEntity{
 	private RoleEntity role;
 	private String password;
 	private String status;
+	private String verified;
 	private String resetpassword;
 	private int resetpasswordcount;
 	@UpdateTimestamp

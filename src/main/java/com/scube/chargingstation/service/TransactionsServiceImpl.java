@@ -13,6 +13,7 @@ import org.springframework.util.ResourceUtils;
 
 import com.scube.chargingstation.controller.UserInfoController;
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
+import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
@@ -47,6 +48,10 @@ public class TransactionsServiceImpl implements TransactionsService {
 	
 	@Autowired
 	PayslipPdfExporter	payslipPdfExporter;
+	
+	@Autowired
+	UserPaymentService	userPaymentService;
+	
 	
 	// update status using file 
 	/*
@@ -100,16 +105,25 @@ public class TransactionsServiceImpl implements TransactionsService {
 			
 				if(chargingRequestEntity != null) {
 					
+					UserWalletRequestDto	userWalletRequestDto = new UserWalletRequestDto();
 					
 					//ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(chargingRequestEntity.getChargePointId(),chargingRequestEntity.getConnectorId(),chargingRequestEntity.getRequestAmount());
 					
 					ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getConnectorId(),chargingRequestEntity.getRequestAmount());
 					
+					userWalletRequestDto.setChargeRequestId(chargingRequestEntity.getId());
+					userWalletRequestDto.setTraansactionType("Debit");
+					userWalletRequestDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
+					userWalletRequestDto.setRequestAmount(String.valueOf(chargingRequestEntity.getRequestAmount()));
+					
+					// Api amount cut in wallet 
+					userPaymentService.processWalletMoney(userWalletRequestDto);
+					
 					transactionsEntity.setAllowedCharge(chargingPointConnectorRateDto.getKWh());
 					transactionsEntity.setStartResult("Approved");
 					transactionsRepository.save(transactionsEntity);
 					
-					
+					chargingRequestEntity.setRequestKwh(chargingPointConnectorRateDto.getKWh());
 					chargingRequestEntity.setStatus("Approved");
 					chargingRequestEntity.setChargingStatus("Starting");
 					chargingRequestEntity.setTransactionsEntity(transactionsEntity);
@@ -144,14 +158,69 @@ public class TransactionsServiceImpl implements TransactionsService {
 					chargingRequestEntity.setStopTime(transactionsEntity.getStopTime());
 					chargingRequestEntity.setMeterStop(transactionsEntity.getMeterStop());
 				
+					String statusCrDr = "";
+					double differenceAmount = 0;
+					double differenceKwh = 0;
+					
+					double finalAmount = 0;
+					double finalKwh = 0;
+					
+					if(chargingRequestEntity.getRequestKwh() == chargingRequestEntity.getMeterStop()) {
+						differenceAmount = 0;
+						differenceKwh = 0;
+						finalAmount = chargingRequestEntity.getRequestAmount();
+						finalKwh	= chargingRequestEntity.getMeterStop();
+					}else {
+						
+						double minKwh = 0.01;
+						ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndKwh(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getConnectorId(),minKwh);
+						
+						if(chargingRequestEntity.getRequestKwh() > chargingRequestEntity.getMeterStop()) {
+							statusCrDr = "Credit";
+							
+							differenceKwh = chargingRequestEntity.getRequestKwh() - chargingRequestEntity.getMeterStop();
+							
+							differenceAmount = (differenceKwh *  Integer.parseInt(chargingPointConnectorRateDto.getAmount()))/ minKwh ; // 
+							
+							finalAmount = chargingRequestEntity.getRequestAmount() - differenceAmount; //
+							finalKwh	= chargingRequestEntity.getMeterStop();
+						}
+	
+						if(chargingRequestEntity.getRequestKwh() < chargingRequestEntity.getMeterStop()) {
+							statusCrDr = "Debit"; 
+							
+							differenceKwh = chargingRequestEntity.getMeterStop() - chargingRequestEntity.getRequestKwh();
+							
+							differenceAmount = (differenceKwh * Integer.parseInt(chargingPointConnectorRateDto.getAmount())) / minKwh; // 
+							
+							finalAmount = chargingRequestEntity.getRequestAmount() + differenceAmount ; //
+							finalKwh	= chargingRequestEntity.getMeterStop();
+						}
+					
+						UserWalletRequestDto	userWalletRequestDto = new UserWalletRequestDto();
+						
+						
+						userWalletRequestDto.setChargeRequestId(chargingRequestEntity.getId());
+						userWalletRequestDto.setTraansactionType(statusCrDr);
+						userWalletRequestDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
+						userWalletRequestDto.setRequestAmount(String.valueOf(differenceAmount));
+						
+						// Api amount cut in wallet 
+						userPaymentService.processWalletMoney(userWalletRequestDto);
+						
+					}
+					
+					chargingRequestEntity.setDifferenceAmount(differenceAmount);
+					chargingRequestEntity.setDifferenceKwh(differenceKwh);
+					chargingRequestEntity.setAmountCrDrStatus(statusCrDr);
+					chargingRequestEntity.setFinalAmount(finalAmount);
+					chargingRequestEntity.setFinalKwh(finalKwh);
 					
 					String filename =  payslipPdfExporter.generatePdf(chargingRequestEntity);
-				
+					
 					chargingRequestEntity.setInvoiceFilePath(filename);
 					
 					chargingRequestRepository.save(chargingRequestEntity);
-					
-					
 					
 				}
 			}
