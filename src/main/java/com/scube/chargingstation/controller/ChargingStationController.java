@@ -178,30 +178,13 @@ public class ChargingStationController {
 		
 	}
 	
-	@PostMapping( value = "/processWalletMoney" , consumes = APPLICATION_JSON_VALUE)
-	public Response processWalletMoney(@Valid @RequestBody UserWalletRequestDto userWalletRequestDto) {
-		logger.info("***processWalletMoney***");
 		
-				return Response.ok().setPayload(chargingRequestService.processWalletMoney(userWalletRequestDto));
-		
-		
-	}
-	
-	
-	@PostMapping( value = "/getMyWalletBalance" , consumes = APPLICATION_JSON_VALUE)
-	public Response getMyWalletBalance(@Valid @RequestBody UserWalletRequestDto userWalletRequestDto) {
-		logger.info("***getMyWalletBalance***");
-		
-				return Response.ok().setPayload(chargingRequestService.getMyWalletBalance(userWalletRequestDto));
-		
-	}
-	
 	
 	@GetMapping("/getNearByChargingStations11")
 	public Response getNearByChargingStations11(@RequestBody ChargingStationDto chargingStationDto) throws Exception {
 		
-		chargingRequestService.getNearByChargingStations11(chargingStationDto);
-		return null;
+		
+		return Response.ok().setPayload(chargingRequestService.getNearByChargingStations11(chargingStationDto));
 	
 	}
 	

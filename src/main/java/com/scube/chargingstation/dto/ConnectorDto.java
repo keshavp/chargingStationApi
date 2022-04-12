@@ -18,6 +18,13 @@ import lombok.experimental.Accessors;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ConnectorDto {
 
+    private String chargingPoint;
+    
+	private String chargerId;
+	private String chargerType;
 	private String connectorId;
-    private String chargingPointEntity;
+	private String imagePath;
+
+    
+    
 }

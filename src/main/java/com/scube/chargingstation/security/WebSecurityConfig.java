@@ -63,7 +63,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				 * .antMatchers("/api/v1/empinfo/saveDocument/**").permitAll()
 				 */	 
 			.antMatchers("/api/**").permitAll()
+			.antMatchers("/chargerImages/**").permitAll()
+
 			.anyRequest().authenticated();
+		
 		
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

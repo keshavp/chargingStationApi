@@ -13,7 +13,11 @@ public class ConnectorMapper {
         return new ConnectorDto()
         		//.setId(userInfo.getId())
         		.setConnectorId(connectorEntity.getConnectorId())
-        		.setChargingPointEntity(connectorEntity.getChargingPointEntity().getChargingPointId());
+        		//.setChargingPoint(connectorEntity.getChargingPointEntity().getChargingPointId())
+        		.setChargerId(connectorEntity.getChargerTypeEntity().getId())
+        		.setChargerType(connectorEntity.getChargerTypeEntity().getName())
+        
+        		.setImagePath(connectorEntity.getChargerTypeEntity().getImagePath());
 	}
 	
 	public static Set<ConnectorDto> toConnectorsDto(Set<ConnectorEntity> connectorEntities) {
