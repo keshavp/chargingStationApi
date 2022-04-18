@@ -71,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
 			throw BRSException.throwException("Error: Password cannot be empty!"); 
 		}
 		
-		 UserInfoEntity masterEntity =  empInfoRepository.findByUsername(loginRequest.getUsername());
+		 UserInfoEntity masterEntity =  empInfoRepository.findByMobilenumber(loginRequest.getUsername());
 		  
 		 if(masterEntity == null) {
 			 

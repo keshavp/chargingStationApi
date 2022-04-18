@@ -22,6 +22,7 @@ import lombok.Setter;
 public class RoleEntity extends BaseEntity{
 	
 	private String name;
+	@Column(name="name_code")
 	private String nameCode;
 	private String status;
 	

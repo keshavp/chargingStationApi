@@ -22,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
-		UserInfoEntity user = empInfoRepository.findByUsername(username);
+		UserInfoEntity user = empInfoRepository.findByMobilenumber(username);
 
 		return UserDetailsImpl.build(user);
 	}
