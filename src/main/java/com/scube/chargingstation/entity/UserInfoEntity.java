@@ -30,6 +30,7 @@ public class UserInfoEntity extends BaseEntity{
 	private String status;
 	private String verified;
 	private String resetpassword;
+	private String fcmToken;
 	private int resetpasswordcount;
 	@UpdateTimestamp
 	@Column(name = "reset_password_instance")

@@ -1,37 +1,20 @@
 package com.scube.chargingstation.service;
 
-import static com.scube.chargingstation.exception.ExceptionType.DUPLICATE_ENTITY;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.scube.chargingstation.dto.ChargingPointDto;
-import com.scube.chargingstation.dto.ConnectorDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
-import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
 import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
-import com.scube.chargingstation.dto.mapper.ConnectorMapper;
-import com.scube.chargingstation.dto.response.Response;
-import com.scube.chargingstation.entity.AmenitiesEntity;
-import com.scube.chargingstation.entity.ChargerTypeEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
-import com.scube.chargingstation.entity.UserWalletDtlEntity;
-import com.scube.chargingstation.entity.UserWalletEntity;
 import com.scube.chargingstation.exception.BRSException;
-import com.scube.chargingstation.exception.EntityType;
 import com.scube.chargingstation.repository.ChargerTypeRepository;
 import com.scube.chargingstation.repository.ChargingPointRepository;
 import com.scube.chargingstation.repository.ChargingRequestRepository;
@@ -66,6 +49,10 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	@Autowired
 	ConnectorService	connectorService;
 	
+	
+	 @Value("${chargingstation.chargertype}")
+	private   String imgLocation;
+	
 	@Override
 	public boolean addChargingRequest(ChargingRequestDto chargingRequestDto) {
 			
@@ -88,24 +75,34 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			ChargingPointEntity	chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(chargingRequestDto.getChargePointId());
 			ConnectorEntity	connectorEntity = connectorService.getConnectorEntityById(connectorId) ;
 			UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(chargingRequestDto.getMobileUser_Id());
-				
 			
 			
-			
+		/*
+		 * List<ChargingRequestEntity> list=chargingRequestRepository.
+		 * findByChargingPointEntityAndConnectorEntityAndUserInfoEntityAndChargingStatus
+		 * (chargingPointEntity, connectorEntity, userInfoEntity, "Starting");
+		 */
+		  
+		
+		  List<ChargingRequestEntity> list=chargingRequestRepository.findMyOnGoingChargingProcesses(chargingPointEntity, connectorEntity, userInfoEntity);
+				  
+		  
+		  	if(list.size()>0)
+			{
+			  throw BRSException.throwException("Error: Can't book, charging is already in process");
+			}
+		  
+		 
 			chargingRequestEntity.setChargingPointEntity(chargingPointEntity);
 			chargingRequestEntity.setConnectorEntity(connectorEntity);
 			chargingRequestEntity.setUserInfoEntity(userInfoEntity);
-
-			
 			chargingRequestEntity.setStatus(chargingRequestDto.getStatus());
 			chargingRequestEntity.setRequestAmount(Double.valueOf(chargingRequestDto.getRequestAmount()));
+			chargingRequestEntity.setChargingStatus("Pending");
 			chargingRequestEntity.setIsdeleted("N");
 			
+			
 			chargingRequestRepository.save(chargingRequestEntity);
-			
-			//resp="success";  test
-			
-			//temp chnge  
 			
 			return true;
 			
@@ -132,10 +129,10 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	
 
 	@Override
-	public List<ChargingPointDto> getNearByChargingStations11(ChargingStationDto chargingStationDto) {
+	public List<ChargingPointDto> getNearByChargingStations(ChargingStationDto chargingStationDto) {
 		// TODO Auto-generated method stub
-		
-		
+	
+
 		
 		List<ChargingPointEntity> cpEntity=chargingPointRepository.findAll();
 		List<ChargingPointDto> chargingPointDto = ChargingPointMapper.toChargingPointDto(cpEntity);

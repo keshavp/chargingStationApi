@@ -18,4 +18,5 @@ import lombok.experimental.Accessors;
 public class UserLoginIncomingDto {
 	private String username;
 	private String password;
+	private String fcmToken;
 }

@@ -93,7 +93,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 		
 		List<TransactionsEntity> transactionsEntitys =  transactionsRepository.findByStartResult("Initiated");
 		
-		logger.info("***TransactionsServiceImpl updateStartResultInitiated***");
+	//	logger.info("***TransactionsServiceImpl updateStartResultInitiated***");
 		
 		for(TransactionsEntity transactionsEntity : transactionsEntitys) {
 		
@@ -112,7 +112,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 					ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getConnectorId(),chargingRequestEntity.getRequestAmount());
 					
 					userWalletRequestDto.setChargeRequestId(chargingRequestEntity.getId());
-					userWalletRequestDto.setTraansactionType("Debit");
+					userWalletRequestDto.setTransactionType("Debit");
 					userWalletRequestDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
 					userWalletRequestDto.setRequestAmount(String.valueOf(chargingRequestEntity.getRequestAmount()));
 					
@@ -180,7 +180,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 							
 							differenceKwh = chargingRequestEntity.getRequestKwh() - chargingRequestEntity.getMeterStop();
 							
-							differenceAmount = (differenceKwh *  Integer.parseInt(chargingPointConnectorRateDto.getAmount()))/ minKwh ; // 
+							differenceAmount = (differenceKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh ; // 
 							
 							finalAmount = chargingRequestEntity.getRequestAmount() - differenceAmount; //
 							finalKwh	= chargingRequestEntity.getMeterStop();
@@ -191,7 +191,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 							
 							differenceKwh = chargingRequestEntity.getMeterStop() - chargingRequestEntity.getRequestKwh();
 							
-							differenceAmount = (differenceKwh * Integer.parseInt(chargingPointConnectorRateDto.getAmount())) / minKwh; // 
+							differenceAmount = (differenceKwh * chargingPointConnectorRateDto.getAmount()) / minKwh; // 
 							
 							finalAmount = chargingRequestEntity.getRequestAmount() + differenceAmount ; //
 							finalKwh	= chargingRequestEntity.getMeterStop();
@@ -201,7 +201,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 						
 						
 						userWalletRequestDto.setChargeRequestId(chargingRequestEntity.getId());
-						userWalletRequestDto.setTraansactionType(statusCrDr);
+						userWalletRequestDto.setTransactionType(statusCrDr);
 						userWalletRequestDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
 						userWalletRequestDto.setRequestAmount(String.valueOf(differenceAmount));
 						

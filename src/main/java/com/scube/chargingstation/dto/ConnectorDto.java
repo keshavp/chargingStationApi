@@ -23,7 +23,7 @@ public class ConnectorDto {
 	private String chargerId;
 	private String chargerType;
 	private String connectorId;
-	private String imagePath;
+	private String image;
 
     
     

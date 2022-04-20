@@ -85,7 +85,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		
 		userInfoEntity.setPassword(encoder.encode(userInfoIncomingDto.getPassword()));
 		System.out.println("-------------userInfoIncomingDto.getPassword()---------------"+userInfoEntity.getPassword() );
-		userInfoEntity.setStatus(userInfoIncomingDto.getStatus());
+		userInfoEntity.setStatus("ACTIVE");
 		
 		userInfoEntity.setRole(roleService.findRoleNameByCode(userInfoIncomingDto.getRole()));
 

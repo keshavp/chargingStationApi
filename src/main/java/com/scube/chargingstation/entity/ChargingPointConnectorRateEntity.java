@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter @Getter
 public class ChargingPointConnectorRateEntity extends BaseEntity {
 
-	private String amount;
+	private double amount;
 	private double kwh;
 	private String time;
 	

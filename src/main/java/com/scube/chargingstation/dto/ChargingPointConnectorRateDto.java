@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChargingPointConnectorRateDto{
 
-	private String amount;
+	private double amount;
 	private double kWh;
 	private String time;
     private String chargingPointCode;

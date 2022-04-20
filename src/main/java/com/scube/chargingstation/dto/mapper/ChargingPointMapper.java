@@ -15,9 +15,9 @@ public class ChargingPointMapper {
 				.setAddress(chargingPointEntity.getAddress())
 				.setDistance(chargingPointEntity.getDistance())
 				.setLatitude(chargingPointEntity.getLatitude())
-				.setLogitude(chargingPointEntity.getLogitude())
+				.setLongitude(chargingPointEntity.getLongitude())
 				.setName(chargingPointEntity.getName())
-				.setRating(chargingPointEntity.getStatus())
+				.setRating(chargingPointEntity.getRating())
 				.setStatus(chargingPointEntity.getStatus())
 				.setAmenities(AmenityMapper.toAmenitiesDto(chargingPointEntity.getAmenities()))
 				.setConnectors(ConnectorMapper.toConnectorsDto(chargingPointEntity.getConnectorEntities()));

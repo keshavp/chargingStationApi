@@ -28,13 +28,13 @@ public class UserWalletDtlEntity extends BaseEntity{
     private
 	ChargingRequestEntity chargingRequestEntity;
 	
-	
 	@Column(name = "amount")
 	private String  amount;
-
-
 	
 	@Column(name = "transaction_type")
 	private String  transactionType;
+	
+	@Column(name = "transaction_id")
+	private String  transaction_id;
 
 }

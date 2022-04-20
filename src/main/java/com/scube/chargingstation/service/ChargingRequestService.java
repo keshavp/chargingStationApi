@@ -27,7 +27,7 @@ public interface ChargingRequestService {
 			ChargingPointEntity chargingPointEntity, ConnectorEntity connectorEntity, String string);
 			
 	
-	public List<ChargingPointDto> getNearByChargingStations11(ChargingStationDto chargingStationDto);
+	public List<ChargingPointDto> getNearByChargingStations(ChargingStationDto chargingStationDto);
 	
 	
 			

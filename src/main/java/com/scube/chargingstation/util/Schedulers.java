@@ -25,7 +25,7 @@ public class Schedulers {
 	@Scheduled(cron = "${updateStartResult.cronTime}")
 	public int updateStartResult() throws Exception {
 		
-		log.info("updateStartResult");
+	//	log.info("updateStartResult");
 		
 	 	transactionsService.updateStartResultInitiated();
 	 	

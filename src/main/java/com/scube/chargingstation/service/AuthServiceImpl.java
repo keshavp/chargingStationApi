@@ -102,10 +102,16 @@ public class AuthServiceImpl implements AuthService {
 				  new UsernamePasswordAuthenticationToken(
 						  loginRequest.getUsername(),loginRequest.getPassword()));
 		 
+		 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = jwtUtils.generateJwtToken(authentication);
 			
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();	
+		
+		//update FcmToken		
+		masterEntity.setFcmToken(loginRequest.getFcmToken());
+		empInfoRepository.save(masterEntity);		
+		//
 		
 		RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 			if(masterEntity!=null) {

@@ -9,8 +9,8 @@ public class UserWalletRequestDto{
 	private String  chargeRequestId;
 	private String  mobileUser_Id;
 	private String  requestAmount;
-	private String  traansactionType;
-	
+	private String  transactionType;
+	private String  transactionId;
 	
 
 	

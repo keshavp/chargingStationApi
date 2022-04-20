@@ -21,13 +21,14 @@ import lombok.experimental.Accessors;
 public class ChargingPointDto {
 
 	private String address;
-	private String logitude;
-	private String distance;
-	private String latitude;
+	private Double longitude;
+	private Double distance;
+	private Double latitude;
 	private String name;
-	private String rating;
+	private Double rating;
 	private String status;
 	private String chargingPointId;
+	
     private Set<ConnectorDto> Connectors;
     private Set<AmenityDto> Amenities ;
 }
