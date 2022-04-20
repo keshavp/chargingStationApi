@@ -78,4 +78,18 @@ public class ChargingRequestEntity extends BaseEntity {
 	@Column(name = "invoice_file_path")
 	private String  invoiceFilePath;
 	
+	
+	@Column(name = "cust_name")
+	private String  custName;
+	
+	@Column(name = "mobile_no")
+	private String  mobileNo;
+	
+	@Column(name = "vehicle_no")
+	private String  vehicleNO;
+	
+	
+	
+	
+	
 }

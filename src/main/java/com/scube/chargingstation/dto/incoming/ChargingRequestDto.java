@@ -12,4 +12,8 @@ public class ChargingRequestDto{
 	private String  status;
 	private String  requestAmount;
 	
+	private String  name;
+	private String  mobileNo;
+	private String  vechicleNo;
+	
 }
