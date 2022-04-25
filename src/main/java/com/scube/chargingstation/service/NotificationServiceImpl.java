@@ -121,9 +121,6 @@ public class NotificationServiceImpl implements NotificationService {
 			title=notificationReqDto.getTitle();
 			body=notificationReqDto.getBody();
 			
-			
-			
-			
            // This registration token comes from the client FCM SDKs.
           //  String DEVICE_TOKEN = "f4aREZY8QGqbDNO2vTSq0X:APA91bEBhMdze1OVs26milHTNqs6hy-cMgrDD0O5IyqLci1q3ALTgyW4ODuuxBj-N0zg6l_bCaKup0hitvrB9MfFB8u5YsoLHMXsfUf__5x3--Qev4d5mr1Ro0KxN8gY7hMWKlGA3BZF";
 
@@ -139,8 +136,10 @@ public class NotificationServiceImpl implements NotificationService {
 				response = FirebaseMessaging.getInstance().send(message);
 			} catch (FirebaseMessagingException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
 				
+				e.printStackTrace();
+				  throw BRSException.throwException("Error: Notification not sent");
+
 			}
             // Response is a message ID string.
             System.out.println("Successfully sent message: " + response);

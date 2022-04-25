@@ -53,6 +53,8 @@ public class AuthServiceImpl implements AuthService {
 	
 	@Autowired 
 	AuthenticationManager authenticationManager;
+	
+	
 	  
 	
 	@Override
@@ -211,6 +213,24 @@ public class AuthServiceImpl implements AuthService {
 		emp.setResetpasswordcount(emp.getResetpasswordcount() + 1);
 		empInfoRepository.save(emp);
 		logger.info("Password has been reset.");
+		return true;
+	}
+
+
+	@Override
+	public boolean signoutUser(UserLoginIncomingDto loginRequest) {
+		// TODO Auto-generated method stub
+		
+		UserInfoEntity userInfoEntity = empInfoRepository.findByMobilenumber(loginRequest.getUsername());
+		if(userInfoEntity==null)
+		{
+			throw BRSException.throwException("Error: User does not exist"); 
+		}
+		
+		userInfoEntity.setFcmToken(null);
+		empInfoRepository.save(userInfoEntity);
+		
+		
 		return true;
 	}
 	

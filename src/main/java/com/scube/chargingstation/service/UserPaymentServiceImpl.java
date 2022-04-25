@@ -10,14 +10,27 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+import com.razorpay.Order;
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
+import com.razorpay.Utils;
+import com.scube.chargingstation.dto.AuthUserDto;
+import com.scube.chargingstation.dto.RazorOrderIdDto;
 import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
+import com.scube.chargingstation.dto.mapper.RazorOrderIdMapper;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.entity.UserWalletDtlEntity;
@@ -35,116 +48,112 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 
 	@Autowired
 	ChargingPointRepository chargingPointRepository;
-	
+
 	@Autowired
 	ChargingRequestRepository chargingRequestRepository;
-	
+
 	@Autowired
 	ChargerTypeRepository chargerTypeRepository;
-	
+
 	@Autowired
 	UserInfoRepository userInfoRepository;
-	
+
 	@Autowired
 	UserWalletRepository userWalletRepository;
-	
+
 	@Autowired
 	UserWalletDtlRepository userWalletDtlRepository;
-	
+
 	@Autowired
-	ChargingPointService	chargingPointService;
-	
+	ChargingPointService chargingPointService;
+
 	@Autowired
-	ConnectorService	connectorService;
+	ConnectorService connectorService;
 	
 	
-	
+	RazorOrderIdMapper razorOrderIdMapper;
+
+	private static final Logger logger = LoggerFactory.getLogger(UserPaymentServiceImpl.class);
+
+	@Value("${razorPayKey}")
+	private String razorPayKey;
+
+	@Value("${razorPaySecret}")
+	private String razorPaySecret;
+
 	@Override
 	public boolean processWalletMoney(UserWalletRequestDto userWalletRequestDto) {
 		// TODO Auto-generated method stub
-		Map<String, String> map = new HashMap<String, String>();
+		// Map<String, String> map = new HashMap<String, String>();
 
-		
-		UserWalletDtlEntity userWalletDtlEntity=new UserWalletDtlEntity();
-		ChargingRequestEntity crEntity=null;
-		
+		UserWalletDtlEntity userWalletDtlEntity = new UserWalletDtlEntity();
+		ChargingRequestEntity crEntity = null;
+
 		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(userWalletRequestDto.getMobileUser_Id());
-		
-		if(userInfoEntity==null) { 
-			throw BRSException.throwException("Error: User does not exist"); 
+
+		if (userInfoEntity == null) {
+			throw BRSException.throwException("Error: User does not exist");
 		}
-		
-		if((!userWalletRequestDto.getTransactionType().equals("Debit"))&&(!userWalletRequestDto.getTransactionType().equals("Credit")))
-		{
-			throw BRSException.throwException("Error: TransactionType is invalid"); 
+
+		if ((!userWalletRequestDto.getTransactionType().equals("Debit"))
+				&& (!userWalletRequestDto.getTransactionType().equals("Credit"))) {
+			throw BRSException.throwException("Error: TransactionType is invalid");
 		}
-		
-		if(userWalletRequestDto.getRequestAmount()==null)
-			throw BRSException.throwException("Error: Amount can not be blank"); 
-			
-		if((userWalletRequestDto.getRequestAmount().isEmpty()))
-		{
-			throw BRSException.throwException("Error: Amount can not be blank"); 
+
+		if (userWalletRequestDto.getRequestAmount() == null)
+			throw BRSException.throwException("Error: Amount can not be blank");
+
+		if ((userWalletRequestDto.getRequestAmount().isEmpty())) {
+			throw BRSException.throwException("Error: Amount can not be blank");
 		}
-		
-		if((userWalletRequestDto.getChargeRequestId()!=null)&&(!userWalletRequestDto.getChargeRequestId().isEmpty()))
-		{
-		Optional<ChargingRequestEntity> chargingRequestEntity=chargingRequestRepository.findById(userWalletRequestDto.getChargeRequestId());
-		crEntity = chargingRequestEntity.get();
+
+		if ((userWalletRequestDto.getChargeRequestId() != null)
+				&& (!userWalletRequestDto.getChargeRequestId().isEmpty())) {
+			Optional<ChargingRequestEntity> chargingRequestEntity = chargingRequestRepository
+					.findById(userWalletRequestDto.getChargeRequestId());
+			crEntity = chargingRequestEntity.get();
 		}
-		
-		
+
 		userWalletDtlEntity.setTransactionType(userWalletRequestDto.getTransactionType());
 		userWalletDtlEntity.setUserInfoEntity(userInfoEntity);
 		userWalletDtlEntity.setChargingRequestEntity(crEntity);
 		userWalletDtlEntity.setAmount(userWalletRequestDto.getRequestAmount());
-		userWalletDtlEntity.setTransaction_id(userWalletRequestDto.getTransactionId());
-		
-		
-	  //save/update user wallet
-			Double balance=0.0;
-			UserWalletEntity userWaltEntity=new UserWalletEntity();
-		
-			UserWalletEntity userchkWaltEntity=userWalletRepository.findByUserInfoEntity(userInfoEntity);
-		 
-		 
-			if(userchkWaltEntity!=null)
-				userWaltEntity=userchkWaltEntity;
-			
-		 Double amount=Double.parseDouble(userWalletRequestDto.getRequestAmount());
-		 
-		 UserWalletEntity userbalWaltEntity=userWalletRepository.findBalanceByUserId(userInfoEntity.getId());
-		 String currentBal="0";
-		 
-		 if(userbalWaltEntity!=null)
-			 currentBal=userbalWaltEntity.getCurrentBalance();
-		 
-		 Double curBal=Double.parseDouble(currentBal);
-		 
-		  if(userWalletRequestDto.getTransactionType().equals("Credit"))
-		  {
-			  balance=curBal+amount;
-		  } 
-		  else if(userWalletRequestDto.getTransactionType().equals("Debit")) 
-		  {
-			if(curBal<amount)
-				 { 
-					throw BRSException.throwException("Error: Insufficient balance"); 
-				}
-		  balance=curBal-amount;
-		  } 
-		  
-		  
-		  userWaltEntity.setUserInfoEntity(userInfoEntity);
-		  userWaltEntity.setCurrentBalance(balance.toString());
-		  userWalletRepository.save(userWaltEntity);
-		//
-		
-		
+		// userWalletDtlEntity.setTransaction_id(userWalletRequestDto.getTransactionId());
+
+		// save/update user wallet
+		Double balance = 0.0;
+		UserWalletEntity userWaltEntity = new UserWalletEntity();
+
+		UserWalletEntity userchkWaltEntity = userWalletRepository.findByUserInfoEntity(userInfoEntity);
+
+		if (userchkWaltEntity != null)
+			userWaltEntity = userchkWaltEntity;
+
+		Double amount = Double.parseDouble(userWalletRequestDto.getRequestAmount());
+
+		UserWalletEntity userbalWaltEntity = userWalletRepository.findBalanceByUserId(userInfoEntity.getId());
+		String currentBal = "0";
+
+		if (userbalWaltEntity != null)
+			currentBal = userbalWaltEntity.getCurrentBalance();
+
+		Double curBal = Double.parseDouble(currentBal);
+
+		if (userWalletRequestDto.getTransactionType().equals("Credit")) {
+			balance = curBal + amount;
+		} else if (userWalletRequestDto.getTransactionType().equals("Debit")) {
+			if (curBal < amount) {
+				throw BRSException.throwException("Error: Insufficient balance");
+			}
+			balance = curBal - amount;
+		}
+
+		userWaltEntity.setUserInfoEntity(userInfoEntity);
+		userWaltEntity.setCurrentBalance(balance.toString());
+		userWalletRepository.save(userWaltEntity);
+
 		userWalletDtlRepository.save(userWalletDtlEntity);
-		
-		
-		
+
 		return true;
 	}
 
@@ -152,24 +161,315 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 	public Map<String, String> getMyWalletBalance(UserWalletRequestDto userWalletRequestDto) {
 		// TODO Auto-generated method stub
 		Map<String, String> map = new HashMap<String, String>();
-		String balance="0";
-		
+		String balance = "0";
+
 		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(userWalletRequestDto.getMobileUser_Id());
-		
-		if(userInfoEntity==null) { 
-			throw BRSException.throwException("Error: User does not exist"); 
+
+		if (userInfoEntity == null) {
+			throw BRSException.throwException("Error: User does not exist");
 		}
 
 		UserWalletEntity userWalletEntity = userWalletRepository.findByUserInfoEntity(userInfoEntity);
-			if(userWalletEntity!=null)
-			balance=userWalletEntity.getCurrentBalance();
-		
+		if (userWalletEntity != null)
+			balance = userWalletEntity.getCurrentBalance();
+
 		map.put("balance", balance);
-		
+
 		return map;
 	}
 
+	@Override
+	public RazorOrderIdDto addWalletMoneyRequest(UserWalletRequestDto userWalletRequestDto) 
+	{ 
+		// TODO Auto-generated method stub
+
+		razorOrderIdMapper=new RazorOrderIdMapper();
+		RazorOrderIdDto response=new RazorOrderIdDto();
+		
+		UserWalletDtlEntity userWalletDtlEntity = new UserWalletDtlEntity();
+		ChargingRequestEntity crEntity = null;
+
+		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(userWalletRequestDto.getMobileUser_Id());
+
+		if (userInfoEntity == null) {
+			throw BRSException.throwException("Error: User does not exist");
+		}
+
+		/*
+		 * if ((!userWalletRequestDto.getTransactionType().equals("Debit")) &&
+		 * (!userWalletRequestDto.getTransactionType().equals("Credit"))) { throw
+		 * BRSException.throwException("Error: TransactionType is invalid"); }
+		 */
+
+		if (userWalletRequestDto.getRequestAmount() == null)
+			throw BRSException.throwException("Error: Amount can not be blank");
+
+		if ((userWalletRequestDto.getRequestAmount().isEmpty())) {
+			throw BRSException.throwException("Error: Amount can not be blank");
+		}
+
+		
+		String OrderId=createRazorOrderID(userWalletRequestDto);
+		
+		/*
+		 * if ((userWalletRequestDto.getChargeRequestId() != null) &&
+		 * (!userWalletRequestDto.getChargeRequestId().isEmpty())) {
+		 * Optional<ChargingRequestEntity> chargingRequestEntity =
+		 * chargingRequestRepository
+		 * .findById(userWalletRequestDto.getChargeRequestId()); crEntity =
+		 * chargingRequestEntity.get(); }
+		 */
+
+		//userWalletDtlEntity.setTransactionType(userWalletRequestDto.getTransactionType());
+		userWalletDtlEntity.setTransactionType("Credit");
+		userWalletDtlEntity.setUserInfoEntity(userInfoEntity);
+		//userWalletDtlEntity.setChargingRequestEntity(crEntity);
+		userWalletDtlEntity.setAmount(userWalletRequestDto.getRequestAmount());
+		userWalletDtlEntity.setOrderId(OrderId);
+		
+		//userWalletDtlEntity.setTransaction_id(userWalletRequestDto.getTransactionId());
+
+		userWalletDtlRepository.save(userWalletDtlEntity);
+
+		response=razorOrderIdMapper.toRazorOrderIdDto(OrderId);
+		
+		return response;
+	}
+
+	@Override
+	public String createRazorOrderID(UserWalletRequestDto userWalletRequestDto) {
+		// TODO Auto-generated method stub
+
+		String OrderId = "";
+		Double amount = Double.parseDouble(userWalletRequestDto.getRequestAmount());
+		
+	//	Map<String, String> orderRequest = new HashMap<String, String>();
+		JSONObject orderRequest = new JSONObject();
+	//	orderRequest.put("amount", userWalletRequestDto.getRequestAmount());
+		orderRequest.put("amount", amount*100);
+		orderRequest.put("currency", "INR");
+	//	orderRequest.put("receipt", "order_rcptid_11");
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		// String json1 = objectMapper.writeValueAsString(orderRequest);
+		// objectMapper.writeV
+		RazorpayClient razorpay = null;
+		try {
+			razorpay = new RazorpayClient(razorPayKey, razorPaySecret);
+			Order order = razorpay.Orders.create(orderRequest);
+			logger.info("orderId for--" + order.get("id"));
+			OrderId = order.get("id");
+			if ((OrderId == null)|| (OrderId.isEmpty()))
+			{
+				throw BRSException.throwException("Error: In Razor Order Id Creation");
+			}
+			
+
+		} catch (RazorpayException e) {
+			// TODO Auto-generated catch block
+			
+			e.printStackTrace();
+			throw BRSException.throwException("Error: In Razor Order Id Creation");
+
+		}
+
+		return OrderId;
+	}
 	
+	
+	@Override
+	public boolean verifyRazorSignature(UserWalletRequestDto userWalletRequestDto) {
+		// TODO Auto-generated method stub
+
+		boolean flag = false;
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		RazorpayClient razorpay = null;
+		try {
+			razorpay = new RazorpayClient(razorPayKey, razorPaySecret);
+			JSONObject options = new JSONObject();
+			
+			options.put("razorpay_payment_id", userWalletRequestDto.getTransactionId());
+			options.put("razorpay_order_id", userWalletRequestDto.getOrderId());
+			//options.put("key_secret", razorPaySecret);
+			options.put("razorpay_signature", userWalletRequestDto.getRazorSignature());
+			
+			flag=Utils.verifyPaymentSignature(options, razorPaySecret);
+			
+			logger.info("verifyRazorSignature flag--" + flag);
+			
+			if(!flag)
+			{
+				throw BRSException.throwException("Error: Invalid Razor Signature");
+			}
+			
+
+		} catch (RazorpayException e) {
+			// TODO Auto-generated catch block
+			
+			e.printStackTrace();
+			throw BRSException.throwException("Error: In Razor Signature verification");
+
+		}
+
+		return flag;
+	}
+
+	@Override
+	public boolean addWalletMoneyTransaction(@Valid UserWalletRequestDto userWalletRequestDto) {
+		// TODO Auto-generated method stub
+		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(userWalletRequestDto.getMobileUser_Id());
+
+		if (userInfoEntity == null)
+		{
+			throw BRSException.throwException("Error: User does not exist");
+		}
+		if (userWalletRequestDto.getRequestAmount() == null)
+			throw BRSException.throwException("Error: Amount can not be blank");
+
+		if ((userWalletRequestDto.getRequestAmount().isEmpty())) {
+			throw BRSException.throwException("Error: Amount can not be blank");
+		}
+		
+		if ((userWalletRequestDto.getTransactionId() == null)|| (userWalletRequestDto.getTransactionId().isEmpty()))
+		{
+			throw BRSException.throwException("Error: TransactionId can not be blank");
+		}
+		
+		if ((userWalletRequestDto.getOrderId() == null)|| (userWalletRequestDto.getOrderId().isEmpty()))
+		{
+			throw BRSException.throwException("Error: OrderId can not be blank");
+		}
+		
+		if ((userWalletRequestDto.getRazorSignature() == null)|| (userWalletRequestDto.getRazorSignature().isEmpty()))
+		{
+			throw BRSException.throwException("Error: RazorSignature can not be blank");
+		}
+		
+		
+		  if(!verifyRazorSignature(userWalletRequestDto)) { throw
+		  BRSException.throwException("Error: Invalid Razor Signature"); }
+		 
+		UserWalletDtlEntity userWalletDtlEntity=userWalletDtlRepository.findByUserInfoEntityAndOrderId(userInfoEntity, userWalletRequestDto.getOrderId());
+		
+		if(userWalletDtlEntity==null)
+		{
+			throw BRSException.throwException("Error: Invalid OrderId");
+		}
+		userWalletDtlEntity.setRazorSignature(userWalletRequestDto.getRazorSignature());
+		userWalletDtlEntity.setTransactionId(userWalletRequestDto.getTransactionId());
+		userWalletDtlEntity.setAmount(userWalletRequestDto.getRequestAmount());
+		userWalletDtlRepository.save(userWalletDtlEntity);
+		
+		Double balance = 0.0;
+		UserWalletEntity userWaltEntity = new UserWalletEntity();
+
+		UserWalletEntity userchkWaltEntity = userWalletRepository.findByUserInfoEntity(userInfoEntity);
+
+		if (userchkWaltEntity != null)
+			userWaltEntity = userchkWaltEntity;
+
+		Double amount = Double.parseDouble(userWalletRequestDto.getRequestAmount());
+
+		UserWalletEntity userbalWaltEntity = userWalletRepository.findBalanceByUserId(userInfoEntity.getId());
+		String currentBal = "0";
+
+		if (userbalWaltEntity != null)
+			currentBal = userbalWaltEntity.getCurrentBalance();
+
+		Double curBal = Double.parseDouble(currentBal);
+		balance = curBal + amount;
+
+		userWaltEntity.setUserInfoEntity(userInfoEntity);
+		userWaltEntity.setCurrentBalance(balance.toString());
+		userWalletRepository.save(userWaltEntity);
+		
+		return true;
+	}
+
+	//
+
+	/*
+	 * @Override public boolean addUserWalletDetail(UserWalletRequestDto
+	 * userWalletRequestDto) { // TODO Auto-generated method stub
+	 * 
+	 * 
+	 * UserWalletDtlEntity userWalletDtlEntity=new UserWalletDtlEntity();
+	 * ChargingRequestEntity crEntity=null;
+	 * 
+	 * UserInfoEntity userInfoEntity =
+	 * userInfoRepository.findByMobilenumber(userWalletRequestDto.getMobileUser_Id()
+	 * );
+	 * 
+	 * if(userInfoEntity==null) { throw
+	 * BRSException.throwException("Error: User does not exist"); }
+	 * 
+	 * if((!userWalletRequestDto.getTransactionType().equals("Debit"))&&(!
+	 * userWalletRequestDto.getTransactionType().equals("Credit"))) { throw
+	 * BRSException.throwException("Error: TransactionType is invalid"); }
+	 * 
+	 * if(userWalletRequestDto.getRequestAmount()==null) throw
+	 * BRSException.throwException("Error: Amount can not be blank");
+	 * 
+	 * if((userWalletRequestDto.getRequestAmount().isEmpty())) { throw
+	 * BRSException.throwException("Error: Amount can not be blank"); }
+	 * 
+	 * if((userWalletRequestDto.getChargeRequestId()!=null)&&(!userWalletRequestDto.
+	 * getChargeRequestId().isEmpty())) { Optional<ChargingRequestEntity>
+	 * chargingRequestEntity=chargingRequestRepository.findById(userWalletRequestDto
+	 * .getChargeRequestId()); crEntity = chargingRequestEntity.get(); }
+	 * 
+	 * 
+	 * userWalletDtlEntity.setTransactionType(userWalletRequestDto.
+	 * getTransactionType()); userWalletDtlEntity.setUserInfoEntity(userInfoEntity);
+	 * userWalletDtlEntity.setChargingRequestEntity(crEntity);
+	 * userWalletDtlEntity.setAmount(userWalletRequestDto.getRequestAmount());
+	 * userWalletDtlEntity.setTransaction_id(userWalletRequestDto.getTransactionId()
+	 * );
+	 * 
+	 * 
+	 * //save/update user wallet
+	 * 
+	 * Double balance=0.0; UserWalletEntity userWaltEntity=new UserWalletEntity();
+	 * 
+	 * UserWalletEntity
+	 * userchkWaltEntity=userWalletRepository.findByUserInfoEntity(userInfoEntity);
+	 * 
+	 * 
+	 * if(userchkWaltEntity!=null) userWaltEntity=userchkWaltEntity;
+	 * 
+	 * Double amount=Double.parseDouble(userWalletRequestDto.getRequestAmount());
+	 * 
+	 * UserWalletEntity
+	 * userbalWaltEntity=userWalletRepository.findBalanceByUserId(userInfoEntity.
+	 * getId()); String currentBal="0";
+	 * 
+	 * if(userbalWaltEntity!=null) currentBal=userbalWaltEntity.getCurrentBalance();
+	 * 
+	 * Double curBal=Double.parseDouble(currentBal);
+	 * 
+	 * if(userWalletRequestDto.getTransactionType().equals("Credit")) {
+	 * balance=curBal+amount; } else
+	 * if(userWalletRequestDto.getTransactionType().equals("Debit")) {
+	 * if(curBal<amount) { throw
+	 * BRSException.throwException("Error: Insufficient balance"); }
+	 * balance=curBal-amount; }
+	 * 
+	 * 
+	 * userWaltEntity.setUserInfoEntity(userInfoEntity);
+	 * userWaltEntity.setCurrentBalance(balance.toString());
+	 * userWalletRepository.save(userWaltEntity);
+	 * 
+	 * 
+	 * userWalletDtlRepository.save(userWalletDtlEntity);
+	 * 
+	 * 
+	 * 
+	 * return true; }
+	 */
+
+	///
+
 	/*
 	 * boolean sendNotification(int userId) { String SERVER_KEY =
 	 * "AAAAgHRHE7M:APA91bFC5F9IZ5_8KZhNROpIeKwVMrdjA_SM7ugvYjgeFwn81G-DRG9syVxHWbVg_198OVhEcBmHpZv_PLIuc4Xw3etQm8_0L-MBoQiVGRpIP0s0R1f5zr2ESZI0wbhPLFjo487zN-Po";
@@ -243,7 +543,5 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 	 * 
 	 * return flag; }
 	 */
-	
 
-	
 }

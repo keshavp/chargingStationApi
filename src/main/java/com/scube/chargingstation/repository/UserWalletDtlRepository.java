@@ -18,4 +18,6 @@ public interface UserWalletDtlRepository extends JpaRepository<UserWalletDtlEnti
 	 * 
 	 * UserInfoEntity findByMobilenumber(String mobilenumber);
 	 */
+	
+	UserWalletDtlEntity findByUserInfoEntityAndOrderId(UserInfoEntity userInfoEntity,String OrderId);
 }

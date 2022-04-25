@@ -19,9 +19,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
+import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
 import com.scube.chargingstation.dto.response.Response;
+import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.repository.ChargerTypeRepository;
 import com.scube.chargingstation.service.ChargingRequestService;
 import com.scube.chargingstation.util.FileStorageService;
@@ -193,8 +196,16 @@ public class ChargingStationController {
 	}
 	
 	
-	
-	 
+	@PostMapping(value ="/getChargingHistory", consumes = APPLICATION_JSON_VALUE)
+	public List<ChargingPointDto> getChargingHistory(ChargingStationDto chargingStationDto) {
+		// TODO Auto-generated method stub
+		
+		//List<ChargingPointEntity> cpEntity=chargingPointRepository.findAll();
+	//	List<ChargingPointDto> chargingPointDto = ChargingPointMapper.toChargingPointDto(cpEntity);
+		
+		return null;
+		
+	}
 	 
 
 	 

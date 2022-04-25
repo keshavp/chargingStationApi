@@ -11,8 +11,8 @@ public class UserWalletRequestDto{
 	private String  requestAmount;
 	private String  transactionType;
 	private String  transactionId;
-	
-
+	private String  orderId;
+	private String  razorSignature;
 	
 	
 	

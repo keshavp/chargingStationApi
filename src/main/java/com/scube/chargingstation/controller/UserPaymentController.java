@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scube.chargingstation.dto.AuthUserDto;
+import com.scube.chargingstation.dto.RazorOrderIdDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
 import com.scube.chargingstation.dto.incoming.UserInfoIncomingDto;
@@ -22,6 +24,7 @@ import com.scube.chargingstation.dto.response.Response;
 import com.scube.chargingstation.service.ChargingRequestService;
 import com.scube.chargingstation.service.UserPaymentService;
 
+import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +62,23 @@ public class UserPaymentController {
 		
 	}
 	
+	@PostMapping( value = "/addWalletMoneyRequest" , consumes = APPLICATION_JSON_VALUE)
+	public Response addWalletMoneyRequest(@Valid @RequestBody UserWalletRequestDto userWalletRequestDto) {
+		logger.info("***addWalletMoneyRequest***");
+		
+		RazorOrderIdDto responseData;
+ 		 
+ 		 responseData =	userPaymentService.addWalletMoneyRequest(userWalletRequestDto);
+		
+		return Response.ok().setPayload(responseData);
+		
+	}
 	
-	
+	@PostMapping( value = "/addWalletMoneyTransaction" , consumes = APPLICATION_JSON_VALUE)
+	public Response addWalletMoneyTransaction(@Valid @RequestBody UserWalletRequestDto userWalletRequestDto)  {
+		logger.info("***addWalletMoneyTransaction***");
+		
+		return Response.ok().setPayload(userPaymentService.addWalletMoneyTransaction(userWalletRequestDto));
+		
+	}
 }

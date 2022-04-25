@@ -13,5 +13,7 @@ public interface AuthService {
 	boolean checkResetPasswordConditions(String email);
 	  
 	boolean setNewPassword(SetNewPasswordIncomingDto setNewPasswordIncomingDto);
+	
+	boolean signoutUser(UserLoginIncomingDto loginRequest);
 
 }

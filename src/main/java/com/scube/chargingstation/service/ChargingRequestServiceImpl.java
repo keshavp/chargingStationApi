@@ -2,10 +2,13 @@ package com.scube.chargingstation.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.scube.chargingstation.controller.AuthController;
 import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
@@ -53,6 +56,10 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	
 	 @Value("${chargingstation.chargertype}")
 	private   String imgLocation;
+	 
+	private static final Logger logger = LoggerFactory.getLogger(ChargingRequestServiceImpl.class);
+
+	 
 	
 	@Override
 	public boolean addChargingRequest(ChargingRequestDto chargingRequestDto) {
@@ -159,6 +166,11 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		return chargingPointDto;
 		
 	}
+	
+	
+	
+	
+
 	
 	
 }

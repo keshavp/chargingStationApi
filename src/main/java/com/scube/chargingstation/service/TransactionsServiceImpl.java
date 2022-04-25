@@ -13,6 +13,7 @@ import org.springframework.util.ResourceUtils;
 
 import com.scube.chargingstation.controller.UserInfoController;
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
+import com.scube.chargingstation.dto.incoming.NotificationReqDto;
 import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
@@ -51,6 +52,9 @@ public class TransactionsServiceImpl implements TransactionsService {
 	
 	@Autowired
 	UserPaymentService	userPaymentService;
+	
+	@Autowired
+	NotificationService notificationService;
 	
 	
 	// update status using file 
@@ -221,6 +225,19 @@ public class TransactionsServiceImpl implements TransactionsService {
 					chargingRequestEntity.setInvoiceFilePath(filename);
 					
 					chargingRequestRepository.save(chargingRequestEntity);
+					
+					//send notification
+					Double requestAmt=chargingRequestEntity.getRequestAmount();
+					String title="Thank you for using EV-Dock.";
+					String body="We are happy to service your request of charging for "+requestAmt+" INR." + 
+							"The actual charging consumed is "+finalKwh +" KWH, " + 
+							"Corresponding to "+finalAmount + " INR.";
+					NotificationReqDto notificationReqDto =new NotificationReqDto();
+					notificationReqDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
+					notificationReqDto.setTitle(title);
+					notificationReqDto.setBody(body);
+					notificationService.sendNotification(notificationReqDto);
+					//notification sent
 					
 				}
 			}

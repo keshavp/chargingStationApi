@@ -84,6 +84,15 @@ import com.scube.chargingstation.service.AuthService;
   		
   	}
   	
+  	
+  	@PostMapping( value = "/signout" , consumes = APPLICATION_JSON_VALUE)
+  	public Response userSignOut(@Valid @RequestBody UserLoginIncomingDto loginRequest) {
+  		
+  		 
+  		 logger.info("signout successful!");
+  		 
+  		 return Response.ok().setPayload(authService.signoutUser(loginRequest));
+  	}
 
   	
   }

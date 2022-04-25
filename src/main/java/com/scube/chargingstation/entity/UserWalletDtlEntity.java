@@ -35,6 +35,12 @@ public class UserWalletDtlEntity extends BaseEntity{
 	private String  transactionType;
 	
 	@Column(name = "transaction_id")
-	private String  transaction_id;
+	private String  transactionId;
+	
+	@Column(name = "order_id")
+	private String  orderId;
+	
+	@Column(name = "razor_signature")
+	private String  razorSignature;
 
 }
