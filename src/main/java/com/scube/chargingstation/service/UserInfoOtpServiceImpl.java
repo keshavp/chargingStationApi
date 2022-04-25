@@ -7,6 +7,8 @@ import com.scube.chargingstation.dto.incoming.OtpVerificationIncomingDto;
 import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.entity.UserInfoOtpEntity;
 import com.scube.chargingstation.exception.BRSException;
+import com.scube.chargingstation.exception.EntityType;
+import com.scube.chargingstation.exception.ExceptionType;
 import com.scube.chargingstation.repository.UserInfoOtpRepository;
 import com.scube.chargingstation.repository.UserInfoRepository;
 
@@ -34,7 +36,7 @@ public class UserInfoOtpServiceImpl implements UserInfoOtpService {
 		
 		if(userInfoOtpEntity == null) {
 			
-			 throw BRSException.throwException("The mobile number not exists!"); 
+			 throw BRSException.throwException(EntityType.OTP, ExceptionType.ENTITY_NOT_FOUND ,""); 
 		}
 		
 		UserInfoEntity userInfoEntity = userInfoOtpEntity.getUserInfoEntity();

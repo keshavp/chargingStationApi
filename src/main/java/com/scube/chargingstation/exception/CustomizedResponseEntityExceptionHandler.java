@@ -1,10 +1,14 @@
 package com.scube.chargingstation.exception;
 import com.scube.chargingstation.dto.response.Response;
+import com.scube.chargingstation.dto.response.Response.Status;
+
+import javax.naming.AuthenticationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -43,6 +47,33 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
          logger.error(ex.getMessage(), ex);
          
          return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+	}
+    
+    @ExceptionHandler(BRSException.UnauthorizedEntityException.class)
+   	public final ResponseEntity handaleUnauthorizedException(Exception ex, WebRequest request){
+       	 Response response = Response.unauthorized();
+            response.addErrorMsgToResponse(ex.getMessage(), ex);
+            logger.error(ex.getMessage(), ex);
+            return new ResponseEntity(response, HttpStatus.UNAUTHORIZED);
+   	}
+    
+    
+    @ExceptionHandler(AuthenticationException.class)
+	public final ResponseEntity handaleAuthenticationException(Exception ex, WebRequest request){
+    	 Response response = Response.unauthorized();
+         response.addErrorMsgToResponse(ex.getMessage(), ex);
+         logger.error(ex.getMessage(), ex);
+         
+         return new ResponseEntity(response, HttpStatus.UNAUTHORIZED);
+	}
+    
+    @ExceptionHandler(BadCredentialsException.class)
+	public final ResponseEntity handaleBadCredentialsException(Exception ex, WebRequest request){
+    	 Response response = Response.unauthorized();
+         response.addErrorMsgToResponse(ex.getMessage(), ex);
+         logger.error(ex.getMessage(), ex);
+         
+         return new ResponseEntity(response, HttpStatus.UNAUTHORIZED);
 	}
     
     @ExceptionHandler(Exception.class)

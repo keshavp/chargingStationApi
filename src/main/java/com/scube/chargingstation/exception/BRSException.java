@@ -84,6 +84,8 @@ public class BRSException {
             return new EntityNotFoundException(format(messageTemplate, args));
         } else if (ExceptionType.DUPLICATE_ENTITY.equals(exceptionType)) {
             return new DuplicateEntityException(format(messageTemplate, args));
+        }else if (ExceptionType.UNAUTHORIZED.equals(exceptionType)) {
+            return new UnauthorizedEntityException(format(messageTemplate, args));
         }
         return new RuntimeException(format(messageTemplate, args));
     }
@@ -108,6 +110,12 @@ public class BRSException {
 
     public static class DuplicateEntityException extends RuntimeException {
         public DuplicateEntityException(String message) {
+            super(message);
+        }
+    }
+    
+    public static class UnauthorizedEntityException extends RuntimeException {
+        public UnauthorizedEntityException(String message) {
             super(message);
         }
     }

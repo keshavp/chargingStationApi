@@ -23,6 +23,9 @@ import com.scube.chargingstation.dto.mapper.AuthUserMapper;
 import com.scube.chargingstation.entity.RefreshToken;
 import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.exception.BRSException;
+import com.scube.chargingstation.exception.CustomizedResponseEntityExceptionHandler;
+import com.scube.chargingstation.exception.EntityType;
+import com.scube.chargingstation.exception.ExceptionType;
 import com.scube.chargingstation.repository.UserInfoRepository;
 import com.scube.chargingstation.security.JwtUtils;
 
@@ -77,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
 		  
 		 if(masterEntity == null) {
 			 
-			 throw BRSException.throwException("Error: The Username provided is not registered to your organization!"); 
+			 throw BRSException.throwException(EntityType.USER, ExceptionType.ENTITY_NOT_FOUND , loginRequest.getUsername()); 
 		 }
 		 
 		 if(masterEntity.getVerified().equalsIgnoreCase("N")) {

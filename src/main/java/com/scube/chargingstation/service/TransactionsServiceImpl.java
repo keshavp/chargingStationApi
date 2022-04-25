@@ -146,6 +146,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 		List<ChargingRequestEntity> chargingRequestEntities = chargingRequestService.findChargingRequestEntityByChargingStatus("Starting");
 		
 		
+		
 		for(ChargingRequestEntity chargingRequestEntity : chargingRequestEntities) {
 		
 			if(chargingRequestEntity != null) {
