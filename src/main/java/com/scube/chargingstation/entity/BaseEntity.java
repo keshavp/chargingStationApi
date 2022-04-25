@@ -12,7 +12,7 @@ import java.time.Instant;
 
 
 @MappedSuperclass
-@Getter @Setter @ToString
+@Getter @Setter @ToString 
 public abstract class BaseEntity {
 
 	@Id

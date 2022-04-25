@@ -1,6 +1,6 @@
 package com.scube.chargingstation.service;
 
-import static com.scube.chargingstation.exception.ExceptionType.DUPLICATE_ENTITY;
+import static com.scube.chargingstation.exception.ExceptionType.ALREADY_EXIST;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

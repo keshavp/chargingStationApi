@@ -1,6 +1,6 @@
 package com.scube.chargingstation.service;
 
-import static com.scube.chargingstation.exception.ExceptionType.DUPLICATE_ENTITY;
+import static com.scube.chargingstation.exception.ExceptionType.ALREADY_EXIST;
 
 import javax.validation.Valid;
 
@@ -65,13 +65,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 		if(userCodeDuplicateCheck != null) {
 			
 			logger.error("throw error that user already exists for Username = "+ userInfoIncomingDto.getUsername());
-			throw BRSException.throwException(EntityType.USER, DUPLICATE_ENTITY, userInfoIncomingDto.getUsername());
+			throw BRSException.throwException(EntityType.USER, ALREADY_EXIST, userInfoIncomingDto.getUsername());
 		}
 		
 		UserInfoEntity userEmailDuplicateCheck = userInfoRepository.findByMobilenumber(userInfoIncomingDto.getMobilenumber());
 		if(userEmailDuplicateCheck != null) {
 			logger.error("throw error that Mobilenumber already exists for Mobilenumber = "+ userInfoIncomingDto.getMobilenumber());
-			throw BRSException.throwException(EntityType.USER, DUPLICATE_ENTITY, userInfoIncomingDto.getMobilenumber());
+			throw BRSException.throwException(EntityType.USER, ALREADY_EXIST, userInfoIncomingDto.getMobilenumber());
 		}
 		
 		UserInfoEntity userInfoEntity = new UserInfoEntity();

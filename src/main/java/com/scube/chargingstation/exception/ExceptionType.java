@@ -5,6 +5,7 @@ package com.scube.chargingstation.exception;
 public enum ExceptionType {
     ENTITY_NOT_FOUND("not.found"),
     DUPLICATE_ENTITY("duplicate"),
+    ALREADY_EXIST("duplicate"),
     UNAUTHORIZED("unauthorized"),
     ENTITY_EXCEPTION("exception"),
     FILE_SIZE_EXCEPTION("size.exceed"),
