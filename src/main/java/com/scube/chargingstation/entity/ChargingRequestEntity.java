@@ -88,8 +88,7 @@ public class ChargingRequestEntity extends BaseEntity {
 	@Column(name = "vehicle_no")
 	private String  vehicleNO;
 	
-	
-	
-	
+	@Column(name = "receipt_no")
+	private String  receiptNo;
 	
 }

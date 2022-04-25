@@ -72,7 +72,7 @@ public class PayslipPdfExporter {
 	 //private static Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 12,Font.BOLD);
 	 //private static Font smallNorm = new Font(Font.FontFamily.TIMES_ROMAN, 12,Font.NORMAL);
 	    
-	public String generatePdf(ChargingRequestEntity chargingRequestEntity) throws Exception {	
+	public ChargingRequestEntity generatePdf(ChargingRequestEntity chargingRequestEntity) throws Exception {	
 		
 //		String filename = bookScheduleResponse.getBookingreff().concat(fileExtension);
 		
@@ -159,9 +159,9 @@ public class PayslipPdfExporter {
 		cellInvoiceVal.setBorder(Border.NO_BORDER);
 //		Color color = WebColors.getRGBColor("#161a47");
 		
-		;
+		String receiptNo = chargingRequestEntity.getId()+"_"+RandomNumber.getRandomNumberString()+RandomStringUtil.getAlphaNumericString(4, "EVDock");
 		
-		Paragraph paraInvoiceVal = new Paragraph(chargingRequestEntity.getId()+"_"+RandomNumber.getRandomNumberString()+RandomStringUtil.getAlphaNumericString(4, "EVDock"));
+		Paragraph paraInvoiceVal = new Paragraph(receiptNo);
 //		invoiceIdpara2.setPaddingTop(5);
 //		invoiceIdpara2.setBorder(Border.NO_BORDER);
 //		invoiceIdpara2.setPaddingLeft(55);
@@ -250,9 +250,9 @@ public class PayslipPdfExporter {
 	    
 		double finalAmount = chargingRequestEntity.getFinalAmount();
 		
-		double GSTAmount = chargingRequestEntity.getFinalAmount()*0.18;
+		double WithoutGSTAmount = Math.round(finalAmount/1.18);
 		
-		double WithoutGSTAmount = finalAmount - GSTAmount ;
+		double GSTAmount = Math.round(WithoutGSTAmount*0.18);
 		
 		
 //		tableCost.addCell(getCellLabelVal("Charging fee :",String.valueOf(WithoutGSTAmount)));
@@ -274,9 +274,32 @@ public class PayslipPdfExporter {
 		
 	    layoutDocument.add(tablePayStatus.addCell(getCellLabelVal("Payment status","Success")));
 	    
+	    
+		Cell cellRound = new Cell();
+//		cell2.setPaddingTop(35);
+		cellRound.setBorder(Border.NO_BORDER);
+		
+//		Color color = WebColors.getRGBColor("#161a47");
+		Paragraph paraRound = new Paragraph("*Total cost is result for Rounding off (Charging fee + GST)");
+		paraRound.setFontSize(3);
+//		para.setPaddingTop(5);
+//		para.setPaddingLeft(55);
+//		para.setPaddingBottom(5);
+//		paraRound.setBold();
+		paraRound.setTextAlignment(TextAlignment.RIGHT);
+//		para.setFontColor(Color.WHITE);
+//		para.setBackgroundColor(color);
+		cellRound.add(paraRound);
+	    
+		 layoutDocument.add(cellRound);
+	    
 		layoutDocument.close();
 		
-		return filename;
+		chargingRequestEntity.setInvoiceFilePath(filename);
+		chargingRequestEntity.setReceiptNo(receiptNo);
+		
+		
+		return chargingRequestEntity;
 	}
 
 	/*

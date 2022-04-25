@@ -146,7 +146,6 @@ public class TransactionsServiceImpl implements TransactionsService {
 		List<ChargingRequestEntity> chargingRequestEntities = chargingRequestService.findChargingRequestEntityByChargingStatus("Starting");
 		
 		
-		
 		for(ChargingRequestEntity chargingRequestEntity : chargingRequestEntities) {
 		
 			if(chargingRequestEntity != null) {
@@ -221,9 +220,10 @@ public class TransactionsServiceImpl implements TransactionsService {
 					chargingRequestEntity.setFinalAmount(finalAmount);
 					chargingRequestEntity.setFinalKwh(finalKwh);
 					
-					String filename =  payslipPdfExporter.generatePdf(chargingRequestEntity);
+					ChargingRequestEntity chargingRequestEntityfilename =  payslipPdfExporter.generatePdf(chargingRequestEntity);
 					
-					chargingRequestEntity.setInvoiceFilePath(filename);
+					chargingRequestEntity.setInvoiceFilePath(chargingRequestEntityfilename.getInvoiceFilePath());
+					chargingRequestEntity.setReceiptNo(chargingRequestEntity.getReceiptNo());
 					
 					chargingRequestRepository.save(chargingRequestEntity);
 					
