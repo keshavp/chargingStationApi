@@ -94,7 +94,6 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		if (userInfoEntity == null) {
 			throw BRSException.throwException("Error: User does not exist");
 		}
-
 		if ((!userWalletRequestDto.getTransactionType().equals("Debit"))
 				&& (!userWalletRequestDto.getTransactionType().equals("Credit"))) {
 			throw BRSException.throwException("Error: TransactionType is invalid");
