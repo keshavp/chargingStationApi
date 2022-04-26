@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,8 +29,12 @@ import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.razorpay.Utils;
 import com.scube.chargingstation.dto.AuthUserDto;
+import com.scube.chargingstation.dto.ChargingHistoryDto;
+import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.RazorOrderIdDto;
 import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
+import com.scube.chargingstation.dto.mapper.ChargingHistoryMapper;
+import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
 import com.scube.chargingstation.dto.mapper.RazorOrderIdMapper;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
@@ -112,11 +117,12 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 					.findById(userWalletRequestDto.getChargeRequestId());
 			crEntity = chargingRequestEntity.get();
 		}
+		Double amount = Double.parseDouble(userWalletRequestDto.getRequestAmount());
 
 		userWalletDtlEntity.setTransactionType(userWalletRequestDto.getTransactionType());
 		userWalletDtlEntity.setUserInfoEntity(userInfoEntity);
 		userWalletDtlEntity.setChargingRequestEntity(crEntity);
-		userWalletDtlEntity.setAmount(userWalletRequestDto.getRequestAmount());
+		userWalletDtlEntity.setAmount(amount);
 		// userWalletDtlEntity.setTransaction_id(userWalletRequestDto.getTransactionId());
 
 		// save/update user wallet
@@ -128,15 +134,17 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		if (userchkWaltEntity != null)
 			userWaltEntity = userchkWaltEntity;
 
-		Double amount = Double.parseDouble(userWalletRequestDto.getRequestAmount());
 
 		UserWalletEntity userbalWaltEntity = userWalletRepository.findBalanceByUserId(userInfoEntity.getId());
-		String currentBal = "0";
-
-		if (userbalWaltEntity != null)
-			currentBal = userbalWaltEntity.getCurrentBalance();
-
-		Double curBal = Double.parseDouble(currentBal);
+		/*
+		 * String currentBal = "0";
+		 * 
+		 * if (userbalWaltEntity != null) currentBal =
+		 * userbalWaltEntity.getCurrentBalance();
+		 */
+		//Double curBal = Double.parseDouble(currentBal);
+		
+		Double curBal=userbalWaltEntity.getCurrentBalance();
 
 		if (userWalletRequestDto.getTransactionType().equals("Credit")) {
 			balance = curBal + amount;
@@ -146,9 +154,10 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 			}
 			balance = curBal - amount;
 		}
-
 		userWaltEntity.setUserInfoEntity(userInfoEntity);
-		userWaltEntity.setCurrentBalance(balance.toString());
+		//userWaltEntity.setCurrentBalance(balance.toString());
+		userWaltEntity.setCurrentBalance(balance);
+		
 		userWalletRepository.save(userWaltEntity);
 
 		userWalletDtlRepository.save(userWalletDtlEntity);
@@ -160,7 +169,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 	public Map<String, String> getMyWalletBalance(UserWalletRequestDto userWalletRequestDto) {
 		// TODO Auto-generated method stub
 		Map<String, String> map = new HashMap<String, String>();
-		String balance = "0";
+		Double balance = 0.0;
 
 		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(userWalletRequestDto.getMobileUser_Id());
 
@@ -172,7 +181,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		if (userWalletEntity != null)
 			balance = userWalletEntity.getCurrentBalance();
 
-		map.put("balance", balance);
+		map.put("balance", balance.toString());
 
 		return map;
 	}
@@ -223,7 +232,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		userWalletDtlEntity.setTransactionType("Credit");
 		userWalletDtlEntity.setUserInfoEntity(userInfoEntity);
 		//userWalletDtlEntity.setChargingRequestEntity(crEntity);
-		userWalletDtlEntity.setAmount(userWalletRequestDto.getRequestAmount());
+		userWalletDtlEntity.setAmount(Double.parseDouble(userWalletRequestDto.getRequestAmount()));
 		userWalletDtlEntity.setOrderId(OrderId);
 		
 		//userWalletDtlEntity.setTransaction_id(userWalletRequestDto.getTransactionId());
@@ -357,7 +366,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		}
 		userWalletDtlEntity.setRazorSignature(userWalletRequestDto.getRazorSignature());
 		userWalletDtlEntity.setTransactionId(userWalletRequestDto.getTransactionId());
-		userWalletDtlEntity.setAmount(userWalletRequestDto.getRequestAmount());
+		userWalletDtlEntity.setAmount(Double.parseDouble(userWalletRequestDto.getRequestAmount()));
 		userWalletDtlRepository.save(userWalletDtlEntity);
 		
 		Double balance = 0.0;
@@ -369,21 +378,39 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 			userWaltEntity = userchkWaltEntity;
 
 		Double amount = Double.parseDouble(userWalletRequestDto.getRequestAmount());
-
 		UserWalletEntity userbalWaltEntity = userWalletRepository.findBalanceByUserId(userInfoEntity.getId());
 		String currentBal = "0";
-
-		if (userbalWaltEntity != null)
-			currentBal = userbalWaltEntity.getCurrentBalance();
-
-		Double curBal = Double.parseDouble(currentBal);
+		/*
+		 * if (userbalWaltEntity != null) currentBal =
+		 * userbalWaltEntity.getCurrentBalance();
+		 */
+		Double curBal = userbalWaltEntity.getCurrentBalance();
 		balance = curBal + amount;
 
 		userWaltEntity.setUserInfoEntity(userInfoEntity);
-		userWaltEntity.setCurrentBalance(balance.toString());
+		userWaltEntity.setCurrentBalance(balance);
 		userWalletRepository.save(userWaltEntity);
 		
 		return true;
+	}
+
+	@Override
+	public List<ChargingHistoryDto> getChargingTrHistory(UserWalletRequestDto userWalletRequestDto) {
+		// TODO Auto-generated method stub
+		
+		logger.info("userInfo"+userWalletRequestDto.getMobileUser_Id());
+		
+		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(userWalletRequestDto.getMobileUser_Id());
+		if (userInfoEntity == null)
+		{
+			throw BRSException.throwException("Error: User does not exist");
+			
+		}
+		List<Map<String, String>> listDtl=userWalletDtlRepository.getUserTrHistory(userInfoEntity.getId());
+		
+		List<ChargingHistoryDto> chargingHistoryDtoLst = ChargingHistoryMapper.toChargingHistoryDto(listDtl);
+		
+		return chargingHistoryDtoLst;
 	}
 
 	//

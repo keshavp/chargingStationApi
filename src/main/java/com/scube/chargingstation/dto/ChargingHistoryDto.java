@@ -21,9 +21,10 @@ import lombok.experimental.Accessors;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChargingHistoryDto {
 
-	private Double amout;
-	private Date transactionDate;
+	private Double amount;
+	private String transactionDate;
 	private String transactionType;
-	private Double chargeUnits; 
+	//private Double chargeUnits; 
+	private String remark;
 	
 }

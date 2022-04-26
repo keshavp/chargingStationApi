@@ -94,8 +94,10 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			}
 				
 			Double balance=0.0;
-			String curBal=userWalletEntity.getCurrentBalance(); //existing balance
-			Double dCurBal=Double.parseDouble(curBal); //double existing balance
+		//	String curBal=userWalletEntity.getCurrentBalance(); //existing balance
+		//	Double dCurBal=Double.parseDouble(curBal); //double existing balance
+			
+			Double dCurBal=userWalletEntity.getCurrentBalance();
 			
 			Double reqAmt=Double.parseDouble(chargingRequestDto.getRequestAmount()); //requested charging amount
 			if(dCurBal<reqAmt)
@@ -150,19 +152,13 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	}
 	
 	
-	
-	
-	
 
 	@Override
 	public List<ChargingPointDto> getNearByChargingStations(ChargingStationDto chargingStationDto) {
 		// TODO Auto-generated method stub
 	
-
-		
 		List<ChargingPointEntity> cpEntity=chargingPointRepository.findAll();
 		List<ChargingPointDto> chargingPointDto = ChargingPointMapper.toChargingPointDto(cpEntity);
-		
 		return chargingPointDto;
 		
 	}

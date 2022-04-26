@@ -196,16 +196,7 @@ public class ChargingStationController {
 	}
 	
 	
-	@PostMapping(value ="/getChargingHistory", consumes = APPLICATION_JSON_VALUE)
-	public List<ChargingPointDto> getChargingHistory(ChargingStationDto chargingStationDto) {
-		// TODO Auto-generated method stub
-		
-		//List<ChargingPointEntity> cpEntity=chargingPointRepository.findAll();
-	//	List<ChargingPointDto> chargingPointDto = ChargingPointMapper.toChargingPointDto(cpEntity);
-		
-		return null;
-		
-	}
+	
 	 
 
 	 

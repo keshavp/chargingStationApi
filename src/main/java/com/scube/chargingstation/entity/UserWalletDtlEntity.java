@@ -29,7 +29,7 @@ public class UserWalletDtlEntity extends BaseEntity{
 	ChargingRequestEntity chargingRequestEntity;
 	
 	@Column(name = "amount")
-	private String  amount;
+	private Double  amount;
 	
 	@Column(name = "transaction_type")
 	private String  transactionType;

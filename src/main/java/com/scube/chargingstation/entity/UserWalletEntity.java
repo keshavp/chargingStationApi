@@ -25,7 +25,7 @@ public class UserWalletEntity extends BaseEntity{
 	
 
 	@Column(name = "current_balance")
-	private String  currentBalance;
+	private Double  currentBalance;
 	
 	
 }

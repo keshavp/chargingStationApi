@@ -1,10 +1,12 @@
 package com.scube.chargingstation.service;
 
 import java.security.InvalidKeyException;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
 
+import com.scube.chargingstation.dto.ChargingHistoryDto;
 import com.scube.chargingstation.dto.ConnectorDto;
 import com.scube.chargingstation.dto.RazorOrderIdDto;  
 import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
@@ -27,5 +29,6 @@ public interface UserPaymentService {
 
 	public boolean addWalletMoneyTransaction(UserWalletRequestDto userWalletRequestDto) ;
 
+	List<ChargingHistoryDto> getChargingTrHistory (UserWalletRequestDto userWalletRequestDto) ;
 	
 }

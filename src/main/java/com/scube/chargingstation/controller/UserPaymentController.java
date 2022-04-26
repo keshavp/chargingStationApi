@@ -15,12 +15,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scube.chargingstation.dto.AuthUserDto;
+import com.scube.chargingstation.dto.ChargingHistoryDto;
+import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.RazorOrderIdDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
 import com.scube.chargingstation.dto.incoming.UserInfoIncomingDto;
 import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
+import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
 import com.scube.chargingstation.dto.response.Response;
+import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.service.ChargingRequestService;
 import com.scube.chargingstation.service.UserPaymentService;
 
@@ -81,4 +85,13 @@ public class UserPaymentController {
 		return Response.ok().setPayload(userPaymentService.addWalletMoneyTransaction(userWalletRequestDto));
 		
 	}
+	
+	@PostMapping(value ="/getChargingTrHistory", consumes = APPLICATION_JSON_VALUE)
+	public Response getChargingTrHistory(@Valid @RequestBody UserWalletRequestDto userWalletRequestDto) {
+		// TODO Auto-generated method stub
+		logger.info("***getChargingTrHistory***"+userWalletRequestDto.getMobileUser_Id());
+		return Response.ok().setPayload(userPaymentService.getChargingTrHistory(userWalletRequestDto));
+		
+	}
+	
 }
