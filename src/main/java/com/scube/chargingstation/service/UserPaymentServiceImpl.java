@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,7 @@ import com.razorpay.RazorpayException;
 import com.razorpay.Utils;
 import com.scube.chargingstation.dto.AuthUserDto;
 import com.scube.chargingstation.dto.ChargingHistoryDto;
+import com.scube.chargingstation.dto.ChargingHistoryRespDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.RazorOrderIdDto;
 import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
@@ -79,6 +82,8 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 	RazorOrderIdMapper razorOrderIdMapper;
 
 	private static final Logger logger = LoggerFactory.getLogger(UserPaymentServiceImpl.class);
+	
+	private static final DecimalFormat df = new DecimalFormat("0.00");
 
 	@Value("${razorPayKey}")
 	private String razorPayKey;
@@ -93,6 +98,9 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 
 		UserWalletDtlEntity userWalletDtlEntity = new UserWalletDtlEntity();
 		ChargingRequestEntity crEntity = null;
+		
+		df.setRoundingMode(RoundingMode.UP);
+
 
 		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(userWalletRequestDto.getMobileUser_Id());
 
@@ -122,18 +130,17 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		userWalletDtlEntity.setTransactionType(userWalletRequestDto.getTransactionType());
 		userWalletDtlEntity.setUserInfoEntity(userInfoEntity);
 		userWalletDtlEntity.setChargingRequestEntity(crEntity);
-		userWalletDtlEntity.setAmount(amount);
+		//userWalletDtlEntity.setAmount(amount);
+		userWalletDtlEntity.setAmount(Double.parseDouble(df.format(amount)));
 		// userWalletDtlEntity.setTransaction_id(userWalletRequestDto.getTransactionId());
 
 		// save/update user wallet
 		Double balance = 0.0;
 		UserWalletEntity userWaltEntity = new UserWalletEntity();
-
 		UserWalletEntity userchkWaltEntity = userWalletRepository.findByUserInfoEntity(userInfoEntity);
 
 		if (userchkWaltEntity != null)
 			userWaltEntity = userchkWaltEntity;
-
 
 		UserWalletEntity userbalWaltEntity = userWalletRepository.findBalanceByUserId(userInfoEntity.getId());
 		/*
@@ -156,8 +163,11 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		}
 		userWaltEntity.setUserInfoEntity(userInfoEntity);
 		//userWaltEntity.setCurrentBalance(balance.toString());
-		userWaltEntity.setCurrentBalance(balance);
 		
+	
+	    System.out.println("after rounding off : " + Double.parseDouble(df.format(balance)));      //1205.64
+	    
+		userWaltEntity.setCurrentBalance(Double.parseDouble(df.format(balance)));
 		userWalletRepository.save(userWaltEntity);
 
 		userWalletDtlRepository.save(userWalletDtlEntity);
@@ -190,7 +200,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 	public RazorOrderIdDto addWalletMoneyRequest(UserWalletRequestDto userWalletRequestDto) 
 	{ 
 		// TODO Auto-generated method stub
-
+		df.setRoundingMode(RoundingMode.UP);
 		razorOrderIdMapper=new RazorOrderIdMapper();
 		RazorOrderIdDto response=new RazorOrderIdDto();
 		
@@ -232,11 +242,9 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		userWalletDtlEntity.setTransactionType("Credit");
 		userWalletDtlEntity.setUserInfoEntity(userInfoEntity);
 		//userWalletDtlEntity.setChargingRequestEntity(crEntity);
-		userWalletDtlEntity.setAmount(Double.parseDouble(userWalletRequestDto.getRequestAmount()));
+		userWalletDtlEntity.setAmount(Double.parseDouble(df.format(userWalletRequestDto.getRequestAmount())));
 		userWalletDtlEntity.setOrderId(OrderId);
-		
 		//userWalletDtlEntity.setTransaction_id(userWalletRequestDto.getTransactionId());
-
 		userWalletDtlRepository.save(userWalletDtlEntity);
 
 		response=razorOrderIdMapper.toRazorOrderIdDto(OrderId);
@@ -327,7 +335,10 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 	public boolean addWalletMoneyTransaction(@Valid UserWalletRequestDto userWalletRequestDto) {
 		// TODO Auto-generated method stub
 		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(userWalletRequestDto.getMobileUser_Id());
+		df.setRoundingMode(RoundingMode.UP);
 
+		
+		
 		if (userInfoEntity == null)
 		{
 			throw BRSException.throwException("Error: User does not exist");
@@ -366,7 +377,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		}
 		userWalletDtlEntity.setRazorSignature(userWalletRequestDto.getRazorSignature());
 		userWalletDtlEntity.setTransactionId(userWalletRequestDto.getTransactionId());
-		userWalletDtlEntity.setAmount(Double.parseDouble(userWalletRequestDto.getRequestAmount()));
+		userWalletDtlEntity.setAmount(Double.parseDouble(df.format(userWalletRequestDto.getRequestAmount())));
 		userWalletDtlRepository.save(userWalletDtlEntity);
 		
 		Double balance = 0.0;
@@ -379,11 +390,6 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 
 		Double amount = Double.parseDouble(userWalletRequestDto.getRequestAmount());
 		UserWalletEntity userbalWaltEntity = userWalletRepository.findBalanceByUserId(userInfoEntity.getId());
-		String currentBal = "0";
-		/*
-		 * if (userbalWaltEntity != null) currentBal =
-		 * userbalWaltEntity.getCurrentBalance();
-		 */
 		Double curBal = userbalWaltEntity.getCurrentBalance();
 		balance = curBal + amount;
 
@@ -395,7 +401,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 	}
 
 	@Override
-	public List<ChargingHistoryDto> getChargingTrHistory(UserWalletRequestDto userWalletRequestDto) {
+	public List<ChargingHistoryRespDto> getChargingTrHistory(UserWalletRequestDto userWalletRequestDto) {
 		// TODO Auto-generated method stub
 		
 		logger.info("userInfo"+userWalletRequestDto.getMobileUser_Id());
@@ -408,7 +414,10 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		}
 		List<Map<String, String>> listDtl=userWalletDtlRepository.getUserTrHistory(userInfoEntity.getId());
 		
-		List<ChargingHistoryDto> chargingHistoryDtoLst = ChargingHistoryMapper.toChargingHistoryDto(listDtl);
+		
+		
+		
+		List<ChargingHistoryRespDto> chargingHistoryDtoLst = ChargingHistoryMapper.toChargingHistoryDto(listDtl);
 		
 		return chargingHistoryDtoLst;
 	}

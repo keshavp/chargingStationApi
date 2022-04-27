@@ -58,5 +58,32 @@ public class ImageController {
 		                             .body(bytes);
 	
 	 }	
+	 
+	 @GetMapping("/getChargingRequestReceipt/{id}")
+	 public ResponseEntity<byte[]> getChargingRequestReceipt(@PathVariable String id ) throws Exception {
+		 
+			 
+			 Resource res =  fileStorageService.loadReceiptFileAsResource(id);
+			 
+			 byte[] bytes = StreamUtils.copyToByteArray(res.getInputStream());
+			 
+			 MediaType mediaType;
+			 String ext = FilenameUtils.getExtension(res.getFilename());
+		        
+		        if(ext.equalsIgnoreCase("pdf")|| ext == "PDF" ) {
+		        
+		        	mediaType = MediaType.APPLICATION_PDF ;
+		        }
+		        else {
+		        	mediaType = MediaType.IMAGE_JPEG ;
+		        }
+		        	
+		        
+		        return ResponseEntity.ok()
+		                             .contentType(mediaType)
+		                             .body(bytes);
+	
+	 }	
+	 
 	
 }

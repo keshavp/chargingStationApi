@@ -28,7 +28,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.scube.chargingstation.entity.ChargerTypeEntity;
+import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.repository.ChargerTypeRepository;
+import com.scube.chargingstation.repository.ChargingRequestRepository;
 import com.scube.chargingstation.util.FileStorageProperties;
 
 
@@ -44,6 +46,9 @@ public class FileStorageService {
 	 
 	@Autowired
 	ChargerTypeRepository chargerTypeRepository;
+	
+	@Autowired
+	ChargingRequestRepository chargingRequestRepository;
 	
 	 
 	  public FileStorageService(FileStorageProperties fileStorageProperties) 
@@ -62,6 +67,47 @@ public class FileStorageService {
 		        		Optional<ChargerTypeEntity> cData = chargerTypeRepository.findById(id.toString());
 		        		ChargerTypeEntity entity = cData.get();
 		        		fileName = entity.getImagePath();   		
+			        	
+		        		fileStorageLocation = Paths.get(newPAth).toAbsolutePath().normalize();
+		  	          
+		  	          	System.out.println("----this.fileStorageLocation--------userFor---------"+fileStorageLocation+"-------------");
+		  	          
+		  	            logger.info("newPath"+ newPAth);
+		  	        	logger.info("fileStorageLocation"+ fileStorageLocation);
+//		  	            System.out.println(this.fileStorageLocation);
+		  	            
+		  	            Path filePath = fileStorageLocation.resolve(fileName).normalize();
+		  	            logger.info("filePath"+ filePath);
+		  	            
+		  	            Resource resource = new UrlResource(filePath.toUri());
+		  	            if(resource.exists()) {
+		  	            	logger.info("Inside IF(resource.exists)");
+		  	                return resource;
+		  	            } else {
+		  	            	logger.info("Inside else()");
+		  	                throw new Exception("File not found " + fileName);
+		  	            }
+		        		
+		        	
+		        } catch (Exception ex) {
+		            throw new Exception("File not found " + fileName, ex);
+		        }
+		    }
+		 
+		 
+		 
+		 
+		 public Resource loadReceiptFileAsResource( String id) throws Exception {
+				
+			 	String fileName ="";
+			 	try {
+		        	
+			 			String newPAth = "";     
+		        		newPAth = this.fileBaseLocation+"/"+UploadPathContUtils.FILE_BOOKING_DIR;
+		        	
+		        		Optional<ChargingRequestEntity> cData = chargingRequestRepository.findById(id);
+		        		ChargingRequestEntity entity = cData.get();
+		        		fileName = entity.getInvoiceFilePath();  		
 			        	
 		        		fileStorageLocation = Paths.get(newPAth).toAbsolutePath().normalize();
 		  	          
