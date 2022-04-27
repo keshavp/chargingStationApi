@@ -9,10 +9,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.scube.chargingstation.controller.AuthController;
+import com.scube.chargingstation.dto.ChargingHistoryDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
+import com.scube.chargingstation.dto.ChargingStatusRespDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
 import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
+import com.scube.chargingstation.dto.mapper.ChargingStatusMapper;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
@@ -160,6 +163,15 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		List<ChargingPointEntity> cpEntity=chargingPointRepository.findAll();
 		List<ChargingPointDto> chargingPointDto = ChargingPointMapper.toChargingPointDto(cpEntity);
 		return chargingPointDto;
+		
+	}
+
+	@Override
+	public ChargingStatusRespDto getChargingStatus(ChargingHistoryDto chargingHistoryDto) {
+		// TODO Auto-generated method stub
+		
+		ChargingStatusRespDto chargingStatusRespDto =null;// ChargingStatusMapper.toChargingStatusRespDto(cpEntity);
+		return chargingStatusRespDto;
 		
 	}
 	

@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.scube.chargingstation.entity.ChargerTypeEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
+import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.repository.ChargerTypeRepository;
 import com.scube.chargingstation.repository.ChargingRequestRepository;
 import com.scube.chargingstation.util.FileStorageProperties;
@@ -106,6 +107,11 @@ public class FileStorageService {
 		        		newPAth = this.fileBaseLocation+"/"+UploadPathContUtils.FILE_BOOKING_DIR;
 		        	
 		        		Optional<ChargingRequestEntity> cData = chargingRequestRepository.findById(id);
+		        		if(cData==null)
+		        		{
+		        			throw BRSException.throwException("Error: Charging Request is invalid");
+		        		}
+		        		
 		        		ChargingRequestEntity entity = cData.get();
 		        		fileName = entity.getInvoiceFilePath();  		
 			        	

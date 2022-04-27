@@ -414,9 +414,6 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		}
 		List<Map<String, String>> listDtl=userWalletDtlRepository.getUserTrHistory(userInfoEntity.getId());
 		
-		
-		
-		
 		List<ChargingHistoryRespDto> chargingHistoryDtoLst = ChargingHistoryMapper.toChargingHistoryDto(listDtl);
 		
 		return chargingHistoryDtoLst;

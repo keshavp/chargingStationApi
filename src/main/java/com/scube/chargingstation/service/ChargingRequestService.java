@@ -5,7 +5,9 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import com.scube.chargingstation.dto.ChargingHistoryDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
+import com.scube.chargingstation.dto.ChargingStatusRespDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
 import com.scube.chargingstation.entity.ChargingPointEntity;
@@ -29,6 +31,7 @@ public interface ChargingRequestService {
 	
 	public List<ChargingPointDto> getNearByChargingStations(ChargingStationDto chargingStationDto);
 	
+	public ChargingStatusRespDto getChargingStatus(ChargingHistoryDto chargingHistoryDto);
+
 	
-			
 }

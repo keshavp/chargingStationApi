@@ -26,5 +26,6 @@ public class ChargingHistoryDto {
 	private String transactionType;
 	//private Double chargeUnits; 
 	private String remark;
+	private String chargingRequestId;
 	
 }

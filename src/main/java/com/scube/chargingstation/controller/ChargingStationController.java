@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scube.chargingstation.dto.ChargingHistoryDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
@@ -189,14 +190,16 @@ public class ChargingStationController {
 	
 	@PostMapping(value ="/getNearByChargingStations", consumes = APPLICATION_JSON_VALUE)
 	public Response getNearByChargingStations(@RequestBody ChargingStationDto chargingStationDto) throws Exception {
-		
-		
 		return Response.ok().setPayload(chargingRequestService.getNearByChargingStations(chargingStationDto));
 	
 	}
 	
 	
+	@PostMapping(value ="/getChargingStatus", consumes = APPLICATION_JSON_VALUE)
+	public Response getChargingStatus(@RequestBody ChargingHistoryDto chargingHistoryDto) throws Exception {
+		return Response.ok().setPayload(chargingRequestService.getChargingStatus(chargingHistoryDto));
 	
+	}
 	 
 
 	 

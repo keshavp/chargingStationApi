@@ -25,7 +25,11 @@ public class ChargingHistoryMapper {
 			obj.setTransactionDate(pojo.getTransactionDate());
 			obj.setAmount(pojo.getAmount());
 			obj.setRemark(pojo.getRemark());
-			obj.setReceipt("http://125.99.153.126:8085/chargingStationApi/api/v1/images/getChargingRequestReceipt/e94286e6d7");
+			
+			if(pojo.getChargingRequestId()!=null&&!pojo.getChargingRequestId().isEmpty())
+			{
+			obj.setReceipt("http://125.99.153.126:8085/chargingStationApi/api/v1/images/getChargingRequestReceipt/"+pojo.getChargingRequestId());
+			}
 			
 			resp.add(obj);
 		}
