@@ -1,6 +1,7 @@
 package com.scube.chargingstation.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,11 +168,18 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	}
 
 	@Override
-	public ChargingStatusRespDto getChargingStatus(ChargingHistoryDto chargingHistoryDto) {
+	public List<ChargingStatusRespDto> getChargingStatus(ChargingRequestDto chargingRequestDto) {
 		// TODO Auto-generated method stub
 		
-		ChargingStatusRespDto chargingStatusRespDto =null;// ChargingStatusMapper.toChargingStatusRespDto(cpEntity);
-		return chargingStatusRespDto;
+		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(chargingRequestDto.getMobileUser_Id());
+		if(userInfoEntity==null)
+		{
+			throw BRSException.throwException("Error: User does not exist"); 
+		}
+		
+		List<Map<String, String>> listDtl=chargingRequestRepository.getUserChargingStatus(userInfoEntity.getId());
+		List<ChargingStatusRespDto> chargingStatusRespDtoLst = ChargingStatusMapper.toChargingStatusRespDto(listDtl);
+		return chargingStatusRespDtoLst;
 		
 	}
 	

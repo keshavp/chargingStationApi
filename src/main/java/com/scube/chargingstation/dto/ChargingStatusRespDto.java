@@ -21,7 +21,14 @@ import lombok.experimental.Accessors;
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public class ChargingStatusRespDto  {
 
-		private Double kwhUnit;
+		private Double requestedAmount;
+		private Double requestedKwh;
+		private Double currentKwh;
+		private Double chargingPercent;
+		private Double chargingSpeed;
+		private String estimatedTime;
+		private String vehicleNo;
 		
+		//requestedAmount, requestedKwh, chargingSpeed, currentKwh, chargingPercent, vehicleNo, estimatedTime
 		
 }

@@ -195,9 +195,9 @@ public class ChargingStationController {
 	}
 	
 	
-	@PostMapping(value ="/getChargingStatus", consumes = APPLICATION_JSON_VALUE)
-	public Response getChargingStatus(@RequestBody ChargingHistoryDto chargingHistoryDto) throws Exception {
-		return Response.ok().setPayload(chargingRequestService.getChargingStatus(chargingHistoryDto));
+	@PostMapping(value ="/getUserChargingStatus", consumes = APPLICATION_JSON_VALUE)
+	public Response getChargingStatus(@RequestBody ChargingRequestDto chargingRequestDto) throws Exception {
+		return Response.ok().setPayload(chargingRequestService.getChargingStatus(chargingRequestDto));
 	
 	}
 	 

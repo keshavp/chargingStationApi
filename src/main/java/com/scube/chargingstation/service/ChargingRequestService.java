@@ -31,7 +31,7 @@ public interface ChargingRequestService {
 	
 	public List<ChargingPointDto> getNearByChargingStations(ChargingStationDto chargingStationDto);
 	
-	public ChargingStatusRespDto getChargingStatus(ChargingHistoryDto chargingHistoryDto);
+	public List<ChargingStatusRespDto> getChargingStatus(ChargingRequestDto chargingRequestDto);
 
 	
 }
