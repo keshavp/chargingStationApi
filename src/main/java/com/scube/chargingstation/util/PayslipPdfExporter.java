@@ -54,13 +54,18 @@ public class PayslipPdfExporter {
 
 	private Path fileStorageLocation;
 	
-	private final String fileBaseLocation = "/uploads";
+	private final String fileBaseLocation;
 	
 	/*
 	 * @Autowired public PayslipPdfExporter(FileStorageProperties
 	 * fileStorageProperties) { this.fileBaseLocation =
 	 * fileStorageProperties.getUploadDir(); }
 	 */
+	
+	  public PayslipPdfExporter(FileStorageProperties fileStorageProperties) 
+	  {    
+	  this.fileBaseLocation = fileStorageProperties.getUploadDir();
+	  }
 	
 	public final static String fileExtension = ".pdf";
 	
@@ -82,7 +87,7 @@ public class PayslipPdfExporter {
 		
 		logger.info("filename: "+filename);
 		
-		String newPath = this.fileBaseLocation+"/"+UploadPathContUtils.FILE_BOOKING_DIR;
+		String newPath = this.fileBaseLocation+"/"+UploadPathContUtils.FILE_RECEIPT_DIR;
 		
 		this.fileStorageLocation = Paths.get(newPath).toAbsolutePath().normalize();
 		 
@@ -294,6 +299,9 @@ public class PayslipPdfExporter {
 		 layoutDocument.add(cellRound);
 	    
 		layoutDocument.close();
+		
+		System.out.println("filename==="+filename);
+		System.out.println("receiptNo==="+receiptNo);
 		
 		chargingRequestEntity.setInvoiceFilePath(filename);
 		chargingRequestEntity.setReceiptNo(receiptNo);

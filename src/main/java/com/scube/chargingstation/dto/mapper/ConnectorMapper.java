@@ -24,7 +24,7 @@ public class ConnectorMapper {
         		.setChargerId(connectorEntity.getChargerTypeEntity().getId())
         		.setChargerType(connectorEntity.getChargerTypeEntity().getName())
         
-        		.setImage("http://125.99.153.126:8085/chargingStationApi/api/v1/images/getCType/"+connectorEntity.getChargerTypeEntity().getId());
+        		.setImage("http://125.99.153.126:8085/chargingStationApi/api/v1/images/getImage/CT/"+connectorEntity.getChargerTypeEntity().getId());
 	}
 	
 	public static Set<ConnectorDto> toConnectorsDto(Set<ConnectorEntity> connectorEntities) {

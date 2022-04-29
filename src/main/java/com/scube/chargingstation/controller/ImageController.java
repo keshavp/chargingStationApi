@@ -33,11 +33,11 @@ public class ImageController {
 	@Autowired
 	FileStorageService fileStorageService;
 	
-	 @GetMapping("/getCType/{id}")
-	 public ResponseEntity<byte[]> getFileFromStorageSelection(@PathVariable Long id ) throws Exception {
+	 @GetMapping("/getImage/{imageFor}/{id}")
+	 public ResponseEntity<byte[]> getFileFromStorageSelection(@PathVariable Long id ,  @PathVariable String imageFor ) throws Exception {
 		 
 			 
-			 Resource res =  fileStorageService.loadFileAsResource(id);
+			 Resource res =  fileStorageService.loadFileAsResource(id,imageFor);
 			 
 			 byte[] bytes = StreamUtils.copyToByteArray(res.getInputStream());
 			 
@@ -59,11 +59,11 @@ public class ImageController {
 	
 	 }	
 	 
-	 @GetMapping("/getChargingRequestReceipt/{id}")
-	 public ResponseEntity<byte[]> getChargingRequestReceipt(@PathVariable String id ) throws Exception {
+	 @GetMapping("/getDoc/{docFor}/{id}")
+	 public ResponseEntity<byte[]> getChargingRequestReceipt(@PathVariable String id ,  @PathVariable String docFor ) throws Exception {
 		 
 			 
-			 Resource res =  fileStorageService.loadReceiptFileAsResource(id);
+			 Resource res =  fileStorageService.loadReceiptFileAsResource(id, docFor);
 			 
 			 byte[] bytes = StreamUtils.copyToByteArray(res.getInputStream());
 			 

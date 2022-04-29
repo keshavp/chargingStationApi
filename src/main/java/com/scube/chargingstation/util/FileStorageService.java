@@ -4,6 +4,7 @@ package com.scube.chargingstation.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,7 +43,6 @@ public class FileStorageService {
 	
 	private final String fileBaseLocation;
 	
-
 	private static final Logger logger = LoggerFactory.getLogger(FileStorageService.class);
 	 
 	@Autowired
@@ -57,133 +57,130 @@ public class FileStorageService {
 	  this.fileBaseLocation = fileStorageProperties.getUploadDir();
 	  }
 	 
-		 public Resource loadFileAsResource( Long id) throws Exception {
+		 public Resource loadFileAsResource( Long id , String imageFor ) throws Exception {
 				
 			 	String fileName ="";
+			 	String newPAth = ""; 
+	 			Path filePath = null ;
+	 			
 			 	try {
 		        	
-			 			String newPAth = "";     
-		        		newPAth = this.fileBaseLocation;
-		        	
-		        		Optional<ChargerTypeEntity> cData = chargerTypeRepository.findById(id.toString());
-		        		ChargerTypeEntity entity = cData.get();
-		        		fileName = entity.getImagePath();   		
-			        	
-		        		fileStorageLocation = Paths.get(newPAth).toAbsolutePath().normalize();
-		  	          
-		  	          	System.out.println("----this.fileStorageLocation--------userFor---------"+fileStorageLocation+"-------------");
-		  	          
-		  	            logger.info("newPath"+ newPAth);
-		  	        	logger.info("fileStorageLocation"+ fileStorageLocation);
-//		  	            System.out.println(this.fileStorageLocation);
-		  	            
-		  	            Path filePath = fileStorageLocation.resolve(fileName).normalize();
-		  	            logger.info("filePath"+ filePath);
-		  	            
-		  	            Resource resource = new UrlResource(filePath.toUri());
-		  	            if(resource.exists()) {
-		  	            	logger.info("Inside IF(resource.exists)");
-		  	                return resource;
-		  	            } else {
-		  	            	logger.info("Inside else()");
-		  	                throw new Exception("File not found " + fileName);
-		  	            }
-		        		
+			 			if(imageFor.equals("CT")) {
+			        		
+			 				ChargerTypeEntity chargerTypeEntity  = chargerTypeRepository.findById(id.toString()).get();
+			        		
+			 				if(chargerTypeEntity==null)
+			        		{
+			        			throw BRSException.throwException("Error: Charger type request is invalid.");
+			        		}
+			 				
+			        		fileName = chargerTypeEntity.getImagePath();   		
+			        		logger.info("fileName===="+ fileName);
+			        		
+			 				newPAth = this.fileBaseLocation+"/"+UploadPathContUtils.FILE_C_TYPE_DIR;
+			 				logger.info("newPath===="+ newPAth);
+			 				
+			        		fileStorageLocation = Paths.get(newPAth).toAbsolutePath().normalize();
+			        		logger.info("fileStorageLocation===="+ fileStorageLocation);
+			  	            
+			  	            filePath = fileStorageLocation.resolve(fileName).normalize();
+			  	            logger.info("filePath===="+ filePath);
+			 			}
+			 			
+		  	          return getFileResource(filePath);
 		        	
 		        } catch (Exception ex) {
 		            throw new Exception("File not found " + fileName, ex);
 		        }
 		    }
 		 
-		 
-		 
-		 
-		 public Resource loadReceiptFileAsResource( String id) throws Exception {
+		 public Resource loadReceiptFileAsResource( String id , String docFor) throws Exception {
 				
 			 	String fileName ="";
-			 	try {
-		        	
-			 			String newPAth = "";     
-		        		newPAth = this.fileBaseLocation+"/"+UploadPathContUtils.FILE_BOOKING_DIR;
-		        	
-		        		Optional<ChargingRequestEntity> cData = chargingRequestRepository.findById(id);
-		        		if(cData==null)
-		        		{
-		        			throw BRSException.throwException("Error: Charging Request is invalid");
-		        		}
-		        		
-		        		ChargingRequestEntity entity = cData.get();
-		        		fileName = entity.getInvoiceFilePath();  		
-			        	
-		        		fileStorageLocation = Paths.get(newPAth).toAbsolutePath().normalize();
-		  	          
-		  	          	System.out.println("----this.fileStorageLocation--------userFor---------"+fileStorageLocation+"-------------");
-		  	          
-		  	            logger.info("newPath"+ newPAth);
-		  	        	logger.info("fileStorageLocation"+ fileStorageLocation);
-//		  	            System.out.println(this.fileStorageLocation);
-		  	            
-		  	            Path filePath = fileStorageLocation.resolve(fileName).normalize();
-		  	            logger.info("filePath"+ filePath);
-		  	            
-		  	            Resource resource = new UrlResource(filePath.toUri());
-		  	            if(resource.exists()) {
-		  	            	logger.info("Inside IF(resource.exists)");
-		  	                return resource;
-		  	            } else {
-		  	            	logger.info("Inside else()");
-		  	                throw new Exception("File not found " + fileName);
-		  	            }
-		        		
-		        	
-		        } catch (Exception ex) {
-		            throw new Exception("File not found " + fileName, ex);
-		        }
-		    }
-	
-		 public Resource loadFileAsResource( String id) throws Exception {
-				
-			 	String fileName ="";
-			 	try {
-		        	
-			 			String newPAth = "";     
-		        		newPAth = this.fileBaseLocation+"/"+UploadPathContUtils.FILE_BOOKING_DIR;
-		        	
-		        		Optional<ChargingRequestEntity> cData = chargingRequestRepository.findById(id);
-		        		if(cData==null)
-		        		{
-		        			throw BRSException.throwException("Error: Charging Request is invalid");
-		        		}
-		        		
-		        		ChargingRequestEntity entity = cData.get();
-		        		fileName = entity.getInvoiceFilePath();  		
-			        	
-		        		fileStorageLocation = Paths.get(newPAth).toAbsolutePath().normalize();
-		  	          
-		  	          	System.out.println("----this.fileStorageLocation--------userFor---------"+fileStorageLocation+"-------------");
-		  	          
-		  	            logger.info("newPath"+ newPAth);
-		  	        	logger.info("fileStorageLocation"+ fileStorageLocation);
-//		  	            System.out.println(this.fileStorageLocation);
-		  	            
-		  	            Path filePath = fileStorageLocation.resolve(fileName).normalize();
-		  	            logger.info("filePath"+ filePath);
-		  	            
-		  	            Resource resource = new UrlResource(filePath.toUri());
-		  	            if(resource.exists()) {
-		  	            	logger.info("Inside IF(resource.exists)");
-		  	                return resource;
-		  	            } else {
-		  	            	logger.info("Inside else()");
-		  	                throw new Exception("File not found " + fileName);
-		  	            }
-		        		
-		        	
-		        } catch (Exception ex) {
-		            throw new Exception("File not found " + fileName, ex);
-		        }
-		    }
-	
-	
+			 	String newPAth = "";
+	 			Path filePath = null ; 
 
+	 			try {
+		        	
+			 			if(docFor.equals("RC")) {
+			 			
+			 				ChargingRequestEntity chargingRequestEntity = chargingRequestRepository.findById(id).get();
+			        		
+			        		if(chargingRequestEntity==null)
+			        		{
+			        			throw BRSException.throwException("Error: Charging Request is invalid");
+			        		}
+			        		
+			        		fileName = chargingRequestEntity.getInvoiceFilePath();  		
+			        		logger.info("fileName===="+ fileName);
+			 				
+				 			newPAth = this.fileBaseLocation+"/"+UploadPathContUtils.FILE_RECEIPT_DIR;
+				 			logger.info("newPAth===="+ newPAth);
+			        		
+			        		fileStorageLocation = Paths.get(newPAth).toAbsolutePath().normalize();
+			        		logger.info("fileStorageLocation===="+ fileStorageLocation);
+			  	            
+			  	            filePath = fileStorageLocation.resolve(fileName).normalize();
+			  	            logger.info("filePath===="+ filePath);
+			  	            
+			 			}
+			 			
+		 			 return getFileResource(filePath);
+		        	
+		        } catch (Exception ex) {
+		            throw new Exception("File not found " + fileName, ex);
+		        }
+		    }
+	
+		 public Resource loadFileAsResource( String id , String imageFor) throws Exception {
+				
+			 	String fileName ="";
+			 	String newPAth = "";
+	 			Path filePath = null ; 
+	 			
+			 	try {
+		        	
+			 		if(imageFor.equals("CT")) {
+		        		
+		 				ChargerTypeEntity chargerTypeEntity  = chargerTypeRepository.findById(id.toString()).get();
+		        		
+		 				if(chargerTypeEntity==null)
+		        		{
+		        			throw BRSException.throwException("Error: Charger type request is invalid.");
+		        		}
+		 				
+		        		fileName = chargerTypeEntity.getImagePath();   		
+		        		logger.info("fileName===="+ fileName);
+		        		
+		 				newPAth = this.fileBaseLocation+"/"+UploadPathContUtils.FILE_C_TYPE_DIR;
+		 				logger.info("newPath===="+ newPAth);
+		 				
+		        		fileStorageLocation = Paths.get(newPAth).toAbsolutePath().normalize();
+		        		logger.info("fileStorageLocation===="+ fileStorageLocation);
+		  	            
+		  	            filePath = fileStorageLocation.resolve(fileName).normalize();
+		  	            logger.info("filePath===="+ filePath);
+		 			}
+		  	            
+		  	          return getFileResource(filePath);
+		        		
+		        	
+		        } catch (Exception ex) {
+		            throw new Exception("File not found " + fileName, ex);
+		        }
+		    }
+	
+	
+		 public Resource getFileResource(Path filePath) throws Exception {
+		 
+			 Resource resource  = new UrlResource(filePath.toUri());
+	           if(resource.exists()) {
+	           	logger.info("Inside IF(resource.exists)");
+	               return resource;
+	           } else {
+	           	logger.info("Inside else()");
+	               throw new Exception("File not found " + filePath);
+	           }
+		 
+		 }
 }

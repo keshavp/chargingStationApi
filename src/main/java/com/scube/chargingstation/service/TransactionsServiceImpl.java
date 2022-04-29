@@ -223,7 +223,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 					ChargingRequestEntity chargingRequestEntityfilename =  payslipPdfExporter.generatePdf(chargingRequestEntity);
 					
 					chargingRequestEntity.setInvoiceFilePath(chargingRequestEntityfilename.getInvoiceFilePath());
-					chargingRequestEntity.setReceiptNo(chargingRequestEntity.getReceiptNo());
+					chargingRequestEntity.setReceiptNo(chargingRequestEntityfilename.getReceiptNo());
 					
 					chargingRequestRepository.save(chargingRequestEntity);
 					

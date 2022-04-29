@@ -28,7 +28,7 @@ public class ChargingHistoryMapper {
 			
 			if(pojo.getChargingRequestId()!=null&&!pojo.getChargingRequestId().isEmpty())
 			{
-			obj.setReceipt("http://125.99.153.126:8085/chargingStationApi/api/v1/images/getChargingRequestReceipt/"+pojo.getChargingRequestId());
+				obj.setReceipt("http://125.99.153.126:8085/chargingStationApi/api/v1/images/getDoc/RC/"+pojo.getChargingRequestId());
 			}
 			
 			resp.add(obj);

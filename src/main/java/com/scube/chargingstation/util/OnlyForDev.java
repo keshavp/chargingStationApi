@@ -52,11 +52,17 @@ public class OnlyForDev {
 	 */
 	
 		
-		System.out.println(RandomNumber.getRandomNumberString());
-		System.out.println(RandomStringUtil.getAlphaNumericString(6, "keshav"));
+	/*
+	 * System.out.println(RandomNumber.getRandomNumberString());
+	 * System.out.println(RandomStringUtil.getAlphaNumericString(6, "keshav"));
+	 * 
+	 * 
+	 * System.out.println(Math.round(466.89169491525426 * 100.0) / 100.0);
+	 */
 		
+		sendSMS	sms = new sendSMS();
 		
-		System.out.println(Math.round(466.89169491525426 * 100.0) / 100.0); 
+		sms.sendSms();
 		
 	}
 
