@@ -7,11 +7,11 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scube.chargingstation.dto.ChargingHistoryDto;
 import com.scube.chargingstation.dto.ChargingHistoryRespDto;
+import com.scube.chargingstation.util.StaticPathContUtils;
+import com.scube.chargingstation.util.UploadPathContUtils;
 
 public class ChargingHistoryMapper {
 
-	
-	
 	public static List<ChargingHistoryRespDto> toChargingHistoryDto(List<Map<String, String>>  list) {
 		// TODO Auto-generated method stub
 		final ObjectMapper mapper = new ObjectMapper(); 
@@ -28,7 +28,7 @@ public class ChargingHistoryMapper {
 			
 			if(pojo.getChargingRequestId()!=null&&!pojo.getChargingRequestId().isEmpty())
 			{
-				obj.setReceipt("http://125.99.153.126:8085/chargingStationApi/api/v1/images/getDoc/RC/"+pojo.getChargingRequestId());
+				obj.setReceipt(StaticPathContUtils.APP_URL_DIR+StaticPathContUtils.SET_RECEIPT_FILE_URL_DIR +pojo.getChargingRequestId());
 			}
 			
 			resp.add(obj);

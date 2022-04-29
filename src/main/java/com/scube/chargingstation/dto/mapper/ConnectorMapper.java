@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.scube.chargingstation.dto.ConnectorDto;
 import com.scube.chargingstation.entity.ConnectorEntity;
+import com.scube.chargingstation.util.StaticPathContUtils;
+
 import org.springframework.beans.factory.annotation.Value;
 
 
@@ -24,7 +26,7 @@ public class ConnectorMapper {
         		.setChargerId(connectorEntity.getChargerTypeEntity().getId())
         		.setChargerType(connectorEntity.getChargerTypeEntity().getName())
         
-        		.setImage("http://125.99.153.126:8085/chargingStationApi/api/v1/images/getImage/CT/"+connectorEntity.getChargerTypeEntity().getId());
+        		.setImage(StaticPathContUtils.APP_URL_DIR+StaticPathContUtils.SET_CHARGER_TYPE_FILE_URL_DIR+connectorEntity.getChargerTypeEntity().getId());
 	}
 	
 	public static Set<ConnectorDto> toConnectorsDto(Set<ConnectorEntity> connectorEntities) {
