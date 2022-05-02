@@ -12,7 +12,8 @@ public class RoleMapper {
 	 return new RoleDto()
 				  .setId(roleEntity.getId())
 	        		.setName(roleEntity.getName())
-	        		.setStatus(roleEntity.getStatus());
+	        		.setStatus(roleEntity.getStatus())
+	                 .setNameCode(roleEntity.getNameCode());
 	        
 
 	}

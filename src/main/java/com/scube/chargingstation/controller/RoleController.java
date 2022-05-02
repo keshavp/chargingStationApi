@@ -46,7 +46,7 @@ public class RoleController {
 		return Response.ok().setPayload(roleService.editRole(roleIncomingDto));
 		
 	}
-	@PostMapping( value = "/deleteRole/{id}" )
+	@GetMapping( value = "/deleteRole/{id}" )
 	public Response deleteRole(@PathVariable("id") String id) {
 		logger.info("***RoleController deleteRole***");
 	//	logger.info(NEW_ORDER_LOG, createdUser.toString());
@@ -65,6 +65,13 @@ public class RoleController {
 		logger.info("***RoleController findActiveRoles***");
 	//	logger.info(NEW_ORDER_LOG, createdUser.toString());
 		return Response.ok().setPayload(roleService.findActiveRoles());
+		
+	}
+	@GetMapping( value = "/getRoleById/{id}" )
+	public Response getRoleById(@PathVariable("id") String id) {
+		logger.info("***RoleController deleteRole***");
+	//	logger.info(NEW_ORDER_LOG, createdUser.toString());
+		return Response.ok().setPayload(roleService.getRoleById(id));
 		
 	}
 	

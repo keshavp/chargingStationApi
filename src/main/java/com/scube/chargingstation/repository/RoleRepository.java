@@ -12,8 +12,13 @@ import com.scube.chargingstation.entity.RoleEntity;
 public interface RoleRepository extends JpaRepository<RoleEntity, String> {
 
 	  RoleEntity findByNameCode(String namecode);
+	  
 	  RoleEntity findByName(String name);
+	  
 	  Optional<RoleEntity> findById(String id);
-	List<RoleEntity> findByStatus(String string);	
+	  
+	  List<RoleEntity> findByStatusAndIsdeleted(String status ,String isdeleted );
+
+	RoleEntity getRoleById(String id);	
 
 }

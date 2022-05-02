@@ -1,4 +1,4 @@
-package com.scube.chargingstation.service;
+  package com.scube.chargingstation.service;
 
 import static com.scube.chargingstation.exception.ExceptionType.ALREADY_EXIST;
 
@@ -96,13 +96,35 @@ import com.scube.chargingstation.repository.RoleRepository;
 	@Override
 	public boolean editRole(@Valid RoleIncomingDto roleIncomingDto) {
 		// TODO Auto-generated method stub
+		
+	 if(roleIncomingDto.getId() == "" || roleIncomingDto.getId() ==null ) {
+				
+				throw BRSException.throwException("something went wrong");
+	 } 
+			
+	   if(roleIncomingDto.getName() == "" || roleIncomingDto.getName() ==null ) {
+			
+			throw BRSException.throwException("Role name can't be blank or null");
+		}
+		
+	   if(roleIncomingDto.getNamecode() == "" || roleIncomingDto.getNamecode() ==null ) {
+			
+			throw BRSException.throwException("Role namecode can't be blank or null");
+		}
+		
+	   if(roleIncomingDto.getStatus() == "" || roleIncomingDto.getStatus() ==null ) {
+			
+			throw BRSException.throwException("Role namecode can't be blank or null");
+		}
+	  	
 		RoleEntity roleEntity = roleRepository.findById(roleIncomingDto.getId()).get();
+		
+		
 		
 		roleEntity.setName(roleIncomingDto.getName());
 		roleEntity.setNameCode(roleIncomingDto.getNamecode());
 		roleEntity.setStatus(roleIncomingDto.getStatus());
 		roleRepository.save(roleEntity);
-		
 		return true;
 	}
 
@@ -110,11 +132,16 @@ import com.scube.chargingstation.repository.RoleRepository;
 	@Override
 	public boolean deleteRole(String id) {
 		// TODO Auto-generated method stub
-		
 		RoleEntity roleEntity = roleRepository.findById(id).get();
 		
+		if(roleEntity.getId() == "" || roleEntity.getId() ==null ) {
+			
+			throw BRSException.throwException("Role id can't be blank or null");
+		}
+	
+		
 		roleEntity.setIsdeleted("Y");
-		roleEntity.setStatus("InActive");
+		roleEntity.setStatus("INACTIVE");
 		roleRepository.save(roleEntity);
 		
 		return true;
@@ -133,7 +160,16 @@ import com.scube.chargingstation.repository.RoleRepository;
 	@Override
 	public List<RoleDto> findActiveRoles() {
 		// TODO Auto-generated method stub
-		List<RoleEntity> roleEntities = roleRepository.findByStatus("Active");
+		List<RoleEntity> roleEntities = roleRepository.findByStatusAndIsdeleted("Active","N");
 		return  RoleMapper.toRoleDtos(roleEntities);
+	}
+
+
+	@Override
+	public RoleDto getRoleById(String id) {
+		// TODO Auto-generated method stub
+		
+		RoleEntity roleEntity = roleRepository.getRoleById(id);
+		return RoleMapper.toRoleDto(roleEntity);
 	}
 }

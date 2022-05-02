@@ -20,6 +20,7 @@ public interface RoleService {
 	boolean deleteRole(String id);
 	 List<RoleDto>  findAllRoles();
 	 List<RoleDto> findActiveRoles();
+	 RoleDto getRoleById(String id);
 	
 
 	
