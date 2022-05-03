@@ -19,6 +19,7 @@ import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
 import com.scube.chargingstation.entity.TransactionsEntity;
+import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.repository.ChargingRequestRepository;
 import com.scube.chargingstation.repository.TransactionsRepository;
 import com.scube.chargingstation.util.PayslipPdfExporter;
@@ -99,11 +100,28 @@ public class TransactionsServiceImpl implements TransactionsService {
 		
 	//	logger.info("***TransactionsServiceImpl updateStartResultInitiated***");
 		
+		String oldConnectorId ="";
+		String oldChargePointId ="";
+		
 		for(TransactionsEntity transactionsEntity : transactionsEntitys) {
 		
+			
+			
 			ChargingPointEntity	chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(transactionsEntity.getChargePointId());
 			
+			if(chargingPointEntity == null) {
+				//throw BRSException.throwException("Charging Point not found.");
+				continue;
+			}
+			
 			ConnectorEntity	connectorEntity = connectorService.getConnectorEntityByIdAndChargingPointEntity( String.valueOf(transactionsEntity.getConnectorId()) ,chargingPointEntity) ;
+			
+			if(connectorEntity == null) {
+				// throw BRSException.throwException("connector not found.");
+				continue;
+			}
+			
+			if(oldConnectorId.equals(connectorEntity.getId()) && oldChargePointId.equals(chargingPointEntity.getId())) {
 			
 			ChargingRequestEntity chargingRequestEntity = chargingRequestService.findChargingRequestEntityByChargingPointEntityAndConnectorEntityAndStatus(chargingPointEntity, connectorEntity,"REQUESTED");
 			
@@ -133,7 +151,13 @@ public class TransactionsServiceImpl implements TransactionsService {
 					chargingRequestEntity.setTransactionsEntity(transactionsEntity);
 					chargingRequestRepository.save(chargingRequestEntity);
 				}
+				
+			}
 			
+				oldConnectorId = connectorEntity.getId();
+				oldChargePointId = chargingPointEntity.getId();
+				
+				
 		}
 	}
 	
@@ -169,49 +193,60 @@ public class TransactionsServiceImpl implements TransactionsService {
 					double finalAmount = 0;
 					double finalKwh = 0;
 					
-					if(chargingRequestEntity.getRequestKwh() == chargingRequestEntity.getMeterStop()) {
+					
+					double minKwh = 0.01;
+					ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndKwh(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getConnectorId(),minKwh);
+					
+					if(chargingRequestEntity.getRequestAmount() == 0) {
+						
 						differenceAmount = 0;
 						differenceKwh = 0;
-						finalAmount = chargingRequestEntity.getRequestAmount();
+						finalAmount = (chargingRequestEntity.getMeterStop() *  chargingPointConnectorRateDto.getAmount())/ minKwh ;
 						finalKwh	= chargingRequestEntity.getMeterStop();
+					
 					}else {
 						
-						double minKwh = 0.01;
-						ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndKwh(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getConnectorId(),minKwh);
-						
-						if(chargingRequestEntity.getRequestKwh() > chargingRequestEntity.getMeterStop()) {
-							statusCrDr = "Credit";
-							
-							differenceKwh = chargingRequestEntity.getRequestKwh() - chargingRequestEntity.getMeterStop();
-							
-							differenceAmount = (differenceKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh ; // 
-							
-							finalAmount = chargingRequestEntity.getRequestAmount() - differenceAmount; //
+						if(chargingRequestEntity.getRequestKwh() == chargingRequestEntity.getMeterStop()) {
+							differenceAmount = 0;
+							differenceKwh = 0;
+							finalAmount = chargingRequestEntity.getRequestAmount();
 							finalKwh	= chargingRequestEntity.getMeterStop();
+						}else {
+						
+						
+							if(chargingRequestEntity.getRequestKwh() > chargingRequestEntity.getMeterStop()) {
+								statusCrDr = "Credit";
+								
+								differenceKwh = chargingRequestEntity.getRequestKwh() - chargingRequestEntity.getMeterStop();
+								
+								differenceAmount = (differenceKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh ; // 
+								
+								finalAmount = chargingRequestEntity.getRequestAmount() - differenceAmount; //
+								finalKwh	= chargingRequestEntity.getMeterStop();
+							}
+		
+							if(chargingRequestEntity.getRequestKwh() < chargingRequestEntity.getMeterStop()) {
+								statusCrDr = "Debit"; 
+								
+								differenceKwh = chargingRequestEntity.getMeterStop() - chargingRequestEntity.getRequestKwh();
+								
+								differenceAmount = (differenceKwh * chargingPointConnectorRateDto.getAmount()) / minKwh; // 
+								
+								finalAmount = chargingRequestEntity.getRequestAmount() + differenceAmount ; //
+								finalKwh	= chargingRequestEntity.getMeterStop();
+							}
+						
+							UserWalletRequestDto	userWalletRequestDto = new UserWalletRequestDto();
+							
+							userWalletRequestDto.setChargeRequestId(chargingRequestEntity.getId());
+							userWalletRequestDto.setTransactionType(statusCrDr);
+							userWalletRequestDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
+							userWalletRequestDto.setRequestAmount(String.valueOf(differenceAmount));
+							
+							// Api amount cut in wallet 
+							userPaymentService.processWalletMoney(userWalletRequestDto);
+							
 						}
-	
-						if(chargingRequestEntity.getRequestKwh() < chargingRequestEntity.getMeterStop()) {
-							statusCrDr = "Debit"; 
-							
-							differenceKwh = chargingRequestEntity.getMeterStop() - chargingRequestEntity.getRequestKwh();
-							
-							differenceAmount = (differenceKwh * chargingPointConnectorRateDto.getAmount()) / minKwh; // 
-							
-							finalAmount = chargingRequestEntity.getRequestAmount() + differenceAmount ; //
-							finalKwh	= chargingRequestEntity.getMeterStop();
-						}
-					
-						UserWalletRequestDto	userWalletRequestDto = new UserWalletRequestDto();
-						
-						
-						userWalletRequestDto.setChargeRequestId(chargingRequestEntity.getId());
-						userWalletRequestDto.setTransactionType(statusCrDr);
-						userWalletRequestDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
-						userWalletRequestDto.setRequestAmount(String.valueOf(differenceAmount));
-						
-						// Api amount cut in wallet 
-						userPaymentService.processWalletMoney(userWalletRequestDto);
-						
 					}
 					
 					chargingRequestEntity.setDifferenceAmount(differenceAmount);

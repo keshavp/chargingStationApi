@@ -19,6 +19,7 @@ import com.scube.chargingstation.entity.UserInfoOtpEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.exception.EntityType;
 import com.scube.chargingstation.repository.UserInfoRepository;
+import com.scube.chargingstation.service.api.SmsService;
 import com.scube.chargingstation.util.RandomNumber;
 
 @Service
@@ -34,6 +35,10 @@ public class UserInfoServiceImpl implements UserInfoService {
 	
 	@Autowired
 	UserInfoOtpService userInfoOtpService;
+	
+	@Autowired
+	SmsService	smsService;
+	
 	
 	
 	BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -98,8 +103,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 		String otpCode = "";
 		
-//		otpCode	= RandomNumber.getRandomNumberString();
-		otpCode	= "123456";
+		otpCode	= RandomNumber.getRandomNumberString();
 		
 		UserInfoOtpEntity	userInfoOtpEntity = new UserInfoOtpEntity();
 		
@@ -109,6 +113,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 		userInfoOtpEntity.setStatus("open");
 		
 		userInfoOtpService.insertOtpDate(userInfoOtpEntity);
+		
+		smsService.sendSignupOTPMobile(otpCode,userInfoIncomingDto.getMobilenumber());
+		
 		
 		return true;
 	}
