@@ -20,7 +20,7 @@ public class CarModelController {
 	@Autowired 
 	CarModelService carModelService;
 	
-	@GetMapping(value ="/getCarModels", consumes = APPLICATION_JSON_VALUE)
+	@GetMapping(value ="/getCarModels")
 	public Response getCarModels() throws Exception {
 		
 		return Response.ok().setPayload(carModelService.getCarModels());

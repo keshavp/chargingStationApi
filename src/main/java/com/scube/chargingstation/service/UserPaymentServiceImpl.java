@@ -242,7 +242,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		userWalletDtlEntity.setTransactionType("Credit");
 		userWalletDtlEntity.setUserInfoEntity(userInfoEntity);
 		//userWalletDtlEntity.setChargingRequestEntity(crEntity);
-		userWalletDtlEntity.setAmount(Double.parseDouble(df.format(userWalletRequestDto.getRequestAmount())));
+		userWalletDtlEntity.setAmount(Double.parseDouble(df.format(Double.parseDouble(userWalletRequestDto.getRequestAmount()))));
 		userWalletDtlEntity.setOrderId(OrderId);
 		//userWalletDtlEntity.setTransaction_id(userWalletRequestDto.getTransactionId());
 		userWalletDtlRepository.save(userWalletDtlEntity);
@@ -377,7 +377,10 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		}
 		userWalletDtlEntity.setRazorSignature(userWalletRequestDto.getRazorSignature());
 		userWalletDtlEntity.setTransactionId(userWalletRequestDto.getTransactionId());
-		userWalletDtlEntity.setAmount(Double.parseDouble(df.format(userWalletRequestDto.getRequestAmount())));
+		userWalletDtlEntity.setAmount(Double.parseDouble(df.format(Double.parseDouble(userWalletRequestDto.getRequestAmount()))));
+		
+
+		
 		userWalletDtlRepository.save(userWalletDtlEntity);
 		
 		Double balance = 0.0;

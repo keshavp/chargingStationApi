@@ -8,6 +8,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -31,7 +32,7 @@ public class ChargingPointEntity  extends BaseEntity {
     private Set<ConnectorEntity> connectorEntities;
 	
 	 @JoinTable
-	    @OneToMany
+	    @ManyToMany
 	    private Set<AmenitiesEntity> amenities;
 	
 	

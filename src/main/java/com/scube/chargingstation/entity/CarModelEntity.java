@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -20,7 +21,7 @@ public class CarModelEntity extends BaseEntity {
 	private String imagePath;
 	
 	 @JoinTable
-	 @OneToMany
+	 @ManyToMany
 	 private Set<ChargerTypeEntity> chargertypes;
 	
 	
