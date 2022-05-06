@@ -15,11 +15,13 @@ import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.ChargingStatusRespDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
+import com.scube.chargingstation.dto.incoming.NotificationReqDto;
 import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
 import com.scube.chargingstation.dto.mapper.ChargingStatusMapper;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
+import com.scube.chargingstation.entity.TransactionsEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.entity.UserWalletEntity;
 import com.scube.chargingstation.exception.BRSException;
@@ -56,6 +58,9 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	
 	@Autowired
 	ConnectorService	connectorService;
+	
+	@Autowired
+	NotificationService notificationService;
 	
 	
 	 @Value("${chargingstation.chargertype}")
@@ -109,16 +114,21 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 				  throw BRSException.throwException("Error: Insufficient Wallet Balance");
 			}
 			
-		/*
-		 * List<ChargingRequestEntity> list=chargingRequestRepository.
-		 * findByChargingPointEntityAndConnectorEntityAndUserInfoEntityAndChargingStatus
-		 * (chargingPointEntity, connectorEntity, userInfoEntity, "Starting");
-		 */
-		    List<ChargingRequestEntity> list=chargingRequestRepository.findMyOnGoingChargingProcesses(chargingPointEntity, connectorEntity, userInfoEntity);
+			//List<ChargingRequestEntity> list=chargingRequestRepository.findMyPendingChargingRequests(chargingPointEntity, connectorEntity, userInfoEntity);
+			List<ChargingRequestEntity> list=chargingRequestRepository.findMyPendingChargingRequests(chargingPointEntity, connectorEntity);
 		  	if(list.size()>0)
 			{
-			  throw BRSException.throwException("Error: Can't book, charging is already in process");
+			  throw BRSException.throwException("Error: You are in Queue please try after few minutes");
 			}
+			
+		    List<ChargingRequestEntity> listP=chargingRequestRepository.findMyOnGoingChargingProcesses(chargingPointEntity, connectorEntity, userInfoEntity);
+		  	if(listP.size()>0)
+			{
+			  throw BRSException.throwException("Error: Can't book, your charging request is already in process");
+			}
+		  	
+		  	
+		  	
 		  
 			chargingRequestEntity.setChargingPointEntity(chargingPointEntity);
 			chargingRequestEntity.setConnectorEntity(connectorEntity);
@@ -162,6 +172,8 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		// TODO Auto-generated method stub
 	
 		List<ChargingPointEntity> cpEntity=chargingPointRepository.findAll();
+		
+		
 		List<ChargingPointDto> chargingPointDto = ChargingPointMapper.toChargingPointDto(cpEntity);
 		return chargingPointDto;
 		
@@ -182,9 +194,57 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		return chargingStatusRespDtoLst;
 		
 	}
+
+	
+	@Override
+	public void timeoutPendingChargingRequests() {
+		// TODO Auto-generated method stub
+		List<ChargingRequestEntity> chargingRequestEntityList =  chargingRequestRepository.findByChargingStatusAndCreatedMinutes("Pending","5");
+		for(ChargingRequestEntity chargingRequestEntity : chargingRequestEntityList) 
+		{
+			chargingRequestEntity.setChargingStatus("TimeOut");
+			chargingRequestRepository.save(chargingRequestEntity);
+			
+			logger.info("***sending booking timeout Notification for***"+chargingRequestEntity.getUserInfoEntity().getMobilenumber());
+			
+			String title="Thank you for using EV-Dock.";
+			String body="Your Booking for charging is time out";
+			NotificationReqDto notificationReqDto =new NotificationReqDto();
+			notificationReqDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
+			notificationReqDto.setTitle(title);
+			notificationReqDto.setBody(body);
+			
+			notificationService.sendNotification(notificationReqDto);
+		}
+	}
 	
 	
-	
+	@Override
+	public void sendGunInsertNotification() {
+		// TODO Auto-generated method stub
+		List<ChargingRequestEntity> chargingRequestEntityList =  chargingRequestRepository.findByChargingStatusAndCreatedMinutes("Pending","3");
+		for(ChargingRequestEntity chargingRequestEntity : chargingRequestEntityList) 
+		{
+			
+			UserInfoEntity userInfoEntity = userInfoRepository.findById(chargingRequestEntity.getUserInfoEntity().getId());
+			if(userInfoEntity==null)
+			{
+				throw BRSException.throwException("Error: User does not exist"); 
+			}
+			logger.info("***sending sendGunInsertNotification for***"+chargingRequestEntity.getUserInfoEntity().getMobilenumber());
+			
+			String title="Thank you for using EV-Dock.";
+			String body="Please insert the gun";
+			NotificationReqDto notificationReqDto =new NotificationReqDto();
+			notificationReqDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
+			notificationReqDto.setTitle(title);
+			notificationReqDto.setBody(body);
+			
+			notificationService.sendNotification(notificationReqDto);
+
+			
+		}
+	}
 	
 
 	

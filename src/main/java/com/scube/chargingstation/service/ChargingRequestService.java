@@ -33,5 +33,7 @@ public interface ChargingRequestService {
 	
 	public List<ChargingStatusRespDto> getChargingStatus(ChargingRequestDto chargingRequestDto);
 
+	public void timeoutPendingChargingRequests();
 	
+	public void sendGunInsertNotification();
 }

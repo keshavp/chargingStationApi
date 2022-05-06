@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
+import com.scube.chargingstation.service.ChargingRequestService;
 import com.scube.chargingstation.service.TransactionsService;
 
 @Component
@@ -22,15 +23,37 @@ public class Schedulers {
 	@Autowired
 	TransactionsService	transactionsService;	
 	
+	@Autowired 
+	ChargingRequestService chargingRequestService;
+	
+	
+	// 5
 	@Scheduled(cron = "${updateStartResult.cronTime}")
 	public int updateStartResult() throws Exception {
 		
 	//	log.info("updateStartResult");
 		
 	 	transactionsService.updateStartResultInitiated();
-	 	
 	 	transactionsService.chargingRequestedBill();
 	 	
 		return 0;
 	}
+	
+	
+	@Scheduled(cron = "${timeoutPendingChargingRequests.cronTime}")
+	public int timeoutPendingChargingRequests() throws Exception {
+		
+		//log.info("timeoutPendingChargingRequests");
+		chargingRequestService.timeoutPendingChargingRequests();
+		return 0;
+	}
+	
+	@Scheduled(cron = "${sendGunInsertNotification.cronTime}")
+	public int sendGunInsertNotification() throws Exception {
+		
+		log.info("sendGunInsertNotification");
+		chargingRequestService.sendGunInsertNotification();
+		return 0;
+	}
+	
 }
