@@ -1,6 +1,6 @@
-package com.scube.chargingstation.dto.mapper;
+  package com.scube.chargingstation.dto.mapper;
 
-import java.util.ArrayList;
+  import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,6 +17,7 @@ public class CarModelMapper {
         		.setModel(carModelEntity.getModel())
         		.setDescription(carModelEntity.getDescription())
         		.setChargertypes(ChargerTypeMapper.toChargerTypeDto(carModelEntity.getChargertypes()));
+               
 	}
 	
 	public static List<CarModelDto> toCarModelDto(List<CarModelEntity> CarModelEntities) {

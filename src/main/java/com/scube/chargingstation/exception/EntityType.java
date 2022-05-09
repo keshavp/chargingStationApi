@@ -37,4 +37,5 @@ public enum EntityType {
     PAYSLIP,
     SALARYADJ,
     EMPTAX,
+    ChargerType,
 }

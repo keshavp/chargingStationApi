@@ -1,4 +1,4 @@
-package com.scube.chargingstation.service;
+   package com.scube.chargingstation.service;
 
 import static com.scube.chargingstation.exception.ExceptionType.ALREADY_EXIST;
 

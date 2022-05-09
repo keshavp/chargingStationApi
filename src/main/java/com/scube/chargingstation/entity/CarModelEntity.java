@@ -19,7 +19,7 @@ public class CarModelEntity extends BaseEntity {
 	private String model;
 	private String description;
 	private String imagePath;
-	
+	private String status;
 	 @JoinTable
 	 @ManyToMany
 	 private Set<ChargerTypeEntity> chargertypes;

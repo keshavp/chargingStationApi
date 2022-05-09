@@ -16,11 +16,13 @@ import lombok.experimental.Accessors;
 @ToString
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ChargerTypeDto {
 
-
+public class ConnectorTypeDto {
+   
 	private String name;
+	private String imgpath;
 	private String status;
 	private String id;
-	//private String imagePath;
+	
+	
 }

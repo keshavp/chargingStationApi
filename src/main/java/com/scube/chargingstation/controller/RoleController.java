@@ -69,7 +69,7 @@ public class RoleController {
 	}
 	@GetMapping( value = "/getRoleById/{id}" )
 	public Response getRoleById(@PathVariable("id") String id) {
-		logger.info("***RoleController deleteRole***");
+		logger.info("***RoleController RoleById***");
 	//	logger.info(NEW_ORDER_LOG, createdUser.toString());
 		return Response.ok().setPayload(roleService.getRoleById(id));
 		

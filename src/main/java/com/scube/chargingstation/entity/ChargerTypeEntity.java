@@ -18,8 +18,7 @@ import lombok.Setter;
 @Setter @Getter
 public class ChargerTypeEntity  extends BaseEntity {
 
-
 	private String name;
 	private String imagePath;
-	
+	private String status;
 }
