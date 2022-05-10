@@ -7,4 +7,5 @@ public interface UserInfoOtpService {
 
 	void insertOtpDate(UserInfoOtpEntity userInfoOtpEntity);
 	boolean moblieOtpVerify(OtpVerificationIncomingDto otpVerificationIncomingDto);
+	void removeUnVerificationUser();
 }

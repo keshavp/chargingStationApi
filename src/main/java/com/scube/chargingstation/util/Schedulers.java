@@ -13,6 +13,7 @@ import org.springframework.util.ResourceUtils;
 
 import com.scube.chargingstation.service.ChargingRequestService;
 import com.scube.chargingstation.service.TransactionsService;
+import com.scube.chargingstation.service.UserInfoOtpService;
 
 @Component
 public class Schedulers {
@@ -26,6 +27,9 @@ public class Schedulers {
 	@Autowired 
 	ChargingRequestService chargingRequestService;
 	
+	@Autowired
+	UserInfoOtpService	infoOtpService; 
+	
 	
 	// 5
 	@Scheduled(cron = "${updateStartResult.cronTime}")
@@ -35,6 +39,8 @@ public class Schedulers {
 		
 	 	transactionsService.updateStartResultInitiated();
 	 	transactionsService.chargingRequestedBill();
+	 	
+	 	infoOtpService.removeUnVerificationUser();
 	 	
 		return 0;
 	}

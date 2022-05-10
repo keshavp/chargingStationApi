@@ -1,5 +1,7 @@
 package com.scube.chargingstation.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,4 +54,19 @@ public class UserInfoOtpServiceImpl implements UserInfoOtpService {
 		return true;
 	}
 
+	@Override
+	public void removeUnVerificationUser() {
+		// TODO Auto-generated method stub
+		
+		List<UserInfoOtpEntity> userInfoOtpEntities  =  userInfoOtpRepository.findOpenStatusMoreThenOneMinutes(); 
+		
+		for( UserInfoOtpEntity userInfoOtpEntity : userInfoOtpEntities) {
+
+			userInfoOtpRepository.delete(userInfoOtpEntity);
+			userInfoRepository.delete(userInfoOtpEntity.getUserInfoEntity());
+			
+		//	UserInfoEntity userInfoEntity = userInfoService.getUserInfoEntityByIdAndDelete(userInfoOtpEntity.getUserInfoEntity().getId());
+			
+		}
+	}
 }

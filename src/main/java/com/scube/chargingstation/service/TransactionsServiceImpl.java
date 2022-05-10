@@ -199,10 +199,21 @@ public class TransactionsServiceImpl implements TransactionsService {
 					
 					if(chargingRequestEntity.getRequestAmount() == 0) {
 						
-						differenceAmount = 0;
-						differenceKwh = 0;
+						differenceAmount = (chargingRequestEntity.getMeterStop() *  chargingPointConnectorRateDto.getAmount())/ minKwh;
+						differenceKwh = chargingRequestEntity.getMeterStop();
+						statusCrDr = "Debit"; 
 						finalAmount = (chargingRequestEntity.getMeterStop() *  chargingPointConnectorRateDto.getAmount())/ minKwh ;
 						finalKwh	= chargingRequestEntity.getMeterStop();
+						
+						UserWalletRequestDto	userWalletRequestDto = new UserWalletRequestDto();
+						
+						userWalletRequestDto.setChargeRequestId(chargingRequestEntity.getId());
+						userWalletRequestDto.setTransactionType(statusCrDr);
+						userWalletRequestDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
+						userWalletRequestDto.setRequestAmount(String.valueOf(differenceAmount));
+						
+						// Api amount cut in wallet 
+						userPaymentService.processWalletMoney(userWalletRequestDto);
 					
 					}else {
 						
@@ -272,7 +283,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 					notificationReqDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
 					notificationReqDto.setTitle(title);
 					notificationReqDto.setBody(body);
-					notificationService.sendNotification(notificationReqDto);
+//					notificationService.sendNotification(notificationReqDto);
 					//notification sent
 					
 				}

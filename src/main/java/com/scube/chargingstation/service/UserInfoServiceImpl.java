@@ -66,12 +66,16 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 		
 		
-		UserInfoEntity userCodeDuplicateCheck = userInfoRepository.findByUsername(userInfoIncomingDto.getUsername());
-		if(userCodeDuplicateCheck != null) {
-			
-			logger.error("throw error that user already exists for Username = "+ userInfoIncomingDto.getUsername());
-			throw BRSException.throwException(EntityType.USER, ALREADY_EXIST, userInfoIncomingDto.getUsername());
-		}
+		/*
+		 * UserInfoEntity userCodeDuplicateCheck =
+		 * userInfoRepository.findByUsername(userInfoIncomingDto.getUsername());
+		 * if(userCodeDuplicateCheck != null) {
+		 * 
+		 * logger.error("throw error that user already exists for Username = "+
+		 * userInfoIncomingDto.getUsername()); throw
+		 * BRSException.throwException(EntityType.USER, ALREADY_EXIST,
+		 * userInfoIncomingDto.getUsername()); }
+		 */
 		
 		UserInfoEntity userEmailDuplicateCheck = userInfoRepository.findByMobilenumber(userInfoIncomingDto.getMobilenumber());
 		if(userEmailDuplicateCheck != null) {

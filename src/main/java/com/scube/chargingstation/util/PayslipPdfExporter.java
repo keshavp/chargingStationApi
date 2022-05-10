@@ -208,6 +208,13 @@ public class PayslipPdfExporter {
 		table1.addCell(new Cell().add(new Paragraph("GSTN  :")));
 		table1.addCell(new Cell().add(new Paragraph("27AAJCT1560G1ZB")));
 		
+		table1.addCell(new Cell().add(new Paragraph("Name  :")));
+		table1.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getCustName()))));
+		table1.addCell(new Cell().add(new Paragraph("Mobile No.  :")));
+		table1.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getMobileNo()))));
+		table1.addCell(new Cell().add(new Paragraph("Vehicle No.  :")));
+		table1.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getVehicleNO()))));
+		
 		table1.addCell(new Cell().add(new Paragraph("Charge Point  :")));
 		table1.addCell(new Cell().add(new Paragraph(chargingRequestEntity.getChargingPointEntity().getChargingPointId())));
 		table1.addCell(new Cell().add(new Paragraph("Connector  :")));
