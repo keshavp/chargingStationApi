@@ -391,9 +391,16 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		if (userchkWaltEntity != null)
 			userWaltEntity = userchkWaltEntity;
 
+		
 		Double amount = Double.parseDouble(userWalletRequestDto.getRequestAmount());
 		UserWalletEntity userbalWaltEntity = userWalletRepository.findBalanceByUserId(userInfoEntity.getId());
-		Double curBal = userbalWaltEntity.getCurrentBalance();
+		Double curBal=0.0;
+		
+		if(userbalWaltEntity!=null)
+		{
+			curBal = userbalWaltEntity.getCurrentBalance();
+		}
+		
 		balance = curBal + amount;
 
 		userWaltEntity.setUserInfoEntity(userInfoEntity);

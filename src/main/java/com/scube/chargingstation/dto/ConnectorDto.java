@@ -24,6 +24,7 @@ public class ConnectorDto {
 	private String chargerType;
 	private String connectorId;
 	private String image;
+	private String available;
 
     
     

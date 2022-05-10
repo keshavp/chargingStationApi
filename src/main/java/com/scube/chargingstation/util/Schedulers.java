@@ -31,7 +31,7 @@ public class Schedulers {
 	@Scheduled(cron = "${updateStartResult.cronTime}")
 	public int updateStartResult() throws Exception {
 		
-	//	log.info("updateStartResult");
+		log.info("updateStartResult");
 		
 	 	transactionsService.updateStartResultInitiated();
 	 	transactionsService.chargingRequestedBill();
@@ -39,14 +39,13 @@ public class Schedulers {
 		return 0;
 	}
 	
-	
-	@Scheduled(cron = "${timeoutPendingChargingRequests.cronTime}")
-	public int timeoutPendingChargingRequests() throws Exception {
-		
-		//log.info("timeoutPendingChargingRequests");
-		chargingRequestService.timeoutPendingChargingRequests();
-		return 0;
-	}
+	/*
+	 * @Scheduled(cron = "${timeoutPendingChargingRequests.cronTime}") public int
+	 * timeoutPendingChargingRequests() throws Exception {
+	 * 
+	 * log.info("timeoutPendingChargingRequests");
+	 * chargingRequestService.timeoutPendingChargingRequests(); return 0; }
+	 */
 	
 	@Scheduled(cron = "${sendGunInsertNotification.cronTime}")
 	public int sendGunInsertNotification() throws Exception {

@@ -11,5 +11,6 @@ public class ChargingStationDto {
 	
 	private double latitude;
 	private double longitude;
+	private String carModelId;
 
 }

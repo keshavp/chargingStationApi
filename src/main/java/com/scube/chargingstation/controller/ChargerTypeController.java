@@ -28,6 +28,4 @@ public class ChargerTypeController {
      return Response.ok().setPayload(chargertypeservice.findActiveChargerType());
 	}
 	
-	
-	
 }

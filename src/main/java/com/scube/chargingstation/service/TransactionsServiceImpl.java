@@ -121,7 +121,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 				continue;
 			}
 			
-			if(oldConnectorId.equals(connectorEntity.getId()) && oldChargePointId.equals(chargingPointEntity.getId())) {
+			if(!oldConnectorId.equals(connectorEntity.getId()) && !oldChargePointId.equals(chargingPointEntity.getId())) {
 			
 			ChargingRequestEntity chargingRequestEntity = chargingRequestService.findChargingRequestEntityByChargingPointEntityAndConnectorEntityAndStatus(chargingPointEntity, connectorEntity,"REQUESTED");
 			

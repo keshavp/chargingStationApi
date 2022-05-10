@@ -1,7 +1,11 @@
 package com.scube.chargingstation.service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,28 +13,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.scube.chargingstation.controller.AuthController;
-import com.scube.chargingstation.dto.ChargingHistoryDto;
+import com.scube.chargingstation.dto.AmenityDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.ChargingStatusRespDto;
+import com.scube.chargingstation.dto.ConnectorDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
 import com.scube.chargingstation.dto.incoming.NotificationReqDto;
+import com.scube.chargingstation.dto.mapper.AmenityMapper;
 import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
 import com.scube.chargingstation.dto.mapper.ChargingStatusMapper;
+import com.scube.chargingstation.dto.mapper.ConnectorMapper;
+import com.scube.chargingstation.entity.AmenitiesEntity;
+import com.scube.chargingstation.entity.CarModelEntity;
+import com.scube.chargingstation.entity.ChargerTypeEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
-import com.scube.chargingstation.entity.TransactionsEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.entity.UserWalletEntity;
 import com.scube.chargingstation.exception.BRSException;
+import com.scube.chargingstation.repository.CarModelRepository;
 import com.scube.chargingstation.repository.ChargerTypeRepository;
 import com.scube.chargingstation.repository.ChargingPointRepository;
 import com.scube.chargingstation.repository.ChargingRequestRepository;
 import com.scube.chargingstation.repository.UserInfoRepository;
 import com.scube.chargingstation.repository.UserWalletDtlRepository;
 import com.scube.chargingstation.repository.UserWalletRepository;
+import com.scube.chargingstation.util.StaticPathContUtils;
 
 @Service
 public class ChargingRequestServiceImpl implements ChargingRequestService {
@@ -61,6 +71,9 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	
 	@Autowired
 	NotificationService notificationService;
+	
+	@Autowired
+	CarModelRepository carModelRepository;
 	
 	
 	 @Value("${chargingstation.chargertype}")
@@ -95,7 +108,6 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 				throw BRSException.throwException("Error: Connector does not exist"); 
 			}
 			
-			
 			UserWalletEntity userWalletEntity=userWalletRepository.findByUserInfoEntity(userInfoEntity);
 			if(userWalletEntity==null)
 			{
@@ -107,8 +119,17 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		//	Double dCurBal=Double.parseDouble(curBal); //double existing balance
 			
 			Double dCurBal=userWalletEntity.getCurrentBalance();
-			
+
 			Double reqAmt=Double.parseDouble(chargingRequestDto.getRequestAmount()); //requested charging amount
+			
+			if((reqAmt==0)||(reqAmt==0.0))//full charge sceanario
+			{
+				if(dCurBal<1000)
+				{
+					  throw BRSException.throwException("Error: FullCharge needs 1000 INR as Wallet Balance");
+				}
+			}
+			
 			if(dCurBal<reqAmt)
 			{
 				  throw BRSException.throwException("Error: Insufficient Wallet Balance");
@@ -167,17 +188,92 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	
 	
 
-	@Override
-	public List<ChargingPointDto> getNearByChargingStations(ChargingStationDto chargingStationDto) {
-		// TODO Auto-generated method stub
 	
-		List<ChargingPointEntity> cpEntity=chargingPointRepository.findAll();
-		
-		
-		List<ChargingPointDto> chargingPointDto = ChargingPointMapper.toChargingPointDto(cpEntity);
-		return chargingPointDto;
-		
-	}
+	  @Override public List<ChargingPointDto>
+	  getNearByChargingStations(ChargingStationDto chargingStationDto) { 
+		  // TODO  Auto-generated method stub
+	  
+	  List<ChargingPointEntity> cpEntityLst=chargingPointRepository.findAll();
+	  
+	  List<ChargingPointDto> chargingPointDtoLst =  ChargingPointMapper.toChargingPointDto(cpEntityLst); 
+	  return  chargingPointDtoLst;
+	  
+	  }
+	 
+	
+	/*
+	 * @Override public List<ChargingPointDto>
+	 * getNearByChargingStations(ChargingStationDto chargingStationDto) { // TODO
+	 * Auto-generated method stub
+	 * 
+	 * String carModelId=chargingStationDto.getCarModelId(); Set<ChargerTypeEntity>
+	 * chargerTypes=null;
+	 * 
+	 * if(carModelId!=null&&!carModelId.isEmpty()) { Optional<CarModelEntity>
+	 * cmEntity=carModelRepository.findById(carModelId); CarModelEntity
+	 * entity=cmEntity.get();
+	 * 
+	 * if(entity==null) { throw
+	 * BRSException.throwException("Error: This vehicle model does not exist"); }
+	 * if(entity!=null) { chargerTypes=entity.getChargertypes(); }
+	 * 
+	 * }
+	 * 
+	 * 
+	 * 
+	 * List<ChargingPointEntity> cpEntityLst=chargingPointRepository.findAll();
+	 * List<ChargingPointDto> chargingPointDtoLst=new ArrayList<ChargingPointDto>();
+	 * 
+	 * for(ChargingPointEntity chargingPointEntity : cpEntityLst) { ChargingPointDto
+	 * CPDto=new ChargingPointDto();
+	 * 
+	 * Set<ConnectorDto> connectors=new HashSet<ConnectorDto>(); Set<AmenityDto>
+	 * amenities =new HashSet<AmenityDto>();
+	 * 
+	 * Set<ConnectorEntity> conEntitySet
+	 * =chargingPointEntity.getConnectorEntities(); Set<AmenitiesEntity>
+	 * ameEntitySet= chargingPointEntity.getAmenities();
+	 * 
+	 * for(ConnectorEntity conEntity : conEntitySet) { ConnectorDto conDto=new
+	 * ConnectorDto(); //conDto=ConnectorMapper.toConnectorDto(conEntity);
+	 * 
+	 * conDto.setConnectorId(conEntity.getConnectorId()); //
+	 * conDto.setChargingPoint(conEntity.getChargingPointEntity().getChargingPointId
+	 * ()); conDto.setChargerId(conEntity.getChargerTypeEntity().getId());
+	 * conDto.setChargerType(conEntity.getChargerTypeEntity().getName());
+	 * conDto.setImage(StaticPathContUtils.APP_URL_DIR+StaticPathContUtils.
+	 * SET_CHARGER_TYPE_FILE_URL_DIR+conEntity.getChargerTypeEntity().getId());
+	 * 
+	 * 
+	 * connectors.add(conDto); }
+	 * 
+	 * for(AmenitiesEntity amentyEntity : ameEntitySet) { AmenityDto ameDto=new
+	 * AmenityDto(); ameDto=AmenityMapper.toAmenityDto(amentyEntity);
+	 * amenities.add(ameDto); }
+	 * 
+	 * CPDto.setAddress(chargingPointEntity.getAddress());
+	 * CPDto.setDistance(chargingPointEntity.getDistance());
+	 * CPDto.setLatitude(chargingPointEntity.getLatitude());
+	 * CPDto.setLongitude(chargingPointEntity.getLongitude());
+	 * CPDto.setName(chargingPointEntity.getName());
+	 * CPDto.setRating(chargingPointEntity.getRating());
+	 * CPDto.setStatus(chargingPointEntity.getStatus());
+	 * CPDto.setChargingPointId(chargingPointEntity.getChargingPointId());
+	 * CPDto.setConnectors(connectors); CPDto.setAmenities(amenities);
+	 * 
+	 * 
+	 * chargingPointDtoLst.add(CPDto);
+	 * 
+	 * }
+	 * 
+	 * 
+	 * 
+	 * // List<ChargingPointDto> chargingPointDtoLst =
+	 * ChargingPointMapper.toChargingPointDto(cpEntityLst); return
+	 * chargingPointDtoLst;
+	 * 
+	 * }
+	 */
 
 	@Override
 	public List<ChargingStatusRespDto> getChargingStatus(ChargingRequestDto chargingRequestDto) {
@@ -202,7 +298,8 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		List<ChargingRequestEntity> chargingRequestEntityList =  chargingRequestRepository.findByChargingStatusAndCreatedMinutes("Pending","5");
 		for(ChargingRequestEntity chargingRequestEntity : chargingRequestEntityList) 
 		{
-			chargingRequestEntity.setChargingStatus("TimeOut");
+			chargingRequestEntity.setChargingStatus("Rejected");
+			chargingRequestEntity.setStatus("TimeOut");
 			chargingRequestRepository.save(chargingRequestEntity);
 			
 			logger.info("***sending booking timeout Notification for***"+chargingRequestEntity.getUserInfoEntity().getMobilenumber());
@@ -214,7 +311,16 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			notificationReqDto.setTitle(title);
 			notificationReqDto.setBody(body);
 			
-			notificationService.sendNotification(notificationReqDto);
+			try 
+			{
+				notificationService.sendNotification(notificationReqDto);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+				logger.info("***exception in timeoutPendingChargingRequests***"+e.toString());
+			}
+			
 		}
 	}
 	
@@ -239,11 +345,23 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			notificationReqDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
 			notificationReqDto.setTitle(title);
 			notificationReqDto.setBody(body);
-			
-			notificationService.sendNotification(notificationReqDto);
+
+			try 
+			{
+				notificationService.sendNotification(notificationReqDto);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+				logger.info("***exception in sendGunInsertNotification***"+e.toString());
+			}
 
 			
 		}
+		
+		timeoutPendingChargingRequests();
+		
+		
 	}
 	
 
