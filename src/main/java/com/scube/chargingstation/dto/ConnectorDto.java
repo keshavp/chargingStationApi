@@ -25,6 +25,7 @@ public class ConnectorDto {
 	private String connectorId;
 	private String image;
 	private String available;
+	private String compatible;
 
     
     

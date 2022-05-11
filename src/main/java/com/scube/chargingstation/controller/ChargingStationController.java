@@ -202,6 +202,10 @@ public class ChargingStationController {
 	}
 	 
 
-	 
+	@PostMapping(value ="/getNearByChargingStationsOld", consumes = APPLICATION_JSON_VALUE)
+	public Response getNearByChargingStationsOld(@RequestBody ChargingStationDto chargingStationDto) throws Exception {
+		return Response.ok().setPayload(chargingRequestService.getNearByChargingStationsOld(chargingStationDto));
+	
+	}
 	 
 }

@@ -189,91 +189,118 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	
 
 	
+	
 	  @Override public List<ChargingPointDto>
-	  getNearByChargingStations(ChargingStationDto chargingStationDto) { 
-		  // TODO  Auto-generated method stub
+	  getNearByChargingStationsOld(ChargingStationDto chargingStationDto) 
+	  { 
 	  
 	  List<ChargingPointEntity> cpEntityLst=chargingPointRepository.findAll();
 	  
-	  List<ChargingPointDto> chargingPointDtoLst =  ChargingPointMapper.toChargingPointDto(cpEntityLst); 
+	  List<ChargingPointDto> chargingPointDtoLst =
+	  ChargingPointMapper.toChargingPointDto(cpEntityLst); 
 	  return  chargingPointDtoLst;
+	  
+	 } 
+	 
+	  @Override public List<ChargingPointDto>  getNearByChargingStations(ChargingStationDto chargingStationDto) { 
+		  // TODO   Auto-generated method stub
+	  
+	  String carModelId=chargingStationDto.getCarModelId();
+	  Set<ChargerTypeEntity>  chargerTypes=null;
+	  
+	  if(carModelId!=null&&!carModelId.isEmpty()) 
+	  { 
+		  Optional<CarModelEntity> cmEntity=carModelRepository.findById(carModelId); 
+		  CarModelEntity  entity=cmEntity.get();
+	  
+		  if(entity==null) 
+		  { 
+			  throw	  BRSException.throwException("Error: This vehicle model does not exist");
+		  }
+		  if(entity!=null)
+		  { 
+			  chargerTypes=entity.getChargertypes(); //selected car's charger types
+		  }
+	  
+	  }
+	  
+	  List<ChargingPointEntity> cpEntityLst=chargingPointRepository.findAll();
+	  List<ChargingPointDto> chargingPointDtoLst=new ArrayList<ChargingPointDto>();
+	  
+	  for(ChargingPointEntity chargingPointEntity : cpEntityLst) { ChargingPointDto
+	  CPDto=new ChargingPointDto();
+	  
+	  Set<ConnectorDto> connectors=new HashSet<ConnectorDto>(); 
+	  Set<AmenityDto> amenities =new HashSet<AmenityDto>();
+	  
+	  Set<ConnectorEntity> conEntitySet 	  =chargingPointEntity.getConnectorEntities(); Set<AmenitiesEntity>
+	  ameEntitySet= chargingPointEntity.getAmenities();
+	  
+	  for(ConnectorEntity conEntity : conEntitySet) 
+	  { 
+		  ConnectorDto conDto=new  ConnectorDto(); 
+		  //conDto=ConnectorMapper.toConnectorDto(conEntity);
+		  conEntity.getChargerTypeEntity().getId();	 
+		  
+		  if(chargerTypes==null) //input car is not selected
+		  {
+			  conDto.setCompatible("Y");
+		  }
+		  else if(chargerTypes.isEmpty()) //input car is not selected
+		  {
+			  conDto.setCompatible("Y");
+		  }
+		  else
+		  {
+			  if(chargerTypes.contains(conEntity.getChargerTypeEntity()))
+			  {
+					logger.info("***available***");
+					conDto.setCompatible("Y");
+			  }
+			  else
+			  {
+					logger.info("***not available***");
+					conDto.setCompatible("N");
+			  }
+		  }
+	  conDto.setAvailable("Y");
+	  conDto.setConnectorId(conEntity.getConnectorId()); //
+	  conDto.setChargingPoint(conEntity.getChargingPointEntity().getChargingPointId()); 
+	  conDto.setChargerId(conEntity.getChargerTypeEntity().getId());
+	  conDto.setChargerType(conEntity.getChargerTypeEntity().getName());
+	  conDto.setImage(StaticPathContUtils.APP_URL_DIR+StaticPathContUtils.SET_CHARGER_TYPE_FILE_URL_DIR+conEntity.getChargerTypeEntity().getId());
+	  connectors.add(conDto); 
+	  }
+	  
+	  for(AmenitiesEntity amentyEntity : ameEntitySet)
+	  { 
+		  AmenityDto ameDto=new  AmenityDto();
+		  ameDto=AmenityMapper.toAmenityDto(amentyEntity);
+		  amenities.add(ameDto); 
+	  }
+	  
+	  CPDto.setAddress(chargingPointEntity.getAddress());
+	  CPDto.setDistance(chargingPointEntity.getDistance());
+	  CPDto.setLatitude(chargingPointEntity.getLatitude());
+	  CPDto.setLongitude(chargingPointEntity.getLongitude());
+	  CPDto.setName(chargingPointEntity.getName());
+	  CPDto.setRating(chargingPointEntity.getRating());
+	  CPDto.setStatus(chargingPointEntity.getStatus());
+	  CPDto.setChargingPointId(chargingPointEntity.getChargingPointId());
+	  CPDto.setConnectors(connectors); CPDto.setAmenities(amenities);
+	  
+	  
+	  chargingPointDtoLst.add(CPDto);
+	  
+	  }
+	  
+	  
+	  
+	  // List<ChargingPointDto> chargingPointDtoLst =  ChargingPointMapper.toChargingPointDto(cpEntityLst); 
+	  return   chargingPointDtoLst;
 	  
 	  }
 	 
-	
-	/*
-	 * @Override public List<ChargingPointDto>
-	 * getNearByChargingStations(ChargingStationDto chargingStationDto) { // TODO
-	 * Auto-generated method stub
-	 * 
-	 * String carModelId=chargingStationDto.getCarModelId(); Set<ChargerTypeEntity>
-	 * chargerTypes=null;
-	 * 
-	 * if(carModelId!=null&&!carModelId.isEmpty()) { Optional<CarModelEntity>
-	 * cmEntity=carModelRepository.findById(carModelId); CarModelEntity
-	 * entity=cmEntity.get();
-	 * 
-	 * if(entity==null) { throw
-	 * BRSException.throwException("Error: This vehicle model does not exist"); }
-	 * if(entity!=null) { chargerTypes=entity.getChargertypes(); }
-	 * 
-	 * }
-	 * 
-	 * 
-	 * 
-	 * List<ChargingPointEntity> cpEntityLst=chargingPointRepository.findAll();
-	 * List<ChargingPointDto> chargingPointDtoLst=new ArrayList<ChargingPointDto>();
-	 * 
-	 * for(ChargingPointEntity chargingPointEntity : cpEntityLst) { ChargingPointDto
-	 * CPDto=new ChargingPointDto();
-	 * 
-	 * Set<ConnectorDto> connectors=new HashSet<ConnectorDto>(); Set<AmenityDto>
-	 * amenities =new HashSet<AmenityDto>();
-	 * 
-	 * Set<ConnectorEntity> conEntitySet
-	 * =chargingPointEntity.getConnectorEntities(); Set<AmenitiesEntity>
-	 * ameEntitySet= chargingPointEntity.getAmenities();
-	 * 
-	 * for(ConnectorEntity conEntity : conEntitySet) { ConnectorDto conDto=new
-	 * ConnectorDto(); //conDto=ConnectorMapper.toConnectorDto(conEntity);
-	 * 
-	 * conDto.setConnectorId(conEntity.getConnectorId()); //
-	 * conDto.setChargingPoint(conEntity.getChargingPointEntity().getChargingPointId
-	 * ()); conDto.setChargerId(conEntity.getChargerTypeEntity().getId());
-	 * conDto.setChargerType(conEntity.getChargerTypeEntity().getName());
-	 * conDto.setImage(StaticPathContUtils.APP_URL_DIR+StaticPathContUtils.
-	 * SET_CHARGER_TYPE_FILE_URL_DIR+conEntity.getChargerTypeEntity().getId());
-	 * 
-	 * 
-	 * connectors.add(conDto); }
-	 * 
-	 * for(AmenitiesEntity amentyEntity : ameEntitySet) { AmenityDto ameDto=new
-	 * AmenityDto(); ameDto=AmenityMapper.toAmenityDto(amentyEntity);
-	 * amenities.add(ameDto); }
-	 * 
-	 * CPDto.setAddress(chargingPointEntity.getAddress());
-	 * CPDto.setDistance(chargingPointEntity.getDistance());
-	 * CPDto.setLatitude(chargingPointEntity.getLatitude());
-	 * CPDto.setLongitude(chargingPointEntity.getLongitude());
-	 * CPDto.setName(chargingPointEntity.getName());
-	 * CPDto.setRating(chargingPointEntity.getRating());
-	 * CPDto.setStatus(chargingPointEntity.getStatus());
-	 * CPDto.setChargingPointId(chargingPointEntity.getChargingPointId());
-	 * CPDto.setConnectors(connectors); CPDto.setAmenities(amenities);
-	 * 
-	 * 
-	 * chargingPointDtoLst.add(CPDto);
-	 * 
-	 * }
-	 * 
-	 * 
-	 * 
-	 * // List<ChargingPointDto> chargingPointDtoLst =
-	 * ChargingPointMapper.toChargingPointDto(cpEntityLst); return
-	 * chargingPointDtoLst;
-	 * 
-	 * }
-	 */
 
 	@Override
 	public List<ChargingStatusRespDto> getChargingStatus(ChargingRequestDto chargingRequestDto) {

@@ -36,4 +36,8 @@ public interface ChargingRequestService {
 	public void timeoutPendingChargingRequests();
 	
 	public void sendGunInsertNotification();
+	
+	public List<ChargingPointDto> getNearByChargingStationsOld(ChargingStationDto chargingStationDto);
+
+	
 }
