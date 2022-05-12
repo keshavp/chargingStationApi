@@ -21,5 +21,6 @@ public class SetNewPasswordIncomingDto {
 	private String email;
 	private String password;
 	private String confirmpassword;
+	private String mobileUser_Id;
 	
 }

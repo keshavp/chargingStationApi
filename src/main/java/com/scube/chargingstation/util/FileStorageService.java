@@ -142,7 +142,7 @@ public class FileStorageService {
 		        	
 			 		if(imageFor.equals("CT")) {
 		        		
-		 				ChargerTypeEntity chargerTypeEntity  = chargerTypeRepository.findById(id.toString()).get();
+		 				ChargerTypeEntity chargerTypeEntity  = chargerTypeRepository.findById(id).get();
 		        		
 		 				if(chargerTypeEntity==null)
 		        		{

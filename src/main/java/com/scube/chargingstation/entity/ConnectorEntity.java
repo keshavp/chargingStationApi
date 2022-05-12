@@ -29,4 +29,7 @@ public class ConnectorEntity extends BaseEntity {
     @JoinColumn(name = "fk_chargertype")
     private ChargerTypeEntity chargerTypeEntity;
 	
+	@OneToOne
+    @JoinColumn(name = "fk_connectorstatus")
+    private ConnectorStatusEntity connectorStatusEntity;
 }

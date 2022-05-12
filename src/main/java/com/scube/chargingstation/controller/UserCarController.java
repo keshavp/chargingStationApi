@@ -68,4 +68,13 @@ public class UserCarController {
 		
 	}
 	
+	
+	@PostMapping(value ="/removeUserCar", consumes = APPLICATION_JSON_VALUE)
+	public Response removeUserCar(@Valid @RequestBody UserCarDto userCarDto)  {
+		
+		logger.info("***removeUserCar***");
+		return Response.ok().setPayload(userCarService.removeUserCar(userCarDto));
+		
+	}
+	
 }

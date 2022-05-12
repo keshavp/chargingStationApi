@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,6 +109,7 @@ public class UserCarServiceImpl implements UserCarService {
 		userCarsEntity.setUserInfoEntity(userInfoEntity);
 		userCarsEntity.setCarModelEntity(crEntity);
 		userCarsEntity.setVehicleNo(userCarDto.getVehicleNo());
+		userCarsEntity.setIsdeleted("N");
 		userCarsRepository.save(userCarsEntity);
 		
 		return true;
@@ -117,12 +120,33 @@ public class UserCarServiceImpl implements UserCarService {
 	public List<UserCarRespDto> getUserCars(UserInfoEntity userInfoEntity) {
 		// TODO Auto-generated method stub
 		
-		List<UserCarsEntity> userCarsEntity=userCarsRepository.findByUserInfoEntity(userInfoEntity);
+		List<UserCarsEntity> userCarsEntity=userCarsRepository.findByUserInfoEntityAndIsdeleted(userInfoEntity, "N");
 		
 		return UserCarMapper.toUserCarDto(userCarsEntity);
 		
 		
 		//return null;
+	}
+
+
+	@Override
+	public Object removeUserCar(@Valid UserCarDto userCarDto) {
+		// TODO Auto-generated method stub
+		
+		if(userCarDto.getId()==null||userCarDto.getId()=="")
+		{
+			throw BRSException.throwException("Error: Invalid User Car to remove"); 
+		}
+		Optional<UserCarsEntity> userCarsEntity=userCarsRepository.findById(userCarDto.getId());
+		UserCarsEntity entity=userCarsEntity.get();
+		
+		if(entity==null)
+		{
+			throw BRSException.throwException("Error: Invalid User Car to remove"); 
+		}
+		
+		int flg=userCarsRepository.removeUserCar(userCarDto.getId());
+		return true;
 	}
 
 }

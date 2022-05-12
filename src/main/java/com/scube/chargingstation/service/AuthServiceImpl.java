@@ -128,6 +128,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 
+
 	@Override
 	public boolean resetPassword(String username) {
 		
@@ -151,8 +152,8 @@ public class AuthServiceImpl implements AuthService {
 		logger.info("Reset password mail sent.");
 		return true;
 	}
-
-
+	
+	
 	@Override
 	public boolean checkResetPasswordConditions(String email) {
 		
@@ -191,7 +192,7 @@ public class AuthServiceImpl implements AuthService {
 		return true;
 	}
 
-
+/*
 	@Override
 	public boolean setNewPassword(SetNewPasswordIncomingDto setNewPasswordIncomingDto) {
 		
@@ -218,8 +219,42 @@ public class AuthServiceImpl implements AuthService {
 		logger.info("Password has been reset.");
 		return true;
 	}
-
-
+*/
+	@Override
+	public boolean setNewPassword(SetNewPasswordIncomingDto setNewPasswordIncomingDto) {
+		
+		logger.info("*****AuthServiceImpl setNewPassword*****"+ setNewPasswordIncomingDto.getConfirmpassword());
+		
+		String userMobile= setNewPasswordIncomingDto.getMobileUser_Id();
+		
+		UserInfoEntity emp = empInfoRepository.findByMobilenumber(userMobile);
+		
+		if(emp == null) {
+			logger.info("Error: The mobile number provided is not registered.");
+			throw BRSException.throwException("Error: The mobile number provided is not registered!");
+		}
+		
+		if((setNewPasswordIncomingDto.getPassword()=="") || (setNewPasswordIncomingDto.getPassword().trim().isEmpty())) {
+			throw BRSException.throwException("Password can't be blank.");
+		}
+		if((setNewPasswordIncomingDto.getConfirmpassword()=="") || (setNewPasswordIncomingDto.getConfirmpassword().trim().isEmpty())) {
+			throw BRSException.throwException("Confirm Password can't be blank.");
+		}
+		
+		if(!setNewPasswordIncomingDto.getPassword().equalsIgnoreCase(setNewPasswordIncomingDto.getConfirmpassword())) {
+			logger.info("Error: Passwords Do not match.");
+			throw BRSException.throwException("Error: Passwords do not match!");
+		}
+		
+		emp.setResetpassword("Y");
+		emp.setPassword(encoder.encode(setNewPasswordIncomingDto.getPassword()));
+		emp.setResetpasswordcount(emp.getResetpasswordcount() + 1);
+		empInfoRepository.save(emp);
+		logger.info("Password has been reset.");
+		return true;
+	}
+	
+	
 	@Override
 	public boolean signoutUser(UserLoginIncomingDto loginRequest) {
 		// TODO Auto-generated method stub

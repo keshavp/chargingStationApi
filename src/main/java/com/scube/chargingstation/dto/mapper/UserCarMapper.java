@@ -13,7 +13,8 @@ public class UserCarMapper {
       return new UserCarRespDto()
     		  .setId(carModelEntity.getId())
         		.setModel(carModelEntity.getCarModelEntity().getModel())
-        		.setVehicleNo(carModelEntity.getVehicleNo());
+        		.setVehicleNo(carModelEntity.getVehicleNo())
+      			.setModelId(carModelEntity.getCarModelEntity().getId());
         		//.setDescription(carModelEntity.getDescription())
         		//.setChargertypes(ChargerTypeMapper.toChargerTypeDto(carModelEntity.getChargertypes())
     		 // );

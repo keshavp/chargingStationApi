@@ -34,7 +34,7 @@ public class ImageController {
 	FileStorageService fileStorageService;
 	
 	 @GetMapping("/getImage/{imageFor}/{id}")
-	 public ResponseEntity<byte[]> getFileFromStorageSelection(@PathVariable Long id ,  @PathVariable String imageFor ) throws Exception {
+	 public ResponseEntity<byte[]> getFileFromStorageSelection(@PathVariable String id ,  @PathVariable String imageFor ) throws Exception {
 		 
 			 
 			 Resource res =  fileStorageService.loadFileAsResource(id,imageFor);
