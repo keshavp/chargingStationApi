@@ -36,21 +36,29 @@ public class AmenitiesServiceImpl implements AmenitiesService{
 	//	logger.info("********AmenitiesServiceImpl addAmenities********"+amenitiesIncomingDto.getName()+"--"+amenitiesIncomingDto.getName().trim().isEmpty());
 		
 		if((amenitiesIncomingDto.getName()=="") || (amenitiesIncomingDto.getName().trim().isEmpty())) {
-			throw BRSException.throwException("Amenity name can't be blank or null");
+			throw BRSException.throwException("Error : Amenity name can't be blank");
+		}
+		
+		if((amenitiesIncomingDto.getStatus()=="") || (amenitiesIncomingDto.getStatus().trim().isEmpty())) {
+			throw BRSException.throwException("Error : Status can't be blank");
 		}
 		
 		
+		logger.info(amenitiesIncomingDto.getName());
+		
 		AmenitiesEntity checkNameEntity = amenitiesRepository.findByName(amenitiesIncomingDto.getName());
+		
+		
+		
 		if(checkNameEntity != null) {
 			
 			logger.error("Throws an error that Error : Amenity Name already exists = "+ amenitiesIncomingDto.getName());
 			throw BRSException.throwException(EntityType.AMENITY, ALREADY_EXIST, amenitiesIncomingDto.getName());
 		}
-		
-		
 	
 		AmenitiesEntity amenitiesEntity = new AmenitiesEntity();
 		amenitiesEntity.setName(amenitiesIncomingDto.getName());
+		amenitiesEntity.setStatus(amenitiesIncomingDto.getStatus());
 		amenitiesEntity.setIsdeleted("N");
 		amenitiesRepository.save(amenitiesEntity);
 		
@@ -72,7 +80,11 @@ public class AmenitiesServiceImpl implements AmenitiesService{
 		if((amenitiesIncomingDto.getId()=="") || (amenitiesIncomingDto.getId().trim().isEmpty())) {
 			throw BRSException.throwException("Error : Amenity ID can't be blank");
 		}	
+	
 		
+		if((amenitiesIncomingDto.getStatus()=="") || (amenitiesIncomingDto.getStatus().trim().isEmpty())) {
+			throw BRSException.throwException("Error : Status can't be blank");
+		}
 		
 		/*
 		AmenitiesEntity checkIdEntity = amenitiesRepository.findById(amenitiesIncomingDto.getId()).get();
@@ -83,16 +95,18 @@ public class AmenitiesServiceImpl implements AmenitiesService{
 		*/
 		
 		AmenitiesEntity amenitiesEntity = amenitiesRepository.findById(amenitiesIncomingDto.getId()).get();
-		// AmenitiesEntity amenitiesEntity = new AmenitiesEntity();
+	//	AmenitiesEntity amenitiesEntity = new AmenitiesEntity();
 		amenitiesEntity.setName(amenitiesIncomingDto.getName());
+		amenitiesEntity.setStatus(amenitiesIncomingDto.getStatus());
 		// amenitiesEntity.setId(amenitiesIncomingDto.getId());
 		amenitiesEntity.setIsdeleted("N");
+		
 		amenitiesRepository.save(amenitiesEntity);
 		
 		return true;
 	}
 	
-	
+	/*
 	@Override
 	public boolean deleteAmenities(@Valid AmenitiesIncomingDto amenitiesIncomingDto) {
 		// TODO Auto-generated method stub
@@ -105,15 +119,15 @@ public class AmenitiesServiceImpl implements AmenitiesService{
 	
 		
 		amenitiesEntity.setIsdeleted("Y");
-		
+		amenitiesEntity.setStatus("INACTIVE");
 		amenitiesRepository.save(amenitiesEntity);
 		
 		return true;
 	}
-	   
+	*/  
 
 	
-	/*
+	
 	@Override
 	public boolean deleteAmenities(String id) {
 		// TODO Auto-generated method stub
@@ -121,18 +135,16 @@ public class AmenitiesServiceImpl implements AmenitiesService{
 		
 		if(amenitiesEntity.getId() == "" || amenitiesEntity.getId().trim().isEmpty()) {
 			
-			throw BRSException.throwException("Amenity ID can't be blank or null");
+			throw BRSException.throwException("Error : Amenity ID can't be blank or null");
 		}
 	
 		
-		amenitiesEntity.setIsdeleted("Yes");
-		
+		amenitiesEntity.setIsdeleted("Y");
+		amenitiesEntity.setStatus("Inactive");
 		amenitiesRepository.save(amenitiesEntity);
 		
 		return true;
 	}
-	*/
-	
 	
 	
 	@Override
@@ -140,8 +152,7 @@ public class AmenitiesServiceImpl implements AmenitiesService{
 		// TODO Auto-generated method stub
 		
 	   //  List<AmenitiesEntity> amenitiesEntities = amenitiesRepository.findAll();
-		List<AmenitiesEntity> amenitiesEntities = amenitiesRepository.findByIsdeleted("N");
-
+		List<AmenitiesEntity> amenitiesEntities = amenitiesRepository.findAll();
 		return  AmenityMapper.toAmenitiesDto(amenitiesEntities);
 	}
 	
@@ -170,6 +181,7 @@ public class AmenitiesServiceImpl implements AmenitiesService{
 		return AmenityMapper.toAmenityDto(AmenitiesEnt);
 
 	}
+	
 	/*
 	@Override
 	public AmenitiesEntity findById(String id) {

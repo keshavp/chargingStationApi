@@ -19,7 +19,7 @@ import lombok.experimental.Accessors;
 public class AmenityDto {
 
     private String name;
-    
-	   
-    
+    private String id;
+    private String status;
+	
 }

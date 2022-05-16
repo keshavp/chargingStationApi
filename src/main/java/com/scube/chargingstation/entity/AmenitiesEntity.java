@@ -20,6 +20,6 @@ public class AmenitiesEntity  extends BaseEntity {
 
 
 	private String name;
-	//private String imagePath;
+	private String status;
 	
 }

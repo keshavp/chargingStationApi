@@ -48,25 +48,25 @@ public class AmenitiesController {
 			
 		}
 		
-		
+		/*
 		// Delete Amenities API
 		@PostMapping( value = "/deleteAmenities", consumes = APPLICATION_JSON_VALUE)
 			public Response deleteAmenities(@Valid @RequestBody AmenitiesIncomingDto amenitiesIncomingDto) {
 				logger.info("***AmenitiesController deleteAmenities***");
 					
 					return Response.ok().setPayload(amenitiesService.deleteAmenities(amenitiesIncomingDto));
-			}
+			}   
+		*/
 		
 		
-		/*
 		// Delete Amenities API
 		@GetMapping( value = "/deleteAmenities/{id}")
-		public Response deleteAmenities(@PathVariable("id") String id) {
+		public Response deleteAmenities(@PathVariable("id") String id) {    
 			logger.info("***AmenitiesController deleteAmenities***");
 			
-			return Response.ok().setPayload(amenitiesService.deleteAmenities(id));
+			return Response.ok().setPayload(amenitiesService.deleteAmenities(id));    
 		}
-		*/
+		
 		
 		//Get All Amenities API
 		@GetMapping (value = "/getAllAmenities")

@@ -14,6 +14,8 @@ public interface AmenitiesRepository extends JpaRepository<AmenitiesEntity, Stri
 	// AmenitiesEntity findAll(String name);
 		
 	// List<AmenitiesEntity> findAll(String name);
+	//List<AmenitiesEntity> findByName(String name);
+	
 	AmenitiesEntity findByName(String name);
 	
 	List<AmenitiesEntity> findByIsdeleted(String isdeleted);

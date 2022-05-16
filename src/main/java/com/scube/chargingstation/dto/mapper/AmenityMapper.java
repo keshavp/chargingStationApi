@@ -13,7 +13,9 @@ public class AmenityMapper {
 	public static AmenityDto toAmenityDto(AmenitiesEntity amenityEntity) {
  		
         return new AmenityDto()
-        		.setName(amenityEntity.getName());
+        		.setName(amenityEntity.getName())
+        		.setId(amenityEntity.getId())
+        		.setStatus(amenityEntity.getStatus());
 	}
 	
 	public static Set<AmenityDto> toAmenitiesDto(Set<AmenitiesEntity> amenityEntities) {

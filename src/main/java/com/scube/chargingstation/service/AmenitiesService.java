@@ -15,9 +15,9 @@ public interface AmenitiesService {
 	
 	boolean addAmenities (@Valid AmenitiesIncomingDto amenitiesIncomingDto);
 	boolean editAmenities(@Valid AmenitiesIncomingDto amenitiesIncomingDto);
-	boolean deleteAmenities(@Valid AmenitiesIncomingDto amenitiesIncomingDto);
+	// boolean deleteAmenities(@Valid AmenitiesIncomingDto amenitiesIncomingDto);
 	
-	// boolean deleteAmenities(String id);
+	boolean deleteAmenities(String id);
 	
 	List<AmenityDto>  getAllAmenities();
 	// List<AmenityDto> findById();

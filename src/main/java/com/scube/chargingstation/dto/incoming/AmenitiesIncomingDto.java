@@ -10,4 +10,5 @@ import lombok.ToString;
 public class AmenitiesIncomingDto {
 		private String name;
 		private String id;
+		private String status;
 }
