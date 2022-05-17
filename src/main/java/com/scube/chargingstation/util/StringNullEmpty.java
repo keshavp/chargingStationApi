@@ -9,6 +9,6 @@ public class StringNullEmpty {
 			return "";
 		}
 		
-		return "";
+		return string;
 	}
 }
