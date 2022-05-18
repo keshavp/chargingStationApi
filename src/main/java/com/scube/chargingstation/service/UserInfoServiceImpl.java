@@ -10,10 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.scube.chargingstation.dto.ConnectorDto;
+import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.UserInfoOtpDto;
 import com.scube.chargingstation.dto.incoming.OtpVerificationIncomingDto;
 import com.scube.chargingstation.dto.incoming.UserInfoIncomingDto;
+import com.scube.chargingstation.entity.RoleEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.entity.UserInfoOtpEntity;
 import com.scube.chargingstation.exception.BRSException;
@@ -96,30 +97,39 @@ public class UserInfoServiceImpl implements UserInfoService {
 		System.out.println("-------------userInfoIncomingDto.getPassword()---------------"+userInfoEntity.getPassword() );
 		userInfoEntity.setStatus("ACTIVE");
 		
-		userInfoEntity.setRole(roleService.findRoleNameByCode(userInfoIncomingDto.getRole()));
+		RoleEntity	roleEntity =  	roleService.findRoleNameByCode(userInfoIncomingDto.getRole());
+		
+		userInfoEntity.setRole(roleEntity);
 
 		userInfoEntity.setResetpasswordcount(0);
 		userInfoEntity.setVersion(1);
 		userInfoEntity.setResetpassword("N");
-		userInfoEntity.setVerified("N");
+		
+		if(roleEntity.getNameCode().equals("MU")) {
+			userInfoEntity.setVerified("N");
+		}else {
+			userInfoEntity.setVerified("Y");
+		}
+		
 		
 		userInfoEntity = userInfoRepository.save(userInfoEntity);
 
-		String otpCode = "";
-		
-		otpCode	= RandomNumber.getRandomNumberString();
-		
-		UserInfoOtpEntity	userInfoOtpEntity = new UserInfoOtpEntity();
-		
-		userInfoOtpEntity.setMobilenumber(userInfoIncomingDto.getMobilenumber());
-		userInfoOtpEntity.setOtpCode(otpCode);
-		userInfoOtpEntity.setUserInfoEntity(userInfoEntity);
-		userInfoOtpEntity.setStatus("open");
-		
-		userInfoOtpService.insertOtpDate(userInfoOtpEntity);
-		
-		smsService.sendSignupOTPMobile(otpCode,userInfoIncomingDto.getMobilenumber());
-		
+		if(roleEntity.getNameCode().equals("MU")) {
+			String otpCode = "";
+			
+			otpCode	= RandomNumber.getRandomNumberString();
+			
+			UserInfoOtpEntity	userInfoOtpEntity = new UserInfoOtpEntity();
+			
+			userInfoOtpEntity.setMobilenumber(userInfoIncomingDto.getMobilenumber());
+			userInfoOtpEntity.setOtpCode(otpCode);
+			userInfoOtpEntity.setUserInfoEntity(userInfoEntity);
+			userInfoOtpEntity.setStatus("open");
+			
+			userInfoOtpService.insertOtpDate(userInfoOtpEntity);
+			
+			smsService.sendSignupOTPMobile(otpCode,userInfoIncomingDto.getMobilenumber());
+		}
 		
 		return true;
 	}

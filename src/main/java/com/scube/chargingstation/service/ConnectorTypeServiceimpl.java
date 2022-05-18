@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.net.MediaType;
 import com.scube.chargingstation.dto.ChargerTypeDto;
-import com.scube.chargingstation.dto.ConnectorDto;
+import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.ConnectorTypeDto;
 import com.scube.chargingstation.dto.incoming.ConnectorTypeIncomingDto;
 import com.scube.chargingstation.dto.mapper.ConnectorTypeMapper;
@@ -145,12 +145,18 @@ public class ConnectorTypeServiceimpl implements ConnectorTypeService {
 	}
 
 	@Override
+	public ChargerTypeEntity getChargerTypeEntityByName(String name) {
+		// TODO Auto-generated method stub
+		return connectorTypeRepository.findByName(name);
+	}
+	@Override
 	public String saveDocument(MultipartFile file) {
 		// TODO Auto-generated method stub	
 		String fileSubPath = "CT";
 		String filePath;
 		filePath = fileStorageService.storeFile(file , fileSubPath);
 		logger.info("---------ConnecterTypeServiceImpl saveDocument----------------");
+	
 	
 		return filePath;
 	}

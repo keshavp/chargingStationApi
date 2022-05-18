@@ -45,4 +45,7 @@ public class TransactionsEntity {
 	private String  stopReason;
 	@Column(name = "AllowedCharge")
 	private double  allowedCharge;
+	@Column(name = "LastMeter", columnDefinition = "double default 0")
+	private double  lastMeter;
+	
 }

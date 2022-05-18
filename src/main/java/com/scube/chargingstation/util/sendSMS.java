@@ -10,9 +10,9 @@ package com.scube.chargingstation.util;
 	  try { // Construct data
 		  
 			  String apiKey 	= "apikey="+"NGM0ZjMzNDY0OTY3NDE3MzZhNGQ1NjczNjIzODQzMzg=";
-			  String message 	= "&message="+"Use the OTP Xto complete the registration with EV Dock.-EVDOCK"; // 
+			  String message 	= "&message="+"Use the OTP 456123 to complete the registration with EV Dock.-EVDOCK"; // 
 			  String sender 	= "&sender="+"EVDOCK"; 
-			  String numbers 	= "&numbers="+"919892211829"; //  919892211829 
+			  String numbers 	= "&numbers="+"7506173236"; //  919892211829 
 			  
 			// Send data
 				HttpURLConnection conn = (HttpURLConnection) new URL("https://api.textlocal.in/send/?").openConnection();

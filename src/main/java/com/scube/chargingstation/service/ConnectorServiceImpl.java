@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.scube.chargingstation.dto.ConnectorDto;
+import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.incoming.ConnectorTypeIncomingDto;
 import com.scube.chargingstation.dto.mapper.ConnectorMapper;
 import com.scube.chargingstation.entity.ChargerTypeEntity;
@@ -26,12 +26,12 @@ public class ConnectorServiceImpl implements ConnectorService {
 	private static final Logger logger = LoggerFactory.getLogger(CarModelServiceImpl.class);
 	
 	@Override
-	public ConnectorDto getConnectorById(String id) {
+	public ChargingPointConnectorDto getConnectorById(String id) {
 		// TODO Auto-generated method stub
 		
 		ConnectorEntity connectorEntity = connectorRepository.findById(id).get();
 		
-		ConnectorDto connectorDto = ConnectorMapper.toConnectorDto(connectorEntity);
+		ChargingPointConnectorDto connectorDto = ConnectorMapper.toConnectorDto(connectorEntity);
 		
 		return connectorDto;
 	}
@@ -54,6 +54,12 @@ public class ConnectorServiceImpl implements ConnectorService {
 			ChargingPointEntity chargingPointEntity) {
 		// TODO Auto-generated method stub
 		return connectorRepository.findByIdAndChargingPointEntity(id,chargingPointEntity);
+	}
+
+	@Override
+	public ConnectorEntity getConnectorEntityByConnectorId(String chargerId) {
+		// TODO Auto-generated method stub
+		return connectorRepository.findByConnectorId(chargerId);
 	}
 
 

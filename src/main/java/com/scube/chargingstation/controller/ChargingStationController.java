@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,12 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.scube.chargingstation.dto.ChargingHistoryDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
+import com.scube.chargingstation.dto.incoming.ChargingPointIncomingDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
 import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
 import com.scube.chargingstation.dto.response.Response;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.repository.ChargerTypeRepository;
+import com.scube.chargingstation.service.ChargingPointService;
 import com.scube.chargingstation.service.ChargingRequestService;
 import com.scube.chargingstation.util.FileStorageService;
 
@@ -46,6 +49,9 @@ public class ChargingStationController {
 	
 	@Autowired
 	FileStorageService fileStorageService;
+	
+	@Autowired
+	ChargingPointService chargingPointService; 
 	
 	
 	@PostMapping("/getNearByChargingStationsDummy")
@@ -186,8 +192,6 @@ public class ChargingStationController {
 		
 	}
 	
-		
-	
 	@PostMapping(value ="/getNearByChargingStations", consumes = APPLICATION_JSON_VALUE)
 	public Response getNearByChargingStations(@RequestBody ChargingStationDto chargingStationDto) throws Exception {
 		return Response.ok().setPayload(chargingRequestService.getNearByChargingStations(chargingStationDto));
@@ -208,4 +212,44 @@ public class ChargingStationController {
 	
 	}
 	 
+	
+	@PostMapping( value = "/add" , consumes = APPLICATION_JSON_VALUE)
+	public Response addChargingStations(@Valid @RequestBody ChargingPointIncomingDto chargingPointIncomingDto) {
+		logger.info("***addChargingStations***");
+		
+				return Response.ok().setPayload(chargingPointService.addChargingPoint(chargingPointIncomingDto));
+		
+	}
+	
+	@GetMapping( value = "/all" )
+	public Response getAllChargingStations() {
+		logger.info("***addChargingStations***");
+		
+				return Response.ok().setPayload(chargingPointService.getAllChargingStations());
+		
+	}
+	
+	@GetMapping( value = "/allActive" )
+	public Response getAllActiveChargingStations() {
+		logger.info("***addChargingStations***");
+		
+				return Response.ok().setPayload(chargingPointService.getAllActiveChargingStations());
+		
+	}
+	
+	@GetMapping( value = "/byId/{id}" )
+	public Response getChargingStationsById(@PathVariable("id") String id) {
+		logger.info("***addChargingStations***");
+		
+				return Response.ok().setPayload(chargingPointService.getChargingStationsById(id));
+		
+	}
+	
+	@PostMapping( value = "/update" , consumes = APPLICATION_JSON_VALUE)
+	public Response updateChargingStations(@Valid @RequestBody ChargingPointIncomingDto chargingPointIncomingDto) {
+		logger.info("***addChargingStations***");
+		
+				return Response.ok().setPayload(chargingPointService.updateChargingPoint(chargingPointIncomingDto));
+		
+	}
 }

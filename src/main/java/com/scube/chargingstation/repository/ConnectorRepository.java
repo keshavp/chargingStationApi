@@ -14,4 +14,6 @@ public interface ConnectorRepository extends JpaRepository<ConnectorEntity, Stri
 
 	ConnectorEntity findByIdAndChargingPointEntity(String id, ChargingPointEntity chargingPointEntity);
 
+	ConnectorEntity findByConnectorId(String chargerId);
+
 }

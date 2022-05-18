@@ -38,7 +38,7 @@ import com.google.firebase.messaging.Message;
 import com.scube.chargingstation.controller.AuthController;
 import com.scube.chargingstation.dto.CarModelDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
-import com.scube.chargingstation.dto.ConnectorDto;
+import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.UserCarRespDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;

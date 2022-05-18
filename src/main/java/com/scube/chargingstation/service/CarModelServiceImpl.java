@@ -42,7 +42,7 @@ import com.scube.chargingstation.controller.AuthController;
 import com.scube.chargingstation.dto.CarModelDto;
 import com.scube.chargingstation.dto.ChargerTypeDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
-import com.scube.chargingstation.dto.ConnectorDto;
+import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.incoming.CarModelIncomingDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;

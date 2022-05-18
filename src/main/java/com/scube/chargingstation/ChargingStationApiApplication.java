@@ -8,12 +8,19 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.scube.chargingstation.util.FileStorageProperties;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+
 
 @SpringBootApplication
 @EnableScheduling
+@OpenAPIDefinition
 @EnableConfigurationProperties({
 	FileStorageProperties.class
 })
+@SecurityScheme(name = "javainuseapi", scheme = "basic", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
 public class ChargingStationApiApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {

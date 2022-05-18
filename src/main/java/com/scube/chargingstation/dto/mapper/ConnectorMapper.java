@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import com.scube.chargingstation.dto.ConnectorDto;
+import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.entity.ConnectorEntity;
 import com.scube.chargingstation.util.StaticPathContUtils;
 
@@ -17,9 +17,9 @@ public class ConnectorMapper {
 	/*
 	 * @Value("${chargingstation.chargertype}") static String imgLocation;
 	 */	
-	public static ConnectorDto toConnectorDto(ConnectorEntity connectorEntity) {
+	public static ChargingPointConnectorDto toConnectorDto(ConnectorEntity connectorEntity) {
 		
-        return new ConnectorDto()
+        return new ChargingPointConnectorDto()
         		//.setId(userInfo.getId())
         		.setConnectorId(connectorEntity.getConnectorId())
         		//.setChargingPoint(connectorEntity.getChargingPointEntity().getChargingPointId())
@@ -29,9 +29,9 @@ public class ConnectorMapper {
         		.setImage(StaticPathContUtils.APP_URL_DIR+StaticPathContUtils.SET_CHARGER_TYPE_FILE_URL_DIR+connectorEntity.getChargerTypeEntity().getId());
 	}
 	
-	public static Set<ConnectorDto> toConnectorsDto(Set<ConnectorEntity> connectorEntities) {
+	public static Set<ChargingPointConnectorDto> toConnectorsDto(Set<ConnectorEntity> connectorEntities) {
  		
-		Set<ConnectorDto> connectorDtos = new HashSet<ConnectorDto>();
+		Set<ChargingPointConnectorDto> connectorDtos = new HashSet<ChargingPointConnectorDto>();
 		for(ConnectorEntity connectorEntity : connectorEntities) {
 			connectorDtos.add(toConnectorDto(connectorEntity)); 
 		}

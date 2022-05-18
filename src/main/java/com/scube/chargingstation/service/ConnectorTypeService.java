@@ -7,7 +7,7 @@ import javax.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.scube.chargingstation.dto.ChargerTypeDto;
-import com.scube.chargingstation.dto.ConnectorDto;
+import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.ConnectorTypeDto;
 import com.scube.chargingstation.dto.incoming.ConnectorTypeIncomingDto;
 import com.scube.chargingstation.entity.ChargerTypeEntity;
@@ -26,4 +26,6 @@ public interface ConnectorTypeService {
 
 	 public	String saveDocument(MultipartFile file);
 		
+		
+		ChargerTypeEntity getChargerTypeEntityByName(String name);
 }

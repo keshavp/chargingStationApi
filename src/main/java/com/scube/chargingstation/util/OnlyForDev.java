@@ -60,9 +60,26 @@ public class OnlyForDev {
 	 * System.out.println(Math.round(466.89169491525426 * 100.0) / 100.0);
 	 */
 		
-		sendSMS	sms = new sendSMS();
-		
-		sms.sendSms();
+	/*
+	 * sendSMS sms = new sendSMS();
+	 * 
+	 * sms.sendSms();
+	 */
+	/*
+	 * Snippet snippet = new Snippet();
+	 * 
+	 * String dateStart = "01/15/2012 10:29:58"; String dateStop =
+	 * "01/15/2012 10:31:48";
+	 * 
+	 * //HH converts hour in 24 hours format (0-23), day calculation
+	 * SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+	 * 
+	 * Date d1 = null; Date d2 = null;
+	 * 
+	 * d1 = format.parse(dateStart); d2 = format.parse(dateStop);
+	 * 
+	 * System.out.println(snippet.printDifference(d1, d2));
+	 */
 		
 	}
 

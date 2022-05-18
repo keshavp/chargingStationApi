@@ -4,14 +4,14 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.scube.chargingstation.dto.ConnectorDto;
+import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.incoming.ConnectorTypeIncomingDto;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
 
 public interface ConnectorService {
 
-	ConnectorDto getConnectorById(String id);
+	ChargingPointConnectorDto getConnectorById(String id);
 	
 	ConnectorEntity getConnectorEntityById(String id);
 
@@ -20,5 +20,7 @@ public interface ConnectorService {
 
 	ConnectorEntity getConnectorEntityByIdAndChargingPointEntity(String id,
 			ChargingPointEntity chargingPointEntity);
+
+	ConnectorEntity getConnectorEntityByConnectorId(String chargerId);
 
 	}

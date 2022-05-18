@@ -1,7 +1,10 @@
-package com.scube.chargingstation.dto;
+package com.scube.chargingstation.dto.incoming;
+
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scube.chargingstation.dto.AmenityDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,17 +19,8 @@ import lombok.experimental.Accessors;
 @ToString
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ConnectorDto {
+public class ConnectorsIncomingDto {
 
-    private String chargingPoint;
-    
-	private String chargerId;
-	private String chargerType;
-	private String connectorId;
-	private String image;
-	private String available;
-	private String compatible;
-
-    
-    
+	private String name;
+    private String connectorId;
 }

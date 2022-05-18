@@ -19,21 +19,31 @@ import lombok.Setter;
 public class ChargingPointEntity  extends BaseEntity {
 
 	private String chargingPointId;
+	private String name;
+	private String partnerName;
+	private String startTime;
+	private String endTime;
+	
 	private String address;
+	private String address2;
+	private String pincode;
 	private Double longitude;
 	private Double distance;
 	private Double latitude;
-	private String name;
+
 	private Double rating;
 	private String status;
 	
+	private String manufractures;
+	private String communicationtype;
+	private String powerstandards;
 	
 	@OneToMany(mappedBy="chargingPointEntity" , cascade = CascadeType.ALL)
     private Set<ConnectorEntity> connectorEntities;
 	
-	 @JoinTable
-	    @ManyToMany
-	    private Set<AmenitiesEntity> amenities;
+	@JoinTable
+    @ManyToMany
+    private Set<AmenitiesEntity> amenities;
 	
 	
 	public String getChargingPointId() {
@@ -123,12 +133,70 @@ public class ChargingPointEntity  extends BaseEntity {
 		this.amenities = amenities;
 	}
 
+	public String getPartnerName() {
+		return partnerName;
+	}
+
+	public void setPartnerName(String partnerName) {
+		this.partnerName = partnerName;
+	}
+
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+
+	public String getAddress2() {
+		return address2;
+	}
+
+	public void setAddress2(String address2) {
+		this.address2 = address2;
+	}
+
+	public String getPincode() {
+		return pincode;
+	}
+
+	public void setPincode(String pincode) {
+		this.pincode = pincode;
+	}
+
+	public String getManufractures() {
+		return manufractures;
+	}
+
+	public void setManufractures(String manufractures) {
+		this.manufractures = manufractures;
+	}
+
+	public String getCommunicationtype() {
+		return communicationtype;
+	}
+
+	public void setCommunicationtype(String communicationtype) {
+		this.communicationtype = communicationtype;
+	}
+
+	public String getPowerstandards() {
+		return powerstandards;
+	}
+
+	public void setPowerstandards(String powerstandards) {
+		this.powerstandards = powerstandards;
+	}
+
 	
-	
-	
-	
-	
-	
-	
-	
+
 }

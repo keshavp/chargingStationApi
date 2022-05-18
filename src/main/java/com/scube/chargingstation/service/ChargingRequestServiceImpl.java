@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import com.scube.chargingstation.dto.AmenityDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.ChargingStatusRespDto;
-import com.scube.chargingstation.dto.ConnectorDto;
+import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
 import com.scube.chargingstation.dto.incoming.NotificationReqDto;
@@ -230,7 +230,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	  for(ChargingPointEntity chargingPointEntity : cpEntityLst) { 
 		  ChargingPointDto   CPDto=new ChargingPointDto();
 	  
-	  Set<ConnectorDto> connectors=new HashSet<ConnectorDto>(); 
+	  Set<ChargingPointConnectorDto> connectors=new HashSet<ChargingPointConnectorDto>(); 
 	  Set<AmenityDto> amenities =new HashSet<AmenityDto>();
 	  
 	  Set<ConnectorEntity> conEntitySet 	  =chargingPointEntity.getConnectorEntities();
@@ -238,7 +238,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	  
 	  for(ConnectorEntity conEntity : conEntitySet) 
 	  { 
-		  ConnectorDto conDto=new  ConnectorDto(); 
+		  ChargingPointConnectorDto conDto=new  ChargingPointConnectorDto(); 
 		  //conDto=ConnectorMapper.toConnectorDto(conEntity);
 		  conEntity.getChargerTypeEntity().getId();	 
 		  

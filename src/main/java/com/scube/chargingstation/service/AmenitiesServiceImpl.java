@@ -191,5 +191,12 @@ public class AmenitiesServiceImpl implements AmenitiesService{
 		return amenitiesEntities;	
 	}
 	*/
+
+	@Override
+	public AmenitiesEntity findAmenitiesEntityByName(String name) {
+		// TODO Auto-generated method stub
+		
+		return amenitiesRepository.findByName(name);
+	}
 }
 

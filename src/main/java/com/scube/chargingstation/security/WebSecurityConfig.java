@@ -62,7 +62,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			 * .antMatchers("/api/v1/paymentprocess/downloadBankAdvice/**").permitAll()
 			 * .antMatchers("/api/v1/empinfo/saveDocument/**").permitAll()
 			 */	 
+			//	.antMatchers("/swagger-ui/**","/api-docs/**").permitAll()
 				.antMatchers("/api/**").permitAll()
+				
+				
 			//	.antMatchers("/chargerImages/**").permitAll()
 
 			.anyRequest().authenticated();
@@ -71,6 +74,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
+	
+	/*
+	 * @Override protected void configure(AuthenticationManagerBuilder
+	 * authenticationManagerBuilder) throws Exception {
+	 * authenticationManagerBuilder.inMemoryAuthentication() .withUser("java")
+	 * .password(passwordEncoder().encode("java")) .authorities("ADMIN"); }
+	 */
 	
 	
 }

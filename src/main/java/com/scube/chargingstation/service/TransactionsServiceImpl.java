@@ -22,7 +22,8 @@ import com.scube.chargingstation.entity.TransactionsEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.repository.ChargingRequestRepository;
 import com.scube.chargingstation.repository.TransactionsRepository;
-import com.scube.chargingstation.util.PayslipPdfExporter;
+import com.scube.chargingstation.util.ReceiptPdfExporter;
+import com.scube.chargingstation.util.Snippet;
 
 @Service
 public class TransactionsServiceImpl implements TransactionsService {
@@ -49,7 +50,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 	ChargingPointService	chargingPointService;
 	
 	@Autowired
-	PayslipPdfExporter	payslipPdfExporter;
+	ReceiptPdfExporter	payslipPdfExporter;
 	
 	@Autowired
 	UserPaymentService	userPaymentService;
@@ -178,13 +179,25 @@ public class TransactionsServiceImpl implements TransactionsService {
 				TransactionsEntity transactionsEntity =  transactionsRepository.findByTransactionId(chargingRequestEntity.getTransactionsEntity().getTransactionId());
 				
 				
-				if(transactionsEntity.getMeterStop()>0 && transactionsEntity.getStopTime() != null ) {
+//				if(transactionsEntity.getMeterStop()>0 && transactionsEntity.getStopTime() != null ) {
+
+				if( transactionsEntity.getStopTime() != null ) {
 				
 					chargingRequestEntity.setChargingStatus("Done");
 					chargingRequestEntity.setStartTime(transactionsEntity.getStartTime());
 					chargingRequestEntity.setMeterStart(transactionsEntity.getMeterStart());
 					chargingRequestEntity.setStopTime(transactionsEntity.getStopTime());
-					chargingRequestEntity.setMeterStop(transactionsEntity.getMeterStop());
+					
+					String chargingTime = Snippet.twoInstantDifference(transactionsEntity.getStartTime(), transactionsEntity.getStopTime());
+					
+					
+					if(transactionsEntity.getStopReason().equals("PowerLoss")) {
+						chargingRequestEntity.setMeterStop(transactionsEntity.getLastMeter());
+					}else {
+						chargingRequestEntity.setMeterStop(transactionsEntity.getMeterStop());	
+					}
+					
+					
 				
 					String statusCrDr = "";
 					double differenceAmount = 0;
@@ -265,6 +278,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 					chargingRequestEntity.setAmountCrDrStatus(statusCrDr);
 					chargingRequestEntity.setFinalAmount(finalAmount);
 					chargingRequestEntity.setFinalKwh(finalKwh);
+					chargingRequestEntity.setChargingTime(chargingTime);
 					
 					ChargingRequestEntity chargingRequestEntityfilename =  payslipPdfExporter.generatePdf(chargingRequestEntity);
 					

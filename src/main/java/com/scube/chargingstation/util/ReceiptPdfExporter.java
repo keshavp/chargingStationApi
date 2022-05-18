@@ -48,9 +48,9 @@ import com.itextpdf.layout.element.Table;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 
 @Service
-public class PayslipPdfExporter {
+public class ReceiptPdfExporter {
 	
-	private static final Logger logger = LoggerFactory.getLogger(PayslipPdfExporter.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReceiptPdfExporter.class);
 
 	private Path fileStorageLocation;
 	
@@ -62,7 +62,7 @@ public class PayslipPdfExporter {
 	 * fileStorageProperties.getUploadDir(); }
 	 */
 	
-	  public PayslipPdfExporter(FileStorageProperties fileStorageProperties) 
+	  public ReceiptPdfExporter(FileStorageProperties fileStorageProperties) 
 	  {    
 	  this.fileBaseLocation = fileStorageProperties.getUploadDir();
 	  }
@@ -242,7 +242,7 @@ public class PayslipPdfExporter {
 		
 		
 		tableTime.addCell(new Cell().add(new Paragraph("Charging Time  :")));
-		tableTime.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getMeterStop()))));
+		tableTime.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getChargingTime()))));
 		tableTime.addCell(new Cell().add(new Paragraph("Energy Delivered / kwh :")));
 		tableTime.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalKwh()))));
 		
