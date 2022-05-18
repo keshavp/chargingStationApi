@@ -7,10 +7,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ConnectorTypeIncomingDto {
-	
+
+public class ContactUsIncomingDto {
+
 	private String name;
-	private String imagePath;
-	private String status;
-    private String id;
+	private String email;
+	private String message;
+	private String mobile_no;
+	
+
 }

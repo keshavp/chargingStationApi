@@ -6,6 +6,7 @@ import java.util.List;
 import com.scube.chargingstation.dto.ConnectorTypeDto;
 import com.scube.chargingstation.dto.RoleDto;
 import com.scube.chargingstation.entity.ChargerTypeEntity;
+import com.scube.chargingstation.util.StaticPathContUtils;
 
 public class ConnectorTypeMapper {
 
@@ -13,7 +14,7 @@ public class ConnectorTypeMapper {
 		return new ConnectorTypeDto()
 				
 				.setName(chargerTypeEntity.getName())
-				.setImgpath(chargerTypeEntity.getImagePath())
+				.setImagePath(StaticPathContUtils.APP_URL_DIR+StaticPathContUtils.SET_CHARGER_TYPE_FILE_URL_DIR+chargerTypeEntity.getId())
 				.setStatus(chargerTypeEntity.getStatus())
 		         .setId(chargerTypeEntity.getId());
 	}

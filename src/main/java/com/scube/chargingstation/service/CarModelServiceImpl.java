@@ -3,11 +3,13 @@
   import static com.scube.chargingstation.exception.ExceptionType.ALREADY_EXIST;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -27,11 +29,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.firebase.messaging.Notification;
-
+import com.google.common.io.Files;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -105,7 +108,7 @@ public class CarModelServiceImpl implements CarModelService {
 		
 		for(ChargerTypeDto  chargerTypeDtos : carModelIncomigDto.getChargertypes()) {
 				
-		  ChargerTypeEntity carModelEntity = chargerTypeService.findByName(chargerTypeDtos.getName());
+		  ChargerTypeEntity carModelEntity = chargerTypeService.findById(chargerTypeDtos.getId());
 				
 		  
 		  chargerTypeEntities.add(carModelEntity);
@@ -154,7 +157,7 @@ public class CarModelServiceImpl implements CarModelService {
 		
 		for(ChargerTypeDto  chargerTypeDtos : carModelIncomigDto.getChargertypes()) {
 				
-		  ChargerTypeEntity carModelEntity = chargerTypeService.findByName(chargerTypeDtos.getName());
+		  ChargerTypeEntity carModelEntity = chargerTypeService.findById(chargerTypeDtos.getId());
 				
 		  
 		  chargerTypeEntities.add(carModelEntity);   

@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.scube.chargingstation.entity.ChargerTypeEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.exception.BRSException;
+import com.scube.chargingstation.exception.FileStorageException;
 import com.scube.chargingstation.repository.ChargerTypeRepository;
 import com.scube.chargingstation.repository.ChargingRequestRepository;
 import com.scube.chargingstation.util.FileStorageProperties;
@@ -49,9 +50,7 @@ public class FileStorageService {
 	ChargerTypeRepository chargerTypeRepository;
 	
 	@Autowired
-	ChargingRequestRepository chargingRequestRepository;
-	
-	 
+	ChargingRequestRepository chargingRequestRepository; 
 	  public FileStorageService(FileStorageProperties fileStorageProperties) 
 	  {    
 	  this.fileBaseLocation = fileStorageProperties.getUploadDir();
@@ -183,4 +182,67 @@ public class FileStorageService {
 	           }
 		 
 		 }
+
+		public String storeFile(MultipartFile file, String imageFor) {
+			// TODO Auto-generated method stub
+			System.out.println("****fileStorageService storeFile*****"+file);
+			
+			Date date = new Date(System.currentTimeMillis());
+			
+			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+			
+			String filename = fileName.split("\\.")[0];
+			String extension = fileName.split("\\.")[1];
+			
+			String fileNewName = imageFor + "_" + date.getTime() + "." + extension;
+			
+			System.out.println(fileNewName);
+			
+			try {
+				
+				if(fileNewName.contains("..")) {
+					throw new FileStorageException("Sorry! File Name contains invalid path sequence!");
+				}
+				String newPath;
+				String returnPath = "";
+				
+				if(imageFor.equals("CT")) {
+				
+				/*if(flag.equalsIgnoreCase("2")) {
+					newPath = this.fileAssociateBaseLocation + "/" + fileSubPath;
+				}else {*/
+					newPath = this.fileBaseLocation +"/"+UploadPathContUtils.FILE_C_TYPE_DIR; 
+				//}
+					
+					 System.out.println("newPath=============" + newPath);
+				
+				this.fileStorageLocation = Paths.get(newPath).toAbsolutePath().normalize();
+				
+				Files.createDirectories(this.fileStorageLocation);
+				
+				Path targetLocation = this.fileStorageLocation.resolve(fileNewName);
+				
+				Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+				
+				/*
+				 * System.out.println("fileName" + fileNewName+ " ---filePath" +
+				 * targetLocation);
+				 * 
+				 * returnPath = newPath + fileNewName;
+				 * 
+				 * System.out.println("returnPath=============" + returnPath);
+				 */
+				 
+				}
+				
+				return String.valueOf(fileNewName);
+			}catch (IOException ex) {
+				throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+			}
+			
+		
+		}
 }
+
+
+

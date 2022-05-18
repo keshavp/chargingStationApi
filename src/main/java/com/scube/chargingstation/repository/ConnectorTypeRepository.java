@@ -14,6 +14,7 @@ public interface ConnectorTypeRepository extends JpaRepository<ChargerTypeEntity
 	ChargerTypeEntity findByName(String Name);
 	List<ChargerTypeEntity> findByStatusAndIsdeleted(String status,String isdeleted);
 	ChargerTypeEntity getConnectorTypeById(String id);
+	ChargerTypeEntity findByNameAndIdNot(String name, String id);
 	
 
 }

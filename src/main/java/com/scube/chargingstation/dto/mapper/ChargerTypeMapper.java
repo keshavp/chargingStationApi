@@ -12,7 +12,8 @@ public class ChargerTypeMapper {
  		
         return new ChargerTypeDto()
         		.setName(ChargerTypeEntity.getName())
-                .setId(ChargerTypeEntity.getId());
+                .setId(ChargerTypeEntity.getId())
+                .setImagePath(ChargerTypeEntity.getImagePath());
 	}
 	
 	public static Set<ChargerTypeDto> toChargerTypeDto(Set<ChargerTypeEntity> ChargerTypeEntities) {

@@ -20,7 +20,7 @@ import lombok.experimental.Accessors;
 public class ConnectorTypeDto {
    
 	private String name;
-	private String imgpath;
+	private String ImagePath;
 	private String status;
 	private String id;
 	

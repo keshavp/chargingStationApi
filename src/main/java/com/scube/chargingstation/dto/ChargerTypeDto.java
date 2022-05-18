@@ -1,5 +1,7 @@
 package com.scube.chargingstation.dto;
 
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -22,5 +24,6 @@ public class ChargerTypeDto {
 	private String name;
 	private String status;
 	private String id;
-	//private String imagePath;
-}
+     private String imagePath;
+     
+    }

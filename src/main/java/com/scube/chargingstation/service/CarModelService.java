@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.scube.chargingstation.dto.CarModelDto;
 import com.scube.chargingstation.dto.incoming.CarModelIncomingDto;
 import com.scube.chargingstation.dto.incoming.NotificationReqDto;
@@ -22,7 +24,11 @@ public interface CarModelService {
 
 	boolean deleteCarModel(String id);
 
-	CarModelDto getRoleById(String id);
+   	CarModelDto getRoleById(String id);
+
+   // public 	String saveDocument(MultipartFile file);
+
+    
 
 	
 

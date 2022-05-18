@@ -23,6 +23,7 @@ public class Response<T> {
     private T payload;
     private Object errors;
     private Object metadata;
+    private Object respData;
 
     public static <T> Response<T> badRequest() {
         Response<T> response = new Response<>();

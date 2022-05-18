@@ -1,4 +1,4 @@
-package com.scube.chargingstation.service;
+  package com.scube.chargingstation.service;
 
 import java.util.List;
 
@@ -7,17 +7,25 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.google.common.net.MediaType;
 import com.scube.chargingstation.dto.ChargerTypeDto;
 import com.scube.chargingstation.dto.ConnectorDto;
 import com.scube.chargingstation.dto.ConnectorTypeDto;
 import com.scube.chargingstation.dto.incoming.ConnectorTypeIncomingDto;
 import com.scube.chargingstation.dto.mapper.ConnectorTypeMapper;
+import com.scube.chargingstation.dto.response.Response;
 import com.scube.chargingstation.entity.ChargerTypeEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.exception.EntityType;
 import com.scube.chargingstation.repository.ConnectorTypeRepository;
+import com.scube.chargingstation.util.FileStorageService;
+
 import static com.scube.chargingstation.exception.ExceptionType.ALREADY_EXIST;
 @Service
 public class ConnectorTypeServiceimpl implements ConnectorTypeService {
@@ -26,6 +34,10 @@ public class ConnectorTypeServiceimpl implements ConnectorTypeService {
 	@Autowired
 	ConnectorTypeRepository connectorTypeRepository;
 	
+	ConnectorTypeService connectorTypeService;
+	 @Autowired
+	 private FileStorageService fileStorageService;
+
 	@Override
 	public boolean addConnectorType( ConnectorTypeIncomingDto connectorTypeIncomingDto) {
 		// TODO Auto-generated method stub
@@ -36,7 +48,7 @@ public class ConnectorTypeServiceimpl implements ConnectorTypeService {
 			throw BRSException.throwException("Connector name can't be blank");
 		}
 		
-		if(connectorTypeIncomingDto.getImgPath()==" ")
+		if(connectorTypeIncomingDto.getImagePath()==" ")
 		{
 			throw BRSException.throwException("Connector image can't be blank");	
 		}
@@ -55,7 +67,7 @@ public class ConnectorTypeServiceimpl implements ConnectorTypeService {
 		
 		ChargerTypeEntity chargerTypeEntity=new ChargerTypeEntity();
 		chargerTypeEntity.setName(connectorTypeIncomingDto.getName());
-		chargerTypeEntity.setImagePath(connectorTypeIncomingDto.getImgPath());
+		chargerTypeEntity.setImagePath(connectorTypeIncomingDto.getImagePath());
 		chargerTypeEntity.setStatus(connectorTypeIncomingDto.getStatus());
 		chargerTypeEntity.setIsdeleted("N");
 		connectorTypeRepository.save(chargerTypeEntity);
@@ -73,7 +85,7 @@ public class ConnectorTypeServiceimpl implements ConnectorTypeService {
 			throw BRSException.throwException("Connector name can't be blank");
 		}
 		
-		if(connectorTypeIncomingDto.getImgPath()==" ")
+		if(connectorTypeIncomingDto.getImagePath()==" ")
 		{
 			throw BRSException.throwException("Connector image can't be blank");	
 		}
@@ -83,22 +95,20 @@ public class ConnectorTypeServiceimpl implements ConnectorTypeService {
 			throw BRSException.throwException("Connector status can't be blank");
 		}
 		
-		ChargerTypeEntity chargerTypeEntity=connectorTypeRepository.findById(connectorTypeIncomingDto.getId()).get();
-		ChargerTypeEntity chargerCodeDuplicateCheck=connectorTypeRepository.findByName(connectorTypeIncomingDto.getName());
+	   	ChargerTypeEntity chargerTypeEntity=connectorTypeRepository.findById(connectorTypeIncomingDto.getId()).get();
+		ChargerTypeEntity chargerCodeDuplicateCheck=connectorTypeRepository.findByNameAndIdNot(connectorTypeIncomingDto.getName(), connectorTypeIncomingDto.getId());
 		if(chargerCodeDuplicateCheck!= null) {
 		
 			logger.error("throw error that user already exists for Name = "+ connectorTypeIncomingDto.getName());
 			throw BRSException.throwException(EntityType.ChargerType, ALREADY_EXIST, connectorTypeIncomingDto.getName());
 		}
-		
 		chargerTypeEntity.setName(connectorTypeIncomingDto.getName());
-		chargerTypeEntity.setImagePath(connectorTypeIncomingDto.getImgPath());
+		chargerTypeEntity.setImagePath(connectorTypeIncomingDto.getImagePath());
 		chargerTypeEntity.setStatus(connectorTypeIncomingDto.getStatus());
 		connectorTypeRepository.save(chargerTypeEntity);	
 		
 		return true;
 	}
-
 	@Override
 	public boolean deleteConnectorType(String id) {
 		// TODO Auto-generated method stub
@@ -134,8 +144,15 @@ public class ConnectorTypeServiceimpl implements ConnectorTypeService {
 		return ConnectorTypeMapper.connectorTypeDtos(chargerTypeEntities);
 	}
 
+	@Override
+	public String saveDocument(MultipartFile file) {
+		// TODO Auto-generated method stub	
+		String fileSubPath = "CT";
+		String filePath;
+		filePath = fileStorageService.storeFile(file , fileSubPath);
+		logger.info("---------ConnecterTypeServiceImpl saveDocument----------------");
 	
-	
-	
+		return filePath;
+	}
 
 }

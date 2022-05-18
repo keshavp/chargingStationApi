@@ -16,7 +16,8 @@ public class CarModelMapper {
     		  .setId(carModelEntity.getId())
         		.setModel(carModelEntity.getModel())
         		.setDescription(carModelEntity.getDescription())
-        		.setChargertypes(ChargerTypeMapper.toChargerTypeDto(carModelEntity.getChargertypes()));
+        		.setChargertypes(ChargerTypeMapper.toChargerTypeDto(carModelEntity.getChargertypes()))
+                .setStatus(carModelEntity.getStatus());
                
 	}
 	
