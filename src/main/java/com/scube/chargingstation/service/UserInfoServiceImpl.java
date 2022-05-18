@@ -131,4 +131,34 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return userInfoOtpService.moblieOtpVerify(otpVerificationIncomingDto);
 	}
 
+	@Override
+	public boolean editUserProfile(UserInfoIncomingDto userInfoIncomingDto) {
+		
+		if(userInfoIncomingDto.getMobilenumber() == "") {
+			
+			throw BRSException.throwException("Error : user Mobile Number can't be blank");
+		}
+		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(userInfoIncomingDto.getMobilenumber());
+
+		if(userInfoEntity==null)
+		{
+			throw BRSException.throwException("Error : User with this mobile number does not exist");
+		}
+		if(userInfoIncomingDto.getEmail() == "") {
+			
+			throw BRSException.throwException("Error : Email id can't be blank");
+		}
+		if(userInfoIncomingDto.getUsername() == "") {
+			
+			throw BRSException.throwException("Error : Name can't be blank");
+		}
+		
+		userInfoEntity.setEmail(userInfoIncomingDto.getEmail());
+		userInfoEntity.setUsername(userInfoIncomingDto.getUsername());
+		userInfoRepository.save(userInfoEntity);
+		
+		// TODO Auto-generated method stub
+		return true;
+	}
+
 }

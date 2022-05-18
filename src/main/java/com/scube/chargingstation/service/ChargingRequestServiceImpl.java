@@ -227,14 +227,14 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	  List<ChargingPointEntity> cpEntityLst=chargingPointRepository.findAll();
 	  List<ChargingPointDto> chargingPointDtoLst=new ArrayList<ChargingPointDto>();
 	  
-	  for(ChargingPointEntity chargingPointEntity : cpEntityLst) { ChargingPointDto
-	  CPDto=new ChargingPointDto();
+	  for(ChargingPointEntity chargingPointEntity : cpEntityLst) { 
+		  ChargingPointDto   CPDto=new ChargingPointDto();
 	  
 	  Set<ConnectorDto> connectors=new HashSet<ConnectorDto>(); 
 	  Set<AmenityDto> amenities =new HashSet<AmenityDto>();
 	  
-	  Set<ConnectorEntity> conEntitySet 	  =chargingPointEntity.getConnectorEntities(); Set<AmenitiesEntity>
-	  ameEntitySet= chargingPointEntity.getAmenities();
+	  Set<ConnectorEntity> conEntitySet 	  =chargingPointEntity.getConnectorEntities();
+	  Set<AmenitiesEntity> ameEntitySet= chargingPointEntity.getAmenities();
 	  
 	  for(ConnectorEntity conEntity : conEntitySet) 
 	  { 

@@ -10,5 +10,7 @@ public interface UserInfoService {
 	boolean addUserInfo(@Valid UserInfoIncomingDto userInfoIncomingDto);
 
 	boolean moblieOtpVerify(@Valid OtpVerificationIncomingDto otpVerificationIncomingDto);
+	
+	boolean editUserProfile(UserInfoIncomingDto userInfoIncomingDto);
 
 }

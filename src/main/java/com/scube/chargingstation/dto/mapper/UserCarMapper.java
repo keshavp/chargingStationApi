@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.scube.chargingstation.dto.UserCarRespDto;
-import com.scube.chargingstation.entity.UserCarsEntity;  
+import com.scube.chargingstation.entity.UserCarsEntity;
+import com.scube.chargingstation.util.StringNullEmpty;  
 
 public class UserCarMapper {
 
@@ -13,7 +14,7 @@ public class UserCarMapper {
       return new UserCarRespDto()
     		  .setId(carModelEntity.getId())
         		.setModel(carModelEntity.getCarModelEntity().getModel())
-        		.setVehicleNo(carModelEntity.getVehicleNo())
+        		.setVehicleNo(StringNullEmpty.stringNullAndEmptyToBlank((carModelEntity.getVehicleNo())))
       			.setModelId(carModelEntity.getCarModelEntity().getId());
         		//.setDescription(carModelEntity.getDescription())
         		//.setChargertypes(ChargerTypeMapper.toChargerTypeDto(carModelEntity.getChargertypes())

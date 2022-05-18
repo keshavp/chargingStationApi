@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.scube.chargingstation.dto.incoming.OtpVerificationIncomingDto;
 import com.scube.chargingstation.dto.incoming.UserInfoIncomingDto;
+import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
 import com.scube.chargingstation.dto.response.Response;
 import com.scube.chargingstation.service.UserInfoService;
 
@@ -50,4 +51,16 @@ public class UserInfoController {
 		return Response.ok().setPayload(userInfoService.moblieOtpVerify(otpVerificationIncomingDto));
 		
 	}
+	
+	//edit profile for mobile app user
+	@PostMapping( value = "/editUserProfile" , consumes = APPLICATION_JSON_VALUE)
+	public Response editUserProfile(@Valid @RequestBody UserInfoIncomingDto userInfoIncomingDto) {
+		logger.info("***editUserProfile***");
+		
+				return Response.ok().setPayload(userInfoService.editUserProfile(userInfoIncomingDto));
+		
+	}
+	
+	
+	
 }
