@@ -44,7 +44,7 @@ public class ContactUsServiceImpl implements ContactUsService {
 	@Override
 	public boolean sendEmail(@Valid @RequestBody ContactUsIncomingDto contactUsIncomingDto) throws  Exception {
 
-		String to = contactUsIncomingDto.getEmail();
+		String to = "agtechflorida@gmail.com";
 
 		logger.info("-------->1"+to);
 
@@ -92,14 +92,14 @@ public class ContactUsServiceImpl implements ContactUsService {
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 
 			// Set Subject: header field
-			message.setSubject("Contact information");
+			message.setSubject("Contact Us request from website");
 
 			// Now set the actual message
 
 			
 			  String vmFileContent =
-			  "Hello User,"+"/n  Name :- "+contactUsIncomingDto.getName()+"/n  Email :- +"+contactUsIncomingDto.getEmail()+"/n   mobile_No :- "+
-			  contactUsIncomingDto.getMobile_no()+"/n    Meesage :- "+
+			  "Hello User,"+"\n  Name :- "+contactUsIncomingDto.getName()+"\n  Email :- "+contactUsIncomingDto.getEmail()+"\n   mobile_No :- "+
+			  contactUsIncomingDto.getMobile_no()+"\n    Meesage :- "+
 			  contactUsIncomingDto.getMessage();
 			
 //                		"Hello User, <br><br> We have received your reset password request .Please click link below to reset  your password.<br><a href='http://localhost:4200/resetPassword?emailId="+encodeEmail+"'><strong>Reset Link</strong></a> "+
