@@ -27,4 +27,6 @@ public class ChargingHistoryRespDto {
 	//private Double chargeUnits; 
 	private String remark;
 	private String receipt;
+	private String chargingReqId;
+
 }

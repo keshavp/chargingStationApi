@@ -25,6 +25,8 @@ public class ChargingHistoryMapper {
 			obj.setTransactionDate(pojo.getTransactionDate());
 			obj.setAmount(pojo.getAmount());
 			obj.setRemark(pojo.getRemark());
+			obj.setChargingReqId(pojo.getChargingRequestId());
+			
 			
 			if(pojo.getChargingRequestId()!=null&&!pojo.getChargingRequestId().isEmpty())
 			{

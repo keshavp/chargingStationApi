@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import com.scube.chargingstation.dto.ChargingHistoryDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
+import com.scube.chargingstation.dto.ChargingRequestRespDto;
 import com.scube.chargingstation.dto.ChargingStatusRespDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
@@ -38,6 +39,7 @@ public interface ChargingRequestService {
 	public void sendGunInsertNotification();
 	
 	public List<ChargingPointDto> getNearByChargingStationsOld(ChargingStationDto chargingStationDto);
-
+	
+	public ChargingRequestRespDto getChargingRequestDetails(ChargingRequestDto chargingRequestDto);
 	
 }
