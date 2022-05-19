@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.scube.chargingstation.dto.AmenityDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
+import com.scube.chargingstation.dto.ChargingRequestRespDto;
 import com.scube.chargingstation.dto.ChargingStatusRespDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
@@ -22,6 +23,7 @@ import com.scube.chargingstation.dto.incoming.ChargingStationDto;
 import com.scube.chargingstation.dto.incoming.NotificationReqDto;
 import com.scube.chargingstation.dto.mapper.AmenityMapper;
 import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
+import com.scube.chargingstation.dto.mapper.ChargingRequestMapper;
 import com.scube.chargingstation.dto.mapper.ChargingStatusMapper;
 import com.scube.chargingstation.dto.mapper.ConnectorMapper;
 import com.scube.chargingstation.entity.AmenitiesEntity;
@@ -389,6 +391,32 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		timeoutPendingChargingRequests();
 		
 		
+	}
+
+	@Override
+	public ChargingRequestRespDto getChargingRequestDetails(ChargingRequestDto chargingRequestDto) {
+		// TODO Auto-generated method stub
+		
+		if(chargingRequestDto.getChargingRequestId()==null)
+		{
+			throw BRSException.throwException("Error: ChargingRequestId can not be blank"); 
+
+		}
+		
+		Optional<ChargingRequestEntity> chargingRequestEntity=chargingRequestRepository.findById(chargingRequestDto.getChargingRequestId());
+		ChargingRequestEntity entity=chargingRequestEntity.get();
+		
+		if(entity==null)
+		{
+			throw BRSException.throwException("Error: NO Charging request present"); 
+
+		}
+		
+		//ChargingRequestRespDto chargingRequestRespDto=new ChargingRequestRespDto();
+		
+		ChargingRequestMapper.toChargingRequestRespDto(entity);
+		
+		return ChargingRequestMapper.toChargingRequestRespDto(entity);
 	}
 	
 

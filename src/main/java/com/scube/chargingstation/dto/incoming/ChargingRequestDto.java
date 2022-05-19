@@ -7,7 +7,8 @@ import lombok.Setter;
 public class ChargingRequestDto{
 
 	private String  chargePointId;
-	private int  connectorId;
+	private String  chargingRequestId;
+	private int  	connectorId;
 	private String  mobileUser_Id;
 	private String  status;
 	private String  requestAmount;
