@@ -27,7 +27,7 @@ public class ContactUsController {
 	@Autowired
 	ContactUsService contactUsService;
 	
-	private static final Logger logger = LoggerFactory.getLogger(CarModelController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ContactUsController.class);
 	
 	@PostMapping( value = "/getContactUs" , consumes = APPLICATION_JSON_VALUE)
 	public Response getContactUs (@Valid @RequestBody ContactUsIncomingDto contactUsIncomingDto)
@@ -35,6 +35,16 @@ public class ContactUsController {
 		
 		logger.info("***ContactUsController getContactUs***");
 		return Response.created().setPayload(contactUsService.getContactUs(contactUsIncomingDto));
+		
+	}
+	
+	
+	@PostMapping( value = "/mailInformation2" , consumes = APPLICATION_JSON_VALUE)
+	public Response sendEmail(@Valid @RequestBody ContactUsIncomingDto contactUsIncomingDto) throws  Exception
+	{
+		logger.info("***ContactUsController mailservice***");
+		
+		return Response.ok().setPayload(contactUsService.sendEmail(contactUsIncomingDto));		
 		
 	}
 	
