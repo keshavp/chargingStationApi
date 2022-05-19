@@ -23,5 +23,8 @@ public class AuthUserDto {
 	private String accessToken;
 	private String tokenType;
 	private String refreshToken;
+	private String userId;
+	private String mobileno;
+
 
 }

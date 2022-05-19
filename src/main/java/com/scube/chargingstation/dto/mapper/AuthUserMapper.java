@@ -9,11 +9,12 @@ public class AuthUserMapper {
 	public static AuthUserDto toUserLoginDto(UserInfoEntity userInfo,String jwt,String refreshToken) {
 		 		
         return new AuthUserDto()
-        		//.setUserid(userInfo.getId())
+        		.setUserId(userInfo.getId())
         		.setUsername(userInfo.getUsername())
         		.setRole(userInfo.getRole().getNameCode())
         		.setRefreshToken(refreshToken)
         		.setTokenType("Bearer")
-        		.setAccessToken(jwt);
+        		.setAccessToken(jwt)
+        		.setMobileno(userInfo.getMobilenumber());
     }
 }
