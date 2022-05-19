@@ -2,6 +2,8 @@ package com.scube.chargingstation.service;
 
 import static com.scube.chargingstation.exception.ExceptionType.ALREADY_EXIST;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -10,10 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.scube.chargingstation.dto.AuthUserDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.UserInfoOtpDto;
 import com.scube.chargingstation.dto.incoming.OtpVerificationIncomingDto;
 import com.scube.chargingstation.dto.incoming.UserInfoIncomingDto;
+import com.scube.chargingstation.dto.mapper.AuthUserMapper;
 import com.scube.chargingstation.entity.RoleEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.entity.UserInfoOtpEntity;
@@ -171,4 +175,14 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return true;
 	}
 
+	@Override
+	public List<AuthUserDto> getAllUser() {
+		// TODO Auto-generated method stub
+		
+		List<UserInfoEntity> userInfoEntities=userInfoRepository.findAll();
+		return AuthUserMapper.toUserLoginDto(userInfoEntities);
+	
+	}
+
+	
 }
