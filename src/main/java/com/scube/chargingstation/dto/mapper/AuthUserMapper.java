@@ -32,4 +32,12 @@ public class AuthUserMapper {
 		return authUserDtos;
 	}
 	
+	public static AuthUserDto toUserLoginDto(UserInfoEntity userInfo) {
+ 		
+        return new AuthUserDto()
+        		.setUserId(userInfo.getId())
+        		.setUsername(userInfo.getUsername())
+        		.setRole(userInfo.getRole().getNameCode())  	
+        		.setMobileno(userInfo.getMobilenumber());
+    }
 }

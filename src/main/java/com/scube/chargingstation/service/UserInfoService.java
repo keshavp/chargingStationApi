@@ -18,4 +18,6 @@ public interface UserInfoService {
 
 	List<AuthUserDto> getAllUser();
 
+	AuthUserDto getUserById(String userid);
+
 }

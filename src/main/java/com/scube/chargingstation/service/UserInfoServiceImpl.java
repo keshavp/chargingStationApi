@@ -1,4 +1,4 @@
-package com.scube.chargingstation.service;
+ package com.scube.chargingstation.service;
 
 import static com.scube.chargingstation.exception.ExceptionType.ALREADY_EXIST;
 
@@ -184,5 +184,12 @@ public class UserInfoServiceImpl implements UserInfoService {
 	
 	}
 
+	@Override
+	public AuthUserDto getUserById(String userid) {
+		// TODO Auto-generated method stub
+		
+		UserInfoEntity userInfoEntity=userInfoRepository.findById(userid);	
+		return AuthUserMapper.toUserLoginDto(userInfoEntity);
+	}
 	
 }
