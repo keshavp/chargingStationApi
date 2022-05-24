@@ -18,6 +18,7 @@ import lombok.experimental.Accessors;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChargingPointConnectorDto {
 
+	private String id;
     private String chargingPoint;
     
 	private String chargerId;

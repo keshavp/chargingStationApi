@@ -76,6 +76,12 @@ public class AmenitiesController {
 			return Response.ok().setPayload(amenitiesService.getAllAmenities());
 		}
 		
+		@GetMapping (value = "/getActiveAmenities")
+		public Response getActiveAmenities() {
+			
+			logger.info("***AmenitiesController getActiveAmenities***");
+			return Response.ok().setPayload(amenitiesService.getActiveAmenities());
+		}
 		
 		// Get Amenity By ID API
 		@GetMapping( value = "/getAmenitiesById/{id}" )

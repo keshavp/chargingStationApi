@@ -21,6 +21,7 @@ import lombok.experimental.Accessors;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ConnectorsIncomingDto {
 
+	private String id;
 	private String name;
     private String connectorId;
 }

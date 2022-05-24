@@ -24,5 +24,6 @@ public interface AmenitiesService {
 	
 	AmenityDto getAmenitiesById(String id);
 	AmenitiesEntity findAmenitiesEntityByName(String name);
+	List<AmenityDto> getActiveAmenities();
 	
 }
