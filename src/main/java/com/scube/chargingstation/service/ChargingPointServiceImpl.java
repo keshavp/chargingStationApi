@@ -21,6 +21,9 @@ import com.scube.chargingstation.entity.ChargepointForSeverEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
 import com.scube.chargingstation.entity.ConnectorStatusEntity;
+import com.scube.chargingstation.exception.BRSException;
+import com.scube.chargingstation.exception.EntityType;
+import com.scube.chargingstation.exception.ExceptionType;
 import com.scube.chargingstation.repository.ChargepointForSeverRepository;
 import com.scube.chargingstation.repository.ChargingPointRepository;
 import com.scube.chargingstation.repository.ConnectorStatusRepository;
@@ -74,6 +77,14 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		// TODO Auto-generated method stub
 		
 		ChargingPointEntity	chargingPointEntity = new ChargingPointEntity();
+		
+		ChargingPointEntity	chargingPointDuplicateEntity = chargingPointRepository.findByChargingPointId(chargingPointIncomingDto.getChargingPointId());
+		
+		if(chargingPointDuplicateEntity != null) {
+			
+			 throw BRSException.throwException(EntityType.CHARGINGSTATION, ExceptionType.DUPLICATE_ENTITY , chargingPointIncomingDto.getChargingPointId()); 
+		}
+		
 		
 		Set<ConnectorEntity> connectorEntities = new HashSet<ConnectorEntity>() ;
 		

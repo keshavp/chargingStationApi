@@ -38,4 +38,5 @@ public enum EntityType {
     SALARYADJ,
     EMPTAX,
     ChargerType, AMENITY,
+    CHARGINGSTATION
 }
