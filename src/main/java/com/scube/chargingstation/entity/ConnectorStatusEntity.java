@@ -24,7 +24,7 @@ public class ConnectorStatusEntity {
 	@GenericGenerator(
 			name = "custom-generator",
 			strategy = "com.scube.chargingstation.model.id.generator.BaseIdentifierGenerator")
-	protected String id;
+	private String id;
 
 	private String  ChargePointId;
 	private int  ConnectorId;

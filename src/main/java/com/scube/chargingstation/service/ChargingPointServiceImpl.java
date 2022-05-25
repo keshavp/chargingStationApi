@@ -17,10 +17,16 @@ import com.scube.chargingstation.dto.incoming.ConnectorsIncomingDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
 import com.scube.chargingstation.entity.AmenitiesEntity;
+import com.scube.chargingstation.entity.ChargepointForSeverEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
 import com.scube.chargingstation.entity.ConnectorStatusEntity;
+import com.scube.chargingstation.exception.BRSException;
+import com.scube.chargingstation.exception.EntityType;
+import com.scube.chargingstation.exception.ExceptionType;
+import com.scube.chargingstation.repository.ChargepointForSeverRepository;
 import com.scube.chargingstation.repository.ChargingPointRepository;
+import com.scube.chargingstation.repository.ConnectorStatusRepository;
 
 @Service
 public class ChargingPointServiceImpl implements ChargingPointService {
@@ -36,6 +42,12 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	
 	@Autowired
 	ConnectorService connectorService;
+	
+	@Autowired
+	ChargepointForSeverRepository chargepointForSeverRepository; 
+	
+	@Autowired
+	ConnectorStatusRepository connectorStatusRepository;
 	
 	@Override
 	public ChargingPointDto getChargingPointById(String id) {
@@ -66,6 +78,14 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		
 		ChargingPointEntity	chargingPointEntity = new ChargingPointEntity();
 		
+		ChargingPointEntity	chargingPointDuplicateEntity = chargingPointRepository.findByChargingPointId(chargingPointIncomingDto.getChargingPointId());
+		
+		if(chargingPointDuplicateEntity != null) {
+			
+			 throw BRSException.throwException(EntityType.CHARGINGSTATION, ExceptionType.DUPLICATE_ENTITY , chargingPointIncomingDto.getChargingPointId()); 
+		}
+		
+		
 		Set<ConnectorEntity> connectorEntities = new HashSet<ConnectorEntity>() ;
 		
 		Set<AmenitiesEntity> amenitiesEntities = new HashSet<AmenitiesEntity>();
@@ -84,9 +104,18 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		chargingPointEntity.setManufractures(chargingPointIncomingDto.getManufractures());
 		chargingPointEntity.setCommunicationtype(chargingPointIncomingDto.getCommunicationtype());
 		chargingPointEntity.setPowerstandards(chargingPointIncomingDto.getPowerstandards());
-		
+		chargingPointEntity.setStationtype(chargingPointIncomingDto.getStationtype());
 		
 	    Set<ConnectorsIncomingDto> connectors =  chargingPointIncomingDto.getConnectors();
+	    
+	    
+	    ChargepointForSeverEntity	chargepointForSeverEntity = new ChargepointForSeverEntity();
+	    
+	    chargepointForSeverEntity.setChargePointId(chargingPointIncomingDto.getChargingPointId());
+	    chargepointForSeverEntity.setName(chargingPointIncomingDto.getName());
+	    
+	    chargepointForSeverRepository.save(chargepointForSeverEntity);
+	    
 	    
 	    for(ConnectorsIncomingDto connectorDto : connectors) {
 	    	
@@ -96,14 +125,14 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	    	connectorEntity.setConnectorId(connectorDto.getConnectorId());
 	    	connectorEntity.setChargerTypeEntity(connectorTypeService.getChargerTypeEntityByName(connectorDto.getName()));
 	    	
-			/*
-			 * connectorStatusEntity.setConnectorId(Integer.parseInt(connectorDto.
-			 * getConnectorId()));
-			 * connectorStatusEntity.setChargePointId(chargingPointIncomingDto.
-			 * getChargingPointId());
-			 * 
-			 * connectorEntity.setConnectorStatusEntity(connectorStatusEntity);
-			 */   	
+			
+			  connectorStatusEntity.setConnectorId(Integer.parseInt(connectorDto.getConnectorId()));
+			  connectorStatusEntity.setChargePointId(chargingPointIncomingDto.getChargingPointId());
+			  
+			  ConnectorStatusEntity connectorStatusEntitya = connectorStatusRepository.save(connectorStatusEntity);
+			  
+			  connectorEntity.setConnectorStatusEntity(connectorStatusEntitya);
+			    	
 	    	connectorEntities.add(connectorEntity);
 	    }
 	    
@@ -147,7 +176,73 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	@Override
 	public Boolean updateChargingPoint(@Valid ChargingPointIncomingDto chargingPointIncomingDto) {
 		// TODO Auto-generated method stub
-		return null;
+		
+		Set<ConnectorEntity> connectorEntities = new HashSet<ConnectorEntity>() ;
+		
+		Set<AmenitiesEntity> amenitiesEntities = new HashSet<AmenitiesEntity>();
+		
+		ChargingPointEntity chargingPointEntity = chargingPointRepository.findById(chargingPointIncomingDto.getId()).get();
+		
+		
+		chargingPointEntity.setName(chargingPointIncomingDto.getName());
+//		chargingPointEntity.setChargingPointId(chargingPointIncomingDto.getChargingPointId());
+		chargingPointEntity.setPartnerName(chargingPointIncomingDto.getPartnerName());
+		chargingPointEntity.setStartTime(chargingPointIncomingDto.getStartTime());
+		chargingPointEntity.setEndTime(chargingPointIncomingDto.getEndTime());
+		chargingPointEntity.setAddress(chargingPointIncomingDto.getAddress());
+		chargingPointEntity.setAddress2(chargingPointIncomingDto.getAddress2());
+		chargingPointEntity.setPincode(chargingPointIncomingDto.getPincode());
+		chargingPointEntity.setLatitude(chargingPointIncomingDto.getLatitude());
+		chargingPointEntity.setLongitude(chargingPointIncomingDto.getLongitude());
+		chargingPointEntity.setStatus(chargingPointIncomingDto.getStatus());
+		chargingPointEntity.setManufractures(chargingPointIncomingDto.getManufractures());
+		chargingPointEntity.setCommunicationtype(chargingPointIncomingDto.getCommunicationtype());
+		chargingPointEntity.setPowerstandards(chargingPointIncomingDto.getPowerstandards());
+		chargingPointEntity.setStationtype(chargingPointIncomingDto.getStationtype());
+		
+		
+	    Set<ConnectorsIncomingDto> connectors =  chargingPointIncomingDto.getConnectors();
+	    
+	    for(ConnectorsIncomingDto connectorDto : connectors) {
+	    	
+	    	ConnectorEntity  connectorEntity = null;
+	    	
+	    	if(connectorDto.getId() != null){
+	    		connectorEntity = connectorService.getConnectorEntityById(connectorDto.getId());
+	    	}else {
+	    		connectorEntity = new ConnectorEntity();
+	    	}
+	    	ConnectorStatusEntity connectorStatusEntity = new ConnectorStatusEntity(); 	
+	    	
+	    	connectorEntity.setConnectorId(connectorDto.getConnectorId());
+	    	connectorEntity.setChargerTypeEntity(connectorTypeService.getChargerTypeEntityByName(connectorDto.getName()));
+	    	
+			/*
+			 * connectorStatusEntity.setConnectorId(Integer.parseInt(connectorDto.
+			 * getConnectorId()));
+			 * connectorStatusEntity.setChargePointId(chargingPointIncomingDto.
+			 * getChargingPointId());
+			 * 
+			 * connectorEntity.setConnectorStatusEntity(connectorStatusEntity);
+			 */   	
+	    	connectorEntities.add(connectorEntity);
+	    }
+	    
+	    chargingPointEntity.setConnectorEntities(connectorEntities);
+		
+		
+		 Set<AmenityDto> Amenities = chargingPointIncomingDto.getAmenities();
+		 for(AmenityDto amenityDto : Amenities) {
+		    	amenitiesEntities.add(amenitiesService.findAmenitiesEntityByName(amenityDto.getName()));
+		    }
+		
+		
+		 chargingPointEntity.setAmenities(amenitiesEntities);
+		    
+			
+	    chargingPointRepository.save(chargingPointEntity);
+	    
+		return true;
 	}
 
 	

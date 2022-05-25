@@ -20,7 +20,7 @@ public class ConnectorMapper {
 	public static ChargingPointConnectorDto toConnectorDto(ConnectorEntity connectorEntity) {
 		
         return new ChargingPointConnectorDto()
-        		//.setId(userInfo.getId())
+        		.setId(connectorEntity.getId())
         		.setConnectorId(connectorEntity.getConnectorId())
         		//.setChargingPoint(connectorEntity.getChargingPointEntity().getChargingPointId())
         		.setChargerId(connectorEntity.getChargerTypeEntity().getId())

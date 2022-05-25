@@ -21,6 +21,7 @@ import lombok.experimental.Accessors;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChargingPointIncomingDto {
 
+	private String id;
 	private String chargingPointId;
 	private String name;
 	private String partnerName;
@@ -40,6 +41,7 @@ public class ChargingPointIncomingDto {
 	private String manufractures;
 	private String communicationtype;
 	private String powerstandards;
+	private String stationtype;
 	
     private Set<ConnectorsIncomingDto> connectors;
     private Set<AmenityDto> amenities ;

@@ -29,6 +29,7 @@ public class ChargingPointEntity  extends BaseEntity {
 	private String pincode;
 	private Double longitude;
 	private Double distance;
+
 	private Double latitude;
 
 	private Double rating;
@@ -37,6 +38,7 @@ public class ChargingPointEntity  extends BaseEntity {
 	private String manufractures;
 	private String communicationtype;
 	private String powerstandards;
+	private String stationtype;
 	
 	@OneToMany(mappedBy="chargingPointEntity" , cascade = CascadeType.ALL)
     private Set<ConnectorEntity> connectorEntities;
@@ -196,7 +198,13 @@ public class ChargingPointEntity  extends BaseEntity {
 	public void setPowerstandards(String powerstandards) {
 		this.powerstandards = powerstandards;
 	}
+	public String getStationtype() {
+		return stationtype;
+	}
 
+	public void setStationtype(String stationtype) {
+		this.stationtype = stationtype;
+	}
 	
 
 }

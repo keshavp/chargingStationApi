@@ -198,5 +198,13 @@ public class AmenitiesServiceImpl implements AmenitiesService{
 		
 		return amenitiesRepository.findByName(name);
 	}
+
+	@Override
+	public List<AmenityDto> getActiveAmenities() {
+		// TODO Auto-generated method stub
+	   //  List<AmenitiesEntity> amenitiesEntities = amenitiesRepository.findAll();
+		List<AmenitiesEntity> amenitiesEntities = amenitiesRepository.findByStatus("Active");
+		return  AmenityMapper.toAmenitiesDto(amenitiesEntities);
+	}
 }
 
