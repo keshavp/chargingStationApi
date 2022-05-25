@@ -54,7 +54,7 @@ public class UserInfoController {
 		
 	}
 	
-	//edit profile for mobile app user
+	//Edit profile for mobile app user
 	@PostMapping( value = "/editUserProfile" , consumes = APPLICATION_JSON_VALUE)
 	public Response editUserProfile(@Valid @RequestBody UserInfoIncomingDto userInfoIncomingDto) {
 		logger.info("***editUserProfile***");
@@ -62,6 +62,16 @@ public class UserInfoController {
 				return Response.ok().setPayload(userInfoService.editUserProfile(userInfoIncomingDto));
 		
 	}
+	
+	//Delete profile for mobile app user
+	@GetMapping( value = "/deleteUserProfile/{id}" )
+		public Response deleteUserProfile(@PathVariable("id") String userId) {
+			logger.info("***deleteUserProfile***");
+			
+					return Response.ok().setPayload(userInfoService.deleteUserProfile(userId));
+			
+		}
+	
 	
 	@GetMapping( value = "/getAllUser" )
 	public Response getAllUser() {
@@ -71,10 +81,10 @@ public class UserInfoController {
 	}
 	
 	@GetMapping( value = "/getUserById/{id}" )
-	public Response getUserById(@PathVariable("id") String userid) {
+	public Response getUserById(@PathVariable("id") String userId) {
 		logger.info("***UserInfoController UserById***");
 	//	logger.info(NEW_ORDER_LOG, createdUser.toString());
-		return Response.ok().setPayload(userInfoService.getUserById(userid));
+		return Response.ok().setPayload(userInfoService.getUserById(userId));
 		
 	}
 

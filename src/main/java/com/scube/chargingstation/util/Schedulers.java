@@ -26,7 +26,7 @@ public class Schedulers {
 	
 	@Autowired 
 	ChargingRequestService chargingRequestService;
-	
+	   
 	@Autowired
 	UserInfoOtpService	infoOtpService; 
 	
@@ -34,7 +34,7 @@ public class Schedulers {
 	// 5
 	@Scheduled(cron = "${updateStartResult.cronTime}")
 	public int updateStartResult() throws Exception {
-		
+		    
 		log.info("updateStartResult");
 		
 	 	transactionsService.updateStartResultInitiated();

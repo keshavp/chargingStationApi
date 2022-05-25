@@ -15,10 +15,14 @@ public class AuthUserMapper {
         		.setUserId(userInfo.getId())
         		.setUsername(userInfo.getUsername())
         		.setRole(userInfo.getRole().getNameCode())
+        		.setRolename(userInfo.getRole().getName())
         		.setRefreshToken(refreshToken)
         		.setTokenType("Bearer")
         		.setAccessToken(jwt)
-        		.setMobileno(userInfo.getMobilenumber());
+        		.setMobileno(userInfo.getMobilenumber())
+        		.setStatus(userInfo.getStatus())
+        		.setEmail(userInfo.getEmail());
+        		
     }	
 	public static List<AuthUserDto> toUserLoginDto(List<UserInfoEntity> userInfoEntities) {
 		// TODO Auto-generated method stub
@@ -30,7 +34,7 @@ public class AuthUserMapper {
 		}
 				
 		return authUserDtos;
-	}
+	}   
 	
 	public static AuthUserDto toUserLoginDto(UserInfoEntity userInfo) {
  		
@@ -38,6 +42,11 @@ public class AuthUserMapper {
         		.setUserId(userInfo.getId())
         		.setUsername(userInfo.getUsername())
         		.setRole(userInfo.getRole().getNameCode())  	
-        		.setMobileno(userInfo.getMobilenumber());
+        		.setMobileno(userInfo.getMobilenumber())
+        		.setEmail(userInfo.getEmail())
+        		.setStatus(userInfo.getStatus())
+        		.setRolename(userInfo.getRole().getName());
+        		
     }
+
 }

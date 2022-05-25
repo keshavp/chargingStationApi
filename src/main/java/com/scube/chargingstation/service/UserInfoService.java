@@ -15,9 +15,11 @@ public interface UserInfoService {
 	boolean moblieOtpVerify(@Valid OtpVerificationIncomingDto otpVerificationIncomingDto);
 	
 	boolean editUserProfile(UserInfoIncomingDto userInfoIncomingDto);
+	
+	boolean deleteUserProfile(String userId);
 
 	List<AuthUserDto> getAllUser();
 
-	AuthUserDto getUserById(String userid);
+	AuthUserDto getUserById(String userId);
 
 }

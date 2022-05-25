@@ -23,6 +23,7 @@ import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.entity.UserInfoOtpEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.exception.EntityType;
+import com.scube.chargingstation.repository.RoleRepository;
 import com.scube.chargingstation.repository.UserInfoRepository;
 import com.scube.chargingstation.service.api.SmsService;
 import com.scube.chargingstation.util.RandomNumber;
@@ -37,6 +38,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 	
 	@Autowired
 	UserInfoRepository userInfoRepository;
+	
+	@Autowired
+	RoleRepository roleRepository;
 	
 	@Autowired
 	UserInfoOtpService userInfoOtpService;
@@ -104,17 +108,25 @@ public class UserInfoServiceImpl implements UserInfoService {
 		RoleEntity	roleEntity =  	roleService.findRoleNameByCode(userInfoIncomingDto.getRole());
 		
 		userInfoEntity.setRole(roleEntity);
-
+		
 		userInfoEntity.setResetpasswordcount(0);
 		userInfoEntity.setVersion(1);
 		userInfoEntity.setResetpassword("N");
 		
-		if(roleEntity.getNameCode().equals("MU")) {
-			userInfoEntity.setVerified("N");
-		}else {
-			userInfoEntity.setVerified("Y");
-		}
 		
+		if(roleEntity.getNameCode().equals("MU")) 
+		 { 
+			 userInfoEntity.setVerified("N");
+		 }
+		 
+		 else { 
+			 userInfoEntity.setVerified("Y"); 
+		}
+		 
+		/*
+		 * if(roleEntity.getName().equals("User")) { userInfoEntity.setVerified("N"); }
+		 * else { userInfoEntity.setVerified("Y"); }
+		 */
 		
 		userInfoEntity = userInfoRepository.save(userInfoEntity);
 
@@ -150,7 +162,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		
 		if(userInfoIncomingDto.getMobilenumber() == "") {
 			
-			throw BRSException.throwException("Error : user Mobile Number can't be blank");
+			throw BRSException.throwException("Error : User Mobile Number can't be blank");
 		}
 		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(userInfoIncomingDto.getMobilenumber());
 
@@ -158,10 +170,12 @@ public class UserInfoServiceImpl implements UserInfoService {
 		{
 			throw BRSException.throwException("Error : User with this mobile number does not exist");
 		}
+		
 		if(userInfoIncomingDto.getEmail() == "") {
 			
 			throw BRSException.throwException("Error : Email id can't be blank");
 		}
+		
 		if(userInfoIncomingDto.getUsername() == "") {
 			
 			throw BRSException.throwException("Error : Name can't be blank");
@@ -172,6 +186,25 @@ public class UserInfoServiceImpl implements UserInfoService {
 		userInfoRepository.save(userInfoEntity);
 		
 		// TODO Auto-generated method stub
+		return true;
+	}
+	
+	@Override
+	public boolean deleteUserProfile(String userId) {
+		// TODO Auto-generated method stub
+		UserInfoEntity userInfoEntity = userInfoRepository.findById(userId);
+		
+		if(userInfoEntity.getId() == "" || userInfoEntity.getId().trim().isEmpty()) {
+			
+			throw BRSException.throwException("Error : User ID can't be blank");
+		}
+	
+		
+		userInfoEntity.setIsdeleted("Y");
+		userInfoEntity.setStatus("INACTIVE");
+		userInfoRepository.save(userInfoEntity);
+		
+		// TODO Auto-generated method stub   
 		return true;
 	}
 
@@ -185,11 +218,30 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public AuthUserDto getUserById(String userid) {
+	public AuthUserDto getUserById(String userId) {
 		// TODO Auto-generated method stub
 		
-		UserInfoEntity userInfoEntity=userInfoRepository.findById(userid);	
-		return AuthUserMapper.toUserLoginDto(userInfoEntity);
+		UserInfoEntity userInfo=userInfoRepository.findById(userId);	
+		AuthUserDto authUserDto = new AuthUserDto();
+		authUserDto.setUserId(userInfo.getId());
+		authUserDto.setUsername(userInfo.getUsername());
+		authUserDto.setRole(userInfo.getRole().getNameCode())  	;
+		authUserDto.setMobileno(userInfo.getMobilenumber());
+		authUserDto.setEmail(userInfo.getEmail());
+		authUserDto.setStatus(userInfo.getStatus());
+		authUserDto.setRolename(userInfo.getRole().getName());
+		
+		RoleEntity rolentityEntity=roleRepository.findByNameCode(userInfo.getRole().getNameCode());
+		
+		String rolName=rolentityEntity.getName();
+		
+		authUserDto.setRolename(rolName);
+		
+	//	return AuthUserMapper.toUserLoginDto(userInfoEntity);
+		
+		return authUserDto;
+		
+		
 	}
 	
 }

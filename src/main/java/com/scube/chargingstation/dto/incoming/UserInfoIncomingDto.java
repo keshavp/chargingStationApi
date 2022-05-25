@@ -33,4 +33,5 @@ public class UserInfoIncomingDto {
 	private String role;
 	private String password;
 	private String status;
+	
 }

@@ -25,6 +25,8 @@ public class AuthUserDto {
 	private String refreshToken;
 	private String userId;
 	private String mobileno;
-
+	private String status;
+	private String email;
+	private String rolename;
 
 }
