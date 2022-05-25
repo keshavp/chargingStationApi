@@ -44,17 +44,31 @@ public class ContactUsServiceImpl implements ContactUsService {
 	@Override
 	public boolean sendEmail(@Valid @RequestBody ContactUsIncomingDto contactUsIncomingDto) throws  Exception {
 
-		String to = "agtechflorida@gmail.com";
+		//String to = "agtechflorida@gmail.com";
+		
+		String to = "scubeuser8@gmail.com";
 
 		logger.info("-------->1"+to);
 
 		// Sender's email ID needs to be mentioned
 //	        String from = "universityscube@gmail.com";
-		String from = "scube.usr@gmail.com";
+		//String from = "scube.usr@gmail.com";
+		
+		
+	//	String from ="mindfulness@graone.co.in";
+		
+		String from ="resolution@educred.co.in";
+		
 
 		// Assuming you are sending email from through gmails smtp
 //	        String host = "smtp.gmail.com";
-		String host = "smtp.gmail.com";
+	//	String host = "smtp.gmail.com";
+		
+	//	String host = "mail.graone.co.in";
+		
+		//String host = "dallas137.arvixeshared.com";
+		
+		String host = "mail.educred.co.in";
 
 		Properties properties = System.getProperties();
 
@@ -70,7 +84,10 @@ public class ContactUsServiceImpl implements ContactUsService {
 			protected PasswordAuthentication getPasswordAuthentication() {
 
 //	                return new PasswordAuthentication("universityscube@gmail.com", "edu@1234");
-				return new PasswordAuthentication("scube.usr@gmail.com", "scube@1234");
+		//		return new PasswordAuthentication("scube.usr@gmail.com", "scube@1234");
+		//		return new PasswordAuthentication("mindfulness@graone.in", "DASA47@gra1");
+				return new PasswordAuthentication("resolution@educred.co.in", "EduCred$2021$");
+
 
 			}
 
@@ -94,7 +111,7 @@ public class ContactUsServiceImpl implements ContactUsService {
 			// Set Subject: header field
 			message.setSubject("Contact Us request from website");
 
-			// Now set the actual message
+			// Now set the actual message     
 
 			
 			  String vmFileContent =
