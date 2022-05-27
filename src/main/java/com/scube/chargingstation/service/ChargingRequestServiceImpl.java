@@ -1,5 +1,12 @@
 package com.scube.chargingstation.service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -7,17 +14,24 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.tomcat.util.json.JSONParser;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scube.chargingstation.dto.AmenityDto;
+import com.scube.chargingstation.dto.ChargingHistoryDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.ChargingRequestRespDto;
 import com.scube.chargingstation.dto.ChargingStatusRespDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorDto;
+import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
 import com.scube.chargingstation.dto.incoming.NotificationReqDto;
@@ -32,6 +46,7 @@ import com.scube.chargingstation.entity.ChargerTypeEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
+import com.scube.chargingstation.entity.TransactionsEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.entity.UserWalletEntity;
 import com.scube.chargingstation.exception.BRSException;
@@ -39,6 +54,7 @@ import com.scube.chargingstation.repository.CarModelRepository;
 import com.scube.chargingstation.repository.ChargerTypeRepository;
 import com.scube.chargingstation.repository.ChargingPointRepository;
 import com.scube.chargingstation.repository.ChargingRequestRepository;
+import com.scube.chargingstation.repository.TransactionsRepository;
 import com.scube.chargingstation.repository.UserInfoRepository;
 import com.scube.chargingstation.repository.UserWalletDtlRepository;
 import com.scube.chargingstation.repository.UserWalletRepository;
@@ -76,6 +92,13 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	
 	@Autowired
 	CarModelRepository carModelRepository;
+	
+	@Autowired
+	ChargingPointConnectorRateService chargingPointConnectorRateService;
+	
+	@Autowired
+	TransactionsRepository transactionsRepository;
+	
 	
 	
 	 @Value("${chargingstation.chargertype}")
@@ -149,10 +172,25 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			{
 			  throw BRSException.throwException("Error: Can't book, your charging request is already in process");
 			}
+		  	// to call remote start API need transaction Id and allowedcharge value
 		  	
+		 	Double chrg=0.0;
+		  	chrg= getAllowedCharge(chargingRequestDto);
 		  	
+		  	String transactionId=callRemoteStartAPI(chargingRequestDto,chrg);
 		  	
+		
+		  TransactionsEntity transactionsEntity  =transactionsRepository.findByTransactionId(Integer.parseInt(transactionId));
 		  
+		  if(transactionsEntity!=null)
+		  chargingRequestEntity.setTransactionsEntity(transactionsEntity);
+		  else 
+		  {
+			  throw  BRSException.throwException("Error: Can't book, transactionId can not be blank "); 
+			  }
+		 
+		  	
+		  	chargingRequestEntity.setRequestKwh(chrg);
 			chargingRequestEntity.setChargingPointEntity(chargingPointEntity);
 			chargingRequestEntity.setConnectorEntity(connectorEntity);
 			chargingRequestEntity.setUserInfoEntity(userInfoEntity);
@@ -290,13 +328,11 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	  CPDto.setStatus(chargingPointEntity.getStatus());
 	  CPDto.setChargingPointId(chargingPointEntity.getChargingPointId());
 	  CPDto.setConnectors(connectors); CPDto.setAmenities(amenities);
-	  
-	  
 	  chargingPointDtoLst.add(CPDto);
 	  
 	  }
 	  
-	  
+	//  callRemoteStartAPI(null,null);
 	  
 	  // List<ChargingPointDto> chargingPointDtoLst =  ChargingPointMapper.toChargingPointDto(cpEntityLst); 
 	  return   chargingPointDtoLst;
@@ -377,7 +413,11 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 
 			try 
 			{
+				callResetConnectorAPI(chargingRequestEntity);
 				notificationService.sendNotification(notificationReqDto);
+				//call ocpp server reset connector API to free the connector
+				
+				
 			}
 			catch(Exception e)
 			{
@@ -389,6 +429,9 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		}
 		
 		timeoutPendingChargingRequests();
+		
+		
+		
 		
 		
 	}
@@ -420,6 +463,170 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	}
 	
 
+	public String callRemoteStartAPI(ChargingRequestDto chargingRequestDto,Double allowdChrg) 
+	{
+		URL getUrl = null;
+		//Double allowdChrg=0.0;
+	    String strResponse = null;
+		try 
+		{
+		//	allowdChrg=getAllowedCharge(chargingRequestDto);
+			getUrl = new URL(StaticPathContUtils.SERVER_API_URL+"RemoteStart/"+chargingRequestDto.getChargePointId()+"/"+chargingRequestDto.getConnectorId()+"/"+allowdChrg);
+		//	getUrl = new URL("http://125.99.153.126:8080/API/RemoteStart/1347212300231/1/.05");
+		//	getUrl = new URL("http://125.99.153.126:8080/API/RemoteStart/TACW2242321G0285/1/.05");
+			
+			HttpURLConnection conection;
+			conection = (HttpURLConnection) getUrl.openConnection();
+			conection.setRequestMethod("GET");
+	     
+	        logger.info("ResponseMessage="+conection.getResponseMessage());
+	        logger.info("responseCode="+conection.getResponseCode());
+	       
+	        BufferedReader br = null;
+	        br = new BufferedReader(new InputStreamReader((conection.getInputStream())));
+
+	        if (conection.getResponseCode()==200 && conection.getResponseMessage().equals("OK") ) {
+	            br = new BufferedReader(new InputStreamReader(conection.getInputStream()));
+	        } else {
+	        	
+				throw BRSException.throwException("Error: in RemoteStart API call "+conection.getResponseCode()); 
+	        }
+	        
+	        logger.info("br="+br.toString());
+	        StringBuilder response = new StringBuilder();
+	        
+	        while ((strResponse = br.readLine()) != null) 
+	            response.append(strResponse);
+
+	        br.close();
+	        logger.info("API response string="+response);
+	        
+	        final ObjectMapper mapper = new ObjectMapper();
+	        JsonNode actualObj = mapper.readTree(response.toString());
+	        
+	        logger.info("response111="+actualObj.get("Status").textValue());
+	        logger.info("response222="+actualObj.get("Payload").textValue());
+	        
+	        
+	        if((actualObj.get("Status").textValue()).equals("OK"))
+	        {
+	        	strResponse=actualObj.get("Payload").textValue();
+	        }
+	        else if((actualObj.get("Status").textValue()).equals("Error"))
+	        {
+				throw BRSException.throwException("Error: in RemoteStart API call "+actualObj.get("Payload")); 
+	        }
+	        else
+	        {
+				throw BRSException.throwException("Error: in RemoteStart API call "); 
+	        }
+	        
+		} 
 	
+	  catch (IOException e) { // TODO Auto-generated catch block e.printStackTrace();
+		  		throw BRSException.throwException("Error: RemoteStart API");
+	  
+	  }
+	 
+
+        // Getting response code
+		return strResponse;
+		
+	}
+	
+	public Double getAllowedCharge(ChargingRequestDto chargingRequestDto)
+	{
+		Double allowedChrg=0.0;
+		
+		//ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getConnectorId(),chargingRequestEntity.getRequestAmount());
+		
+		ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(chargingRequestDto.getChargePointId(),Integer.toString(chargingRequestDto.getConnectorId()),Double.parseDouble(chargingRequestDto.getRequestAmount()));
+		
+		if(chargingPointConnectorRateDto==null)
+		{
+			throw BRSException.throwException("Error: NO Rate present for chargepoint connector"); 
+		}
+		
+		if(chargingPointConnectorRateDto!=null)
+		allowedChrg=chargingPointConnectorRateDto.getKWh();
+		
+		return allowedChrg;
+	}
+	
+	public String callResetConnectorAPI(ChargingRequestEntity chargingRequestEntity)
+	{
+		URL getUrl = null;
+	    String strResponse = null;
+		try 
+		{
+			getUrl = new URL(StaticPathContUtils.SERVER_API_URL+"ResetConnector/"+chargingRequestEntity.getChargingPointEntity().getChargingPointId()+"/"+chargingRequestEntity.getConnectorEntity().getConnectorId());
+			
+		//	getUrl = new URL("http://125.99.153.126:8080/API/ResetConnector/TACW2242321G0285/1");
+			
+			HttpURLConnection conection;
+			conection = (HttpURLConnection) getUrl.openConnection();
+			conection.setRequestMethod("GET");
+			
+			logger.info("Resetting gChargingPointId="+chargingRequestEntity.getChargingPointEntity().getChargingPointId());
+			logger.info("Resetting ConnectorId="+chargingRequestEntity.getConnectorEntity().getConnectorId());
+	     
+	        logger.info("ResetConnector ResponseMessage="+conection.getResponseMessage());
+	        logger.info("ResetConnector responseCode="+conection.getResponseCode());
+	       
+	        BufferedReader br = null;
+	        br = new BufferedReader(new InputStreamReader((conection.getInputStream())));
+
+	        if (conection.getResponseCode()==200 && conection.getResponseMessage().equals("OK") ) {
+	        	
+	        	
+	            br = new BufferedReader(new InputStreamReader(conection.getInputStream()));
+	        } else {
+	        	
+				throw BRSException.throwException("Error: in ResetConnector API call"); 
+	        }
+	        
+	        logger.info("ResetConnector br="+br.toString());
+	        StringBuilder response = new StringBuilder();
+	        
+	        while ((strResponse = br.readLine()) != null) 
+	            response.append(strResponse);
+	        
+	        
+	        
+	        final ObjectMapper mapper = new ObjectMapper();
+	        JsonNode actualObj = mapper.readTree(response.toString());
+	        
+	        logger.info("response111="+actualObj.get("Status").textValue());
+	        logger.info("response222="+actualObj.get("Payload").textValue());
+	        
+	        
+	        if((actualObj.get("Status").textValue()).equals("OK"))
+	        {
+	        }
+	        else if((actualObj.get("Status").textValue()).equals("Error"))
+	        {
+				throw BRSException.throwException("Error: in ResetConnector API call "+actualObj.get("Payload")); 
+	        }
+	        else
+	        {
+				throw BRSException.throwException("Error: in ResetConnector API call "); 
+	        }
+	        
+	        br.close();
+	        logger.info("ResetConnector response message="+response);
+	        
+		} 
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+	        logger.info("Error: ResetConnector API="+e.toString());
+			throw BRSException.throwException("Error: ResetConnector API"+e.toString()); 
+
+		}
+
+        // Getting response code
+		return strResponse;
+		
+	}
 	
 }
