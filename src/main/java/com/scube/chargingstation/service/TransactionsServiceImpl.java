@@ -190,11 +190,18 @@ public class TransactionsServiceImpl implements TransactionsService {
 					
 					String chargingTime = Snippet.twoInstantDifference(transactionsEntity.getStartTime(), transactionsEntity.getStopTime());
 					
+					double chargingKwh = 0;
+					
 					
 					if(transactionsEntity.getStopReason().equals("PowerLoss")) {
 						chargingRequestEntity.setMeterStop(transactionsEntity.getLastMeter());
+						
+						 chargingKwh = transactionsEntity.getLastMeter() - transactionsEntity.getMeterStart();
+						
 					}else {
 						chargingRequestEntity.setMeterStop(transactionsEntity.getMeterStop());	
+						
+						 chargingKwh = transactionsEntity.getMeterStop() - transactionsEntity.getMeterStart();
 					}
 					
 					
@@ -212,11 +219,11 @@ public class TransactionsServiceImpl implements TransactionsService {
 					
 					if(chargingRequestEntity.getRequestAmount() == 0) {
 						
-						differenceAmount = (chargingRequestEntity.getMeterStop() *  chargingPointConnectorRateDto.getAmount())/ minKwh;
-						differenceKwh = chargingRequestEntity.getMeterStop();
+						differenceAmount = (chargingKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh;
+						differenceKwh = chargingKwh;
 						statusCrDr = "Debit"; 
-						finalAmount = (chargingRequestEntity.getMeterStop() *  chargingPointConnectorRateDto.getAmount())/ minKwh ;
-						finalKwh	= chargingRequestEntity.getMeterStop();
+						finalAmount = (chargingKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh ;
+						finalKwh	= chargingKwh;
 						
 						UserWalletRequestDto	userWalletRequestDto = new UserWalletRequestDto();
 						
@@ -230,34 +237,34 @@ public class TransactionsServiceImpl implements TransactionsService {
 					
 					}else {
 						
-						if(chargingRequestEntity.getRequestKwh() == chargingRequestEntity.getMeterStop()) {
+						if(chargingRequestEntity.getRequestKwh() == chargingKwh) {
 							differenceAmount = 0;
 							differenceKwh = 0;
 							finalAmount = chargingRequestEntity.getRequestAmount();
-							finalKwh	= chargingRequestEntity.getMeterStop();
+							finalKwh	= chargingKwh;
 						}else {
 						
 						
-							if(chargingRequestEntity.getRequestKwh() > chargingRequestEntity.getMeterStop()) {
+							if(chargingRequestEntity.getRequestKwh() > chargingKwh) {
 								statusCrDr = "Credit";
 								
-								differenceKwh = chargingRequestEntity.getRequestKwh() - chargingRequestEntity.getMeterStop();
+								differenceKwh = chargingRequestEntity.getRequestKwh() - chargingKwh;
 								
 								differenceAmount = (differenceKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh ; // 
 								
 								finalAmount = chargingRequestEntity.getRequestAmount() - differenceAmount; //
-								finalKwh	= chargingRequestEntity.getMeterStop();
+								finalKwh	= chargingKwh;
 							}
 		
-							if(chargingRequestEntity.getRequestKwh() < chargingRequestEntity.getMeterStop()) {
+							if(chargingRequestEntity.getRequestKwh() < chargingKwh) {
 								statusCrDr = "Debit"; 
 								
-								differenceKwh = chargingRequestEntity.getMeterStop() - chargingRequestEntity.getRequestKwh();
+								differenceKwh = chargingKwh - chargingRequestEntity.getRequestKwh();
 								
 								differenceAmount = (differenceKwh * chargingPointConnectorRateDto.getAmount()) / minKwh; // 
 								
 								finalAmount = chargingRequestEntity.getRequestAmount() + differenceAmount ; //
-								finalKwh	= chargingRequestEntity.getMeterStop();
+								finalKwh	= chargingKwh;
 							}
 						
 							UserWalletRequestDto	userWalletRequestDto = new UserWalletRequestDto();

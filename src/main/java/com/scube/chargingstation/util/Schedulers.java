@@ -37,7 +37,7 @@ public class Schedulers {
 		    
 		log.info("updateStartResult");
 		
-	 	transactionsService.updateStartResultInitiated();
+	 	// transactionsService.updateStartResultInitiated();
 	 	transactionsService.chargingRequestedBill();
 	 	
 	 	infoOtpService.removeUnVerificationUser();
