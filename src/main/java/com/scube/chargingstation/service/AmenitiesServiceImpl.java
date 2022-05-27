@@ -95,6 +95,17 @@ public class AmenitiesServiceImpl implements AmenitiesService{
 		*/
 		
 		AmenitiesEntity amenitiesEntity = amenitiesRepository.findById(amenitiesIncomingDto.getId()).get();
+		
+		AmenitiesEntity amenitiesCodeDuplicateCheck = amenitiesRepository.findByNameAndIdNot(amenitiesIncomingDto.getName(), amenitiesIncomingDto.getId());
+		if(amenitiesCodeDuplicateCheck != null) {
+		
+			logger.error("throw error that Error : Amenity Name already exists = " + amenitiesIncomingDto.getName());
+			throw BRSException.throwException(EntityType.AMENITY, ALREADY_EXIST, amenitiesIncomingDto.getName());
+		}
+		
+		
+		
+	//	AmenitiesEntity amenitiesEntity = amenitiesRepository.findById(amenitiesIncomingDto.getId()).get();
 	//	AmenitiesEntity amenitiesEntity = new AmenitiesEntity();
 		amenitiesEntity.setName(amenitiesIncomingDto.getName());
 		amenitiesEntity.setStatus(amenitiesIncomingDto.getStatus());
