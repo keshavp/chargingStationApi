@@ -181,8 +181,10 @@ public class UserInfoServiceImpl implements UserInfoService {
 			throw BRSException.throwException("Error : Name can't be blank");
 		}
 		
+		
 		userInfoEntity.setEmail(userInfoIncomingDto.getEmail());
 		userInfoEntity.setUsername(userInfoIncomingDto.getUsername());
+		userInfoEntity.setStatus(userInfoIncomingDto.getStatus());
 		userInfoRepository.save(userInfoEntity);
 		
 		// TODO Auto-generated method stub

@@ -164,6 +164,11 @@ public class AmenitiesServiceImpl implements AmenitiesService{
 		
 	   //  List<AmenitiesEntity> amenitiesEntities = amenitiesRepository.findAll();
 		List<AmenitiesEntity> amenitiesEntities = amenitiesRepository.findAll();
+		/*
+		if (amenitiesEntities.status == null || amenitiesEntities.status.isEmpty() || amenitiesEntities.status.trim().isEmpty()) {
+			return "";
+		}
+		*/
 		return  AmenityMapper.toAmenitiesDto(amenitiesEntities);
 	}
 	
