@@ -11,11 +11,10 @@ import com.scube.chargingstation.dto.ChargingRequestRespDto;
 import com.scube.chargingstation.dto.ChargingStatusRespDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
+import com.scube.chargingstation.dto.incoming.ChargingStationWiseReportIncomingDto;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
-import com.scube.chargingstation.entity.UserWalletEntity;
-import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
 import com.scube.chargingstation.dto.response.Response;
 
 
@@ -41,5 +40,9 @@ public interface ChargingRequestService {
 	public List<ChargingPointDto> getNearByChargingStationsOld(ChargingStationDto chargingStationDto);
 	
 	public ChargingRequestRespDto getChargingRequestDetails(ChargingRequestDto chargingRequestDto);
+	
+	public List<ChargingRequestRespDto> getChargingHistoryDetailsByStation(ChargingStationWiseReportIncomingDto chargingStationWiseReportIncomingDto);
+	
+//	public ChargingRequestRespDto getChargingHistoryByStation(ChargingRequestDto chargingRequestDto); 
 	
 }

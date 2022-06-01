@@ -2,6 +2,7 @@ package com.scube.chargingstation.repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,7 +24,6 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 			ConnectorEntity connectorEntity, String string);
 
 	List<ChargingRequestEntity> findByChargingStatus(String string);
-	
 	
 	List<ChargingRequestEntity> findByChargingPointEntityAndConnectorEntityAndUserInfoEntityAndChargingStatus(ChargingPointEntity
 	  chargingPointEntity, ConnectorEntity connectorEntity,UserInfoEntity userInfoEntity ,String status);
@@ -53,6 +53,13 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	
 	@Query(value = "SELECT * from charging_request where charging_status=(?1) and TIMESTAMPDIFF(MINUTE,created_at,NOW()) > (?2) ",nativeQuery = true)
 	List<ChargingRequestEntity> findByChargingStatusAndCreatedMinutes(String chargingStatus,String Miniutes);
+
+	List<ChargingRequestEntity> findByChargingPointEntity(ChargingPointEntity chargingPointEntity);
+
+
+//	ChargingRequestEntity findByChargingPointEntity(ChargingPointEntity chargingPointEntity);
+
+//	ChargingRequestEntity findByChargingPointId(ChargingPointEntity chargingPointEntity);
 	
 	
 }

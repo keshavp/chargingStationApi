@@ -34,6 +34,7 @@ import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
+import com.scube.chargingstation.dto.incoming.ChargingStationWiseReportIncomingDto;
 import com.scube.chargingstation.dto.incoming.NotificationReqDto;
 import com.scube.chargingstation.dto.mapper.AmenityMapper;
 import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
@@ -791,5 +792,37 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		return strResponse;
 		
 	}
+	
+	@Override
+	public List<ChargingRequestRespDto> getChargingHistoryDetailsByStation(ChargingStationWiseReportIncomingDto chargingStationWiseReportIncomingDto) {
+		// TODO Auto-generated method stub
+
+		// String connectorId= Integer.toString(chargingRequestDto.getConnectorId());
+
+		if (chargingStationWiseReportIncomingDto.getChargePointId() == null) {
+			throw BRSException.throwException("Error : Charge Point ID cannot be blank");
+		}
+
+		ChargingPointEntity chargingPointEntity = chargingPointRepository.findByChargingPointId(chargingStationWiseReportIncomingDto.getChargePointId());
+//		ChargingRequestEntity entity = chargingRequestEntity.get();
+
+		if (chargingPointEntity == null) {
+			throw BRSException.throwException("Error: No Charging Point present");
+		}
+		
+		List<ChargingRequestEntity> chargingRequestEntities = chargingRequestRepository.findByChargingPointEntity(chargingPointEntity);
+		
+	//	ChargingRequestMapper.toChargingRequestRespDtos(chargingRequestEntities);
+		
+	//	 ChargingRequestEntity chargingRequestEntity = chargingRequestRepository.findByChargingPointEntityAndConnectorEntityAndStatus();
+	//	 chargingRequestEntity=chargingRequestRepository.findAll(chargingPointEntity);
+		  
+	//	 chargingRequestEntity.getId();
+		 
+
+	//	ChargingRequestMapper.toChargingRequestRespDtos(chargingRequestEntities);
+		return ChargingRequestMapper.toChargingRequestRespDtos(chargingRequestEntities);  
+	
+	} 
 	
 }

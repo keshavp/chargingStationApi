@@ -47,7 +47,7 @@ public class UserPaymentController {
 	@Autowired 
 	UserPaymentService userPaymentService;
 	
-
+   
 	
 	@PostMapping( value = "/processWalletMoney" , consumes = APPLICATION_JSON_VALUE)
 	public Response processWalletMoney(@Valid @RequestBody UserWalletRequestDto userWalletRequestDto) {

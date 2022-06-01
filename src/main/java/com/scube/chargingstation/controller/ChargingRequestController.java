@@ -11,7 +11,7 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired;  
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,10 +21,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scube.chargingstation.dto.ChargingHistoryDto;
-import com.scube.chargingstation.dto.ChargingPointDto;
+import com.scube.chargingstation.dto.ChargingPointDto;  
 import com.scube.chargingstation.dto.incoming.ChargingPointIncomingDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
+import com.scube.chargingstation.dto.incoming.ChargingStationWiseReportIncomingDto;
 import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
 import com.scube.chargingstation.dto.response.Response;
 import com.scube.chargingstation.entity.ChargingPointEntity;
@@ -51,8 +52,7 @@ public class ChargingRequestController {
 	FileStorageService fileStorageService;
 	
 	@Autowired
-	ChargingPointService chargingPointService; 
-	
+	ChargingPointService chargingPointService; 	
 	
 	
 	@PostMapping(value ="/getChargingRequestDetails", consumes = APPLICATION_JSON_VALUE)
@@ -60,7 +60,10 @@ public class ChargingRequestController {
 		return Response.ok().setPayload(chargingRequestService.getChargingRequestDetails(chargingRequestDto));
 	
 	}
-	 
-
 	
+	@PostMapping(value ="/getChargingHistoryDetailsByStation", consumes = APPLICATION_JSON_VALUE)
+	public Response getChargingHistoryDetailsByStation(@RequestBody ChargingStationWiseReportIncomingDto chargingStationWiseReportIncomingDto) throws Exception{
+		return Response.ok().setPayload(chargingRequestService.getChargingHistoryDetailsByStation(chargingStationWiseReportIncomingDto));
+	}
+	 	
 }

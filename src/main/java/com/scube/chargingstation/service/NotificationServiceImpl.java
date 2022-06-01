@@ -75,7 +75,7 @@ public class NotificationServiceImpl implements NotificationService {
 	@Autowired
 	UserInfoRepository userInfoRepository;
 	
-	@Autowired
+	@Autowired  
 	UserWalletRepository userWalletRepository;
 	
 	@Autowired

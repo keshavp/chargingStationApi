@@ -79,7 +79,7 @@ public class CarModelServiceImpl implements CarModelService {
 	CarModelRepository carModelRepository;
 	@Autowired
 	ChargerTypeService chargerTypeService;
-	
+	   
   	private static final Logger logger = LoggerFactory.getLogger(CarModelServiceImpl.class);
 
   	@Override

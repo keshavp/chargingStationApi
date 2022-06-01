@@ -44,7 +44,7 @@ public class ChargingStationController {
 	@Autowired 
 	ChargingRequestService chargingRequestService;
 	
-	@Autowired
+	@Autowired  
 	ChargerTypeRepository chargerTypeRepository;
 	
 	@Autowired

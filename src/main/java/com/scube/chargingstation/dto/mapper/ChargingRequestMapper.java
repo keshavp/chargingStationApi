@@ -1,6 +1,9 @@
 package com.scube.chargingstation.dto.mapper;
 
+import java.nio.charset.IllegalCharsetNameException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +30,29 @@ public class ChargingRequestMapper {
         		.setConnector(chargingRequestEntity.getConnectorEntity().getChargerTypeEntity().getName())
         		.setRequestedAmount(chargingRequestEntity.getRequestAmount())
         		.setVehicleNo(chargingRequestEntity.getVehicleNO());
+	}
 	
+	public static List<ChargingRequestRespDto> toChargingRequestRespDtos(List<ChargingRequestEntity> chargingRequestEntities) {
+		
+		List<ChargingRequestRespDto> chargingRequestRespDtos = new ArrayList<ChargingRequestRespDto>();
+		
+		for(ChargingRequestEntity chargingRequestEntity : chargingRequestEntities) {
+			chargingRequestRespDtos.add(toChargingRequestRespDtos(chargingRequestEntity));
+		}
+		
+		return chargingRequestRespDtos;
+	}
+	
+	public static ChargingRequestRespDto toChargingRequestRespDtos(ChargingRequestEntity chargingRequestEntity) {
+		
+		return new ChargingRequestRespDto()
+				.setChargePoint(chargingRequestEntity.getChargingPointEntity().getChargingPointId())
+				.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getAddress())
+				.setActualAmt(chargingRequestEntity.getFinalAmount())
+				.setChargedKwh(chargingRequestEntity.getFinalKwh())
+				.setVehicleNo(chargingRequestEntity.getVehicleNO())
+				.setName(chargingRequestEntity.getCustName())
+				.setMobileNo(chargingRequestEntity.getMobileNo());
 	}
 	
 }

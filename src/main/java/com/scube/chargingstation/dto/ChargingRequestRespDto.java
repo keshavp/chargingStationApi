@@ -3,6 +3,8 @@ package com.scube.chargingstation.dto;
 import java.util.Date;
 import java.util.Set;
 
+import javax.print.DocFlavor.STRING;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -30,8 +32,9 @@ import lombok.experimental.Accessors;
 		private String chargingTime;
 		private Double chargedKwh;
 		private Double ActualAmt;
-
 		
+		private String name;
+		private String mobileNo;
 		
 		//requestedAmount, requestedKwh, chargingSpeed, currentKwh, chargingPercent, vehicleNo, estimatedTime
 		

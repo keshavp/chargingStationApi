@@ -94,7 +94,7 @@ public class UserCarServiceImpl implements UserCarService {
 		
 		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(userCarDto.getMobileUser_Id());
 		if(userInfoEntity==null)
-		{
+		{   
 			throw BRSException.throwException("Error: User does not exist"); 
 		}
 		
