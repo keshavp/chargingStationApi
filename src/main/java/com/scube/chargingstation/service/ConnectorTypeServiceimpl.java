@@ -43,17 +43,17 @@ public class ConnectorTypeServiceimpl implements ConnectorTypeService {
 		// TODO Auto-generated method stub
 		
 		logger.info("********ConnectorServiceImpl addConnectorType********");
-		if(connectorTypeIncomingDto.getName()==" ")
+		if((connectorTypeIncomingDto.getName()=="") || (connectorTypeIncomingDto.getName().trim().isEmpty()))
 		{
 			throw BRSException.throwException("Connector name can't be blank");
 		}
 		
-		if(connectorTypeIncomingDto.getImagePath()==" ")
+		if((connectorTypeIncomingDto.getImagePath()=="") || (connectorTypeIncomingDto.getImagePath().trim().isEmpty()))
 		{
 			throw BRSException.throwException("Connector image can't be blank");	
 		}
 		
-		if(connectorTypeIncomingDto.getStatus()==" ")
+		if((connectorTypeIncomingDto.getStatus()=="") || (connectorTypeIncomingDto.getName().trim().isEmpty()))
 		{
 			throw BRSException.throwException("Connector status can't be blank");
 		}
@@ -80,17 +80,17 @@ public class ConnectorTypeServiceimpl implements ConnectorTypeService {
 	public boolean editConnectorType(@Valid ConnectorTypeIncomingDto connectorTypeIncomingDto) {
 		// TODO Auto-generated method stub
 		logger.info("********ConnectorServiceImpl addConnectorType********");
-		if(connectorTypeIncomingDto.getName()==" " || connectorTypeIncomingDto.getName()==null )
+		if((connectorTypeIncomingDto.getName()=="") || (connectorTypeIncomingDto.getName().trim().isEmpty()))
 		{
 			throw BRSException.throwException("Connector name can't be blank");
 		}
 		
-		if(connectorTypeIncomingDto.getImagePath()==" ")
+		if(connectorTypeIncomingDto.getImagePath()==" "|| (connectorTypeIncomingDto.getName().trim().isEmpty()))
 		{
 			throw BRSException.throwException("Connector image can't be blank");	
 		}
 		
-		if(connectorTypeIncomingDto.getStatus()==" " || connectorTypeIncomingDto.getStatus()==null)
+		if((connectorTypeIncomingDto.getStatus()=="") || connectorTypeIncomingDto.getStatus().trim().isEmpty())
 		{
 			throw BRSException.throwException("Connector status can't be blank");
 		}

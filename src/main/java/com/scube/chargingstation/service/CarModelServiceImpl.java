@@ -104,7 +104,7 @@ public class CarModelServiceImpl implements CarModelService {
 			throw BRSException.throwException("ImagePath can't be balnk");
 		}
 		   */
-		Set<ChargerTypeEntity> chargerTypeEntities =new HashSet<ChargerTypeEntity>();
+			Set<ChargerTypeEntity> chargerTypeEntities =new HashSet<ChargerTypeEntity>();
 		
 		for(ChargerTypeDto  chargerTypeDtos : carModelIncomigDto.getChargertypes()) {
 				
@@ -114,6 +114,11 @@ public class CarModelServiceImpl implements CarModelService {
 		  chargerTypeEntities.add(carModelEntity);
 			
 				
+		}
+		if(carModelIncomigDto.getChargertypes().size()<=0)
+		{
+		
+			throw BRSException.throwException("ChargerTypes can't be blank or null");
 		}
 	
 		
@@ -164,6 +169,7 @@ public class CarModelServiceImpl implements CarModelService {
 			
 				
 		}
+		
 	/*    if(carModelIncomigDto.getImgPath()==" " || carModelIncomigDto.getImgPath()==null)
 	    {
 	    	throw BRSException.throwException("Car charger types can't be blank or null"); 
