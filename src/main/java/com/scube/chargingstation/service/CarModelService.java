@@ -1,4 +1,4 @@
-package com.scube.chargingstation.service;
+ package com.scube.chargingstation.service;
 
 import java.util.List;
 

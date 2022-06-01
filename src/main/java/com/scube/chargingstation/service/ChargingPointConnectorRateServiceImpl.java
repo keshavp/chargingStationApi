@@ -1,5 +1,7 @@
 package com.scube.chargingstation.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,10 @@ public class ChargingPointConnectorRateServiceImpl implements ChargingPointConne
 	
 	@Autowired
 	ChargingPointService	chargingPointService;
+	
+	
+	private static final Logger logger = LoggerFactory.getLogger(ChargingPointConnectorRateServiceImpl.class);
+
 	
 	@Override
 	public ChargingPointConnectorRateDto getConnectorByChargingPointIdAndConnectorIdAndAmount( String chargingPoint, String connector, double amount) {
@@ -47,15 +53,26 @@ public class ChargingPointConnectorRateServiceImpl implements ChargingPointConne
 		
 		return ChargingPointConnectorRateMapper.toChargingPointConnectorRateDto(chargingPointConnectorRateEntity);
 	}
-
+   
 	@Override
 	public ChargingPointConnectorRateDto getConnectorByChargingPointNameAndConnectorIdAndAmount(String chargingPointName, String connectorId, double amount) {
 		// TODO Auto-generated method stub
 		ChargingPointEntity	chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(chargingPointName);
 		
-		ConnectorEntity	connectorEntity = connectorService.getConnectorEntityByIdAndChargingPointEntity(connectorId ,chargingPointEntity) ;
+		logger.info("cp id"+chargingPointEntity.getId());    
+		
+	//	ConnectorEntity	connectorEntity = connectorService.getConnectorEntityByIdAndChargingPointEntity(connectorId ,chargingPointEntity) ;
+		
+		ConnectorEntity	connectorEntity = connectorService.getConnectorEntityByConnectorIdAndChargingPointEntity(connectorId ,chargingPointEntity) ;
+		
+		
+		logger.info("eonnector id ---"+connectorEntity.getId()); 
 		
 		ChargingPointConnectorRateEntity chargingPointConnectorRateEntity = chargingPointConnectorRateRepository.findByChargingPointEntityAndConnectorEntityAndAmount(chargingPointEntity,connectorEntity,amount);
+		
+		logger.info("rate id ----"+chargingPointConnectorRateEntity.getId());
+		
+		logger.info("rate amount----"+chargingPointConnectorRateEntity.getAmount());
 		
 		return ChargingPointConnectorRateMapper.toChargingPointConnectorRateDto(chargingPointConnectorRateEntity);
 	}
