@@ -13,4 +13,5 @@ public class ConnectorTypeIncomingDto {
 	private String imagePath;
 	private String status;
     private String id;
+    
 }

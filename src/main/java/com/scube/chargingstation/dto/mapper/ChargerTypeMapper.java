@@ -13,8 +13,10 @@ public class ChargerTypeMapper {
         return new ChargerTypeDto()
         		.setName(ChargerTypeEntity.getName())
                 .setId(ChargerTypeEntity.getId())
-                .setImagePath(ChargerTypeEntity.getImagePath());
+                .setImagePath(ChargerTypeEntity.getImagePath())
+                .setStatus(ChargerTypeEntity.getStatus());
 	}
+	
 	
 	public static Set<ChargerTypeDto> toChargerTypeDto(Set<ChargerTypeEntity> ChargerTypeEntities) {
  		
@@ -22,6 +24,7 @@ public class ChargerTypeMapper {
 		for(ChargerTypeEntity ChargerTypeEntity : ChargerTypeEntities) {
 			ChargerTypeDtos.add(toChargerTypeDto(ChargerTypeEntity)); 
 		}
+		
         return ChargerTypeDtos;
 	}
 

@@ -90,11 +90,13 @@ public class CarModelServiceImpl implements CarModelService {
 		{
 			throw BRSException.throwException("CarModel can't be blank");
 		}
+		
 		if(carModelIncomigDto.getDescription()==" " )
 		{
 			throw BRSException.throwException("Car description can't be blank");
 		}
 			
+		
 		if(carModelIncomigDto.getStatus()==" " )
 		{
 			throw BRSException.throwException("Staus can't be blank");
