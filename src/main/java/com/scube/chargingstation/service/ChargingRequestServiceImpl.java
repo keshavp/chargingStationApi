@@ -64,7 +64,7 @@ import com.scube.chargingstation.util.StaticPathContUtils;
 public class ChargingRequestServiceImpl implements ChargingRequestService {
 
 	@Autowired
-	ChargingPointRepository chargingPointRepository;
+	ChargingPointRepository chargingPointRepository;   
 	
 	@Autowired
 	ChargingRequestRepository chargingRequestRepository;
@@ -177,7 +177,65 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		 	Double chrg=0.0;
 		  	chrg= getAllowedCharge(chargingRequestDto);
 		  	
-		  	String transactionId=callRemoteStartAPI(chargingRequestDto,chrg);
+		  	String transactionId="";
+		  	
+		  	transactionId=callRemoteStartAPI(chargingRequestDto,chrg);
+		  	
+		  	logger.info("remote start response"+transactionId);
+		  	
+		  	if(transactionId.equals("Offline"))  //remote start first returns connector offline 
+		  	{
+		  		//call hardreset
+		  		logger.info("before hardreset");
+		  		String strRspnse=callHardResetConnectorAPI(chargingRequestDto);
+			  	logger.info("hardreset response"+strRspnse);
+
+		  		if(strRspnse.equals("OK"))
+		  		{
+		  			logger.info("second attempt of callRemoteStartAPI");
+		  			transactionId=callRemoteStartAPI(chargingRequestDto,chrg);
+		  			logger.info("remote start 2nd attempt response"+transactionId);
+		  			
+		  			if(transactionId.equals("Offline"))  //remote start first returns connector offline 
+				  	{
+		  				 throw  BRSException.throwException("Error: Can't book, Remote start second attempt error Offline "); 
+				  	}
+		  			else if(transactionId.equals("Running"))  //remote start first returns connector offline 
+					 {
+			  				 throw  BRSException.throwException("Error: Can't book, Remote start second attempt error Running "); 
+					  }
+		  		}
+		  	}
+		  	
+		  	if(transactionId.equals("Running"))  //remote start first returns connector running 
+		  	{
+		  		//call hardreset
+		  		logger.info("before reset");
+		  		
+		  		ChargingRequestEntity centity= new ChargingRequestEntity();
+		  		centity.setChargingPointEntity(chargingPointEntity);
+		  		centity.setConnectorEntity(connectorEntity);
+		  		
+		  		String strRspnse=callResetConnectorAPI(centity);
+			  	logger.info("reset connector response"+strRspnse);
+
+		  		if(strRspnse.equals("OK"))
+		  		{
+		  			logger.info("second attempt of callRemoteStartAPI after reset");
+		  			transactionId=callRemoteStartAPI(chargingRequestDto,chrg);
+		  			
+		  			logger.info("remote start 2nd attempt response after reset"+transactionId);
+		  			
+		  			if(transactionId.equals("Offline"))  //remote start first returns connector offline 
+				  	{
+		  				 throw  BRSException.throwException("Error: Can't book, Remote start second attempt error Offline "); 
+				  	}else
+		  			if(transactionId.equals("Running"))  //remote start first returns connector offline 
+				  	{
+		  				 throw  BRSException.throwException("Error: Can't book, Remote start second attempt error Running "); 
+				  	}
+		  		}
+		  	}	
 		  	
 		
 		  TransactionsEntity transactionsEntity  =transactionsRepository.findByTransactionId(Integer.parseInt(transactionId));
@@ -289,21 +347,23 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		  else if(chargerTypes.isEmpty()) //input car is not selected
 		  {
 			  conDto.setCompatible("Y");
-		  }
+		  }   
 		  else
 		  {
-			  if(chargerTypes.contains(conEntity.getChargerTypeEntity()))
+			  if(chargerTypes.contains(conEntity.getChargerTypeEntity()))   
 			  {
-					logger.info("***available***");
+					logger.info("***Compatible***");
 					conDto.setCompatible("Y");
-			  }
+			  }  
 			  else
 			  {
-					logger.info("***not available***");
+					logger.info("***not Compatible***");
 					conDto.setCompatible("N");
 			  }
 		  }
-	  conDto.setAvailable(conEntity.getConnectorStatusEntity().getLastStatus().equals("Available") ? "Y":"N");
+	//  conDto.setAvailable(conEntity.getConnectorStatusEntity().getLastStatus().equals("Available") ? "N":"Y");
+	// as per lateest discussion if connector status shows status as Charging then user can not book request	  
+	  conDto.setAvailable(conEntity.getConnectorStatusEntity().getLastStatus().equals("Charging") ? "N":"Y");		  
 	  conDto.setConnectorId(conEntity.getConnectorId()); //
 	  conDto.setChargingPoint(conEntity.getChargingPointEntity().getChargingPointId()); 
 	  conDto.setChargerId(conEntity.getChargerTypeEntity().getId());
@@ -514,7 +574,27 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	        }
 	        else if((actualObj.get("Status").textValue()).equals("Error"))
 	        {
-				throw BRSException.throwException("Error: in RemoteStart API call "+actualObj.get("Payload")); 
+				
+	        	 strResponse=actualObj.get("Payload").textValue();
+	        	
+	        	
+	        	if(strResponse.contains("running"))
+	        	{
+	        		strResponse = "Running";
+	        	}
+	        	else if(strResponse.contains("offline"))
+	        	{
+	        		strResponse = "Offline";
+	        	}
+	        	else
+	        	{
+		        	throw BRSException.throwException("Error: in RemoteStart API call "+actualObj.get("Payload")); 
+
+	        	}
+	        	//if already running transaction
+	        	
+	        	//if offline
+				
 	        }
 	        else
 	        {
@@ -538,6 +618,11 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	{
 		Double allowedChrg=0.0;
 		
+		
+		logger.info("cp id"+chargingRequestDto.getChargePointId());
+		logger.info("cp conne id"+chargingRequestDto.getConnectorId());
+		logger.info("cp getRequestAmount"+chargingRequestDto.getRequestAmount());   
+
 		//ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getConnectorId(),chargingRequestEntity.getRequestAmount());
 		
 		ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(chargingRequestDto.getChargePointId(),Integer.toString(chargingRequestDto.getConnectorId()),Double.parseDouble(chargingRequestDto.getRequestAmount()));
@@ -602,6 +687,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	        
 	        if((actualObj.get("Status").textValue()).equals("OK"))
 	        {
+	        	strResponse="OK";
 	        }
 	        else if((actualObj.get("Status").textValue()).equals("Error"))
 	        {
@@ -621,6 +707,83 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			e.printStackTrace();
 	        logger.info("Error: ResetConnector API="+e.toString());
 			throw BRSException.throwException("Error: ResetConnector API"+e.toString()); 
+
+		}
+
+        // Getting response code
+		return strResponse;
+		
+	}
+	
+	public String callHardResetConnectorAPI(ChargingRequestDto chargingRequestDto)
+	{
+		URL getUrl = null;
+	    String strResponse = null;
+		try 
+		{
+			getUrl = new URL(StaticPathContUtils.SERVER_API_URL+"HardChargerReset/"+chargingRequestDto.getChargePointId());
+			
+		//	getUrl = new URL("http://125.99.153.126:8080/API/ResetConnector/TACW2242321G0285/1");
+			
+			HttpURLConnection conection;
+			conection = (HttpURLConnection) getUrl.openConnection();
+			conection.setRequestMethod("GET");
+			
+			logger.info("Resetting gChargingPointId="+chargingRequestDto.getChargePointId());
+			logger.info("Resetting ConnectorId="+chargingRequestDto.getChargePointId());
+	     
+	        logger.info("HardChargerReset ResponseMessage="+conection.getResponseMessage());
+	        logger.info("HardChargerReset responseCode="+conection.getResponseCode());
+	       
+	        BufferedReader br = null;
+	        br = new BufferedReader(new InputStreamReader((conection.getInputStream())));
+
+	        if (conection.getResponseCode()==200 && conection.getResponseMessage().equals("OK") ) {
+	        	
+	        	
+	            br = new BufferedReader(new InputStreamReader(conection.getInputStream()));
+	        } else {
+	        	
+				throw BRSException.throwException("Error: in HardChargerReset API call"); 
+	        }
+	        
+	        logger.info("HardChargerReset br="+br.toString());
+	        StringBuilder response = new StringBuilder();
+	        
+	        while ((strResponse = br.readLine()) != null) 
+	            response.append(strResponse);
+	        
+	        
+	        
+	        final ObjectMapper mapper = new ObjectMapper();
+	        JsonNode actualObj = mapper.readTree(response.toString());
+	        
+	        logger.info("HardChargerResetresponse111="+actualObj.get("Status").textValue());
+	       // logger.info("HardChargerResetresponse222="+actualObj.get("Payload").textValue());
+	        
+	        
+	        if((actualObj.get("Status").textValue()).equals("OK"))
+	        {
+	        	strResponse="OK";
+	        }
+	        else if((actualObj.get("Status").textValue()).equals("Error"))
+	        {
+				throw BRSException.throwException("Error: in HardChargerReset API call "+actualObj.get("Payload").textValue()); 
+	        }
+	        else
+	        {
+				throw BRSException.throwException("Error: in HardChargerReset API call "); 
+	        }
+	        
+	        br.close();
+	        logger.info("HardChargerReset response message="+strResponse);
+	        
+		} 
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+	        logger.info("Error: HardChargerReset API="+e.toString());
+			throw BRSException.throwException("Error: HardChargerReset API"+e.toString()); 
 
 		}
 

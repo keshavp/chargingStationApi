@@ -25,4 +25,6 @@ public interface AmenitiesRepository extends JpaRepository<AmenitiesEntity, Stri
 	AmenitiesEntity getAmenitiesById(String id);
 
 	List<AmenitiesEntity> findByStatus(String status);
+	
+	AmenitiesEntity findByNameAndIdNot(String name, String id);
 }
