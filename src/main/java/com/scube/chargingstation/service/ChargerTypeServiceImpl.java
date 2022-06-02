@@ -18,7 +18,7 @@ public class ChargerTypeServiceImpl implements ChargerTypeService{
 	ChargerTypeRepository chargertyperepository;
 
 	public Set<ChargerTypeDto>findActiveChargerType(){
-    Set<ChargerTypeEntity> ChargerTypeEntities= chargertyperepository.findByIsdeleted("N");
+    Set<ChargerTypeEntity> ChargerTypeEntities= chargertyperepository.findByIsdeletedAndStatus("N","ACTIVE");
     return ChargerTypeMapper.toChargerTypeDto(ChargerTypeEntities);
 		
 	}

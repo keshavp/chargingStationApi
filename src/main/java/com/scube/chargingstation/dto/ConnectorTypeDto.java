@@ -23,6 +23,7 @@ public class ConnectorTypeDto {
 	private String ImagePath;
 	private String status;
 	private String id;
+	private String filename;
 	
 	
 }

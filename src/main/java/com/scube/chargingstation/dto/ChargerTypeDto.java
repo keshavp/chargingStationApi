@@ -25,5 +25,6 @@ public class ChargerTypeDto {
 	private String status;
 	private String id;
      private String imagePath;
+     private String filename;
      
     }

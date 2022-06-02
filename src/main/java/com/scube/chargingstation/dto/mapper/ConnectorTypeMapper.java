@@ -16,7 +16,8 @@ public class ConnectorTypeMapper {
 				.setName(chargerTypeEntity.getName())
 				.setImagePath(StaticPathContUtils.APP_URL_DIR+StaticPathContUtils.SET_CHARGER_TYPE_FILE_URL_DIR+chargerTypeEntity.getId())
 				.setStatus(chargerTypeEntity.getStatus())
-		         .setId(chargerTypeEntity.getId());
+		         .setId(chargerTypeEntity.getId())
+		         .setFilename(chargerTypeEntity.getImagePath());
 	}
 	
 public static List<ConnectorTypeDto> connectorTypeDtos(List<ChargerTypeEntity> chargerTypeEntities) {

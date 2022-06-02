@@ -16,4 +16,6 @@ public interface ChargerTypeRepository extends JpaRepository<ChargerTypeEntity, 
 
 //	ChargingPointEntity findByChargingPointId(String connectorName);
 	ChargerTypeEntity findByName(String name);
+
+	Set<ChargerTypeEntity> findByIsdeletedAndStatus(String staus, String isdeleted);
 }

@@ -14,7 +14,8 @@ public class ChargerTypeMapper {
         		.setName(ChargerTypeEntity.getName())
                 .setId(ChargerTypeEntity.getId())
                 .setImagePath(ChargerTypeEntity.getImagePath())
-                .setStatus(ChargerTypeEntity.getStatus());
+                .setStatus(ChargerTypeEntity.getStatus())
+                .setFilename(ChargerTypeEntity.getImagePath());
 	}
 	
 	
