@@ -10,7 +10,7 @@ public class StaticPathContUtils {
 //		public static final String APP_URL_DIR = "http://125.99.153.126:8085/chargingStationApi/api/v1/";
 //		public static final String SERVER_API_URL = "http://125.99.153.126:8085/API/";
 
-		// internal server		
+		// aws server		
 		public static final String APP_URL_DIR = "https://evdock.app/chargingStationApi/api/v1/";
 		public static final String SERVER_API_URL = "https://evdock.app/API/";
 		
@@ -18,10 +18,6 @@ public class StaticPathContUtils {
 		
 		public static final String SET_CHARGER_TYPE_FILE_URL_DIR = "images/getImage/CT/";
 		
-		//internal server
 		
-		
-		//aws 
-		//public static final String SERVER_API_URL = "http://3.7.55.182/API/";
 		
 }
