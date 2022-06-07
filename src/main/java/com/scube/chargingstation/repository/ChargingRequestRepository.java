@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.fasterxml.jackson.annotation.JacksonInject.Value;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
@@ -53,13 +54,20 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	
 	@Query(value = "SELECT * from charging_request where charging_status=(?1) and TIMESTAMPDIFF(MINUTE,created_at,NOW()) > (?2) ",nativeQuery = true)
 	List<ChargingRequestEntity> findByChargingStatusAndCreatedMinutes(String chargingStatus,String Miniutes);
+	
+	
+	
+	
 
-	List<ChargingRequestEntity> findByChargingPointEntity(ChargingPointEntity chargingPointEntity);
+	 @Query(value = "SELECT * FROM charging_request where fk_charging_point = (?1) and DATE_FORMAT(StartTime, '%d%m%Y') "
+	 		+ " between DATE_FORMAT(STR_TO_DATE((?2), '%d-%M-%Y'), '%d%m%Y') and DATE_FORMAT(STR_TO_DATE((?3), '%d-%M-%Y'), '%d%m%Y')",nativeQuery = true)
+	List<ChargingRequestEntity> findByChargingPointEntity(String chargingPoint , String startDate, String endDate);
 
 
 //	ChargingRequestEntity findByChargingPointEntity(ChargingPointEntity chargingPointEntity);
 
 //	ChargingRequestEntity findByChargingPointId(ChargingPointEntity chargingPointEntity);
+	 
 	
 	
 }

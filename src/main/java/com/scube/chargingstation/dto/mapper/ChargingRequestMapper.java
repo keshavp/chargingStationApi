@@ -1,6 +1,7 @@
 package com.scube.chargingstation.dto.mapper;
 
 import java.nio.charset.IllegalCharsetNameException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -43,16 +44,21 @@ public class ChargingRequestMapper {
 		return chargingRequestRespDtos;
 	}
 	
-	public static ChargingRequestRespDto toChargingRequestRespDtos(ChargingRequestEntity chargingRequestEntity) {
+	public static ChargingRequestRespDto toChargingRequestRespDtos(ChargingRequestEntity chargingRequestEntity) {  
 		
-		return new ChargingRequestRespDto()
+		return new ChargingRequestRespDto()  
 				.setChargePoint(chargingRequestEntity.getChargingPointEntity().getChargingPointId())
-				.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getAddress())
+				.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getAddress() + chargingRequestEntity.getChargingPointEntity().getAddress2() + chargingRequestEntity.getChargingPointEntity().getPincode())
 				.setActualAmt(chargingRequestEntity.getFinalAmount())
 				.setChargedKwh(chargingRequestEntity.getFinalKwh())
 				.setVehicleNo(chargingRequestEntity.getVehicleNO())
-				.setName(chargingRequestEntity.getCustName())
-				.setMobileNo(chargingRequestEntity.getMobileNo());
+				.setName(chargingRequestEntity.getChargingPointEntity().getName())
+	//			.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getAddress2())
+	//			.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getPincode())
+				.setMobileNo(chargingRequestEntity.getMobileNo())
+				.setStartTime(chargingRequestEntity.getStartTime())
+				.setChargingTime(chargingRequestEntity.getChargingTime())
+				.setStopTime(chargingRequestEntity.getStopTime());
 	}
 	
 }

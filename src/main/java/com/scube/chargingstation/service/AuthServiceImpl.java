@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,17 +18,21 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.scube.chargingstation.dto.AuthUserDto;
+import com.scube.chargingstation.dto.incoming.ForgetPasswordIncomingDto;
 import com.scube.chargingstation.dto.incoming.SetNewPasswordIncomingDto;
 import com.scube.chargingstation.dto.incoming.UserLoginIncomingDto;
 import com.scube.chargingstation.dto.mapper.AuthUserMapper;
 import com.scube.chargingstation.entity.RefreshToken;
 import com.scube.chargingstation.entity.UserInfoEntity;
+import com.scube.chargingstation.entity.UserInfoOtpEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.exception.CustomizedResponseEntityExceptionHandler;
 import com.scube.chargingstation.exception.EntityType;
 import com.scube.chargingstation.exception.ExceptionType;
 import com.scube.chargingstation.repository.UserInfoRepository;
 import com.scube.chargingstation.security.JwtUtils;
+import com.scube.chargingstation.service.api.SmsService;
+import com.scube.chargingstation.util.RandomNumber;
 
 
 
@@ -56,6 +61,12 @@ public class AuthServiceImpl implements AuthService {
 	
 	@Autowired 
 	AuthenticationManager authenticationManager;
+	
+	@Autowired
+	UserInfoOtpService userInfoOtpService;
+	
+	@Autowired
+	SmsService smsService;
 	
 	
 	  
@@ -270,6 +281,48 @@ public class AuthServiceImpl implements AuthService {
 		
 		
 		return true;
+	}
+
+	@Override
+	public boolean generateNewOtp(ForgetPasswordIncomingDto forgetPasswordIncomingDto) {
+		
+		System.out.println("Mobile No is " + forgetPasswordIncomingDto);
+		
+		UserInfoEntity userInfoEntity = empInfoRepository.findByMobilenumber(forgetPasswordIncomingDto.getMobileNo());
+		
+		if(userInfoEntity == null) {
+			
+			logger.info("Error : Mobile No is not registered ");
+			throw BRSException.throwException("Error : The Mobile No provided is not registered !");
+		}
+		
+		
+		/*
+		 * Random random = new Random(1000);
+		 * 
+		 * int otp = random.nextInt(999999); System.out.println("OTP " + otp);
+		 */
+		
+		String otpCode ="";
+		
+		otpCode	= RandomNumber.getRandomNumberString();
+		
+		UserInfoOtpEntity	userInfoOtpEntity = new UserInfoOtpEntity();
+		userInfoOtpEntity.setMobilenumber(forgetPasswordIncomingDto.getMobileNo());
+		userInfoOtpEntity.setOtpCode(otpCode);
+		userInfoOtpEntity.setUserInfoEntity(userInfoEntity);
+		userInfoOtpEntity.setStatus("reset_close");
+		
+		userInfoOtpService.insertOtpDate(userInfoOtpEntity);
+		
+	//	smsService.forgetPasswordOtp(otpCode,ForgetPasswordIncomingDto.getMobileNumber());
+		smsService.sendSignupOTPMobile(otpCode,userInfoEntity.getMobilenumber());
+		
+		logger.info("OTP Generated Successfully");
+		
+		return true;
+
+		
 	}
 	
 }

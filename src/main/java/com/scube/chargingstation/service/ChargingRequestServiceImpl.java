@@ -810,7 +810,10 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			throw BRSException.throwException("Error: No Charging Point present");
 		}
 		
-		List<ChargingRequestEntity> chargingRequestEntities = chargingRequestRepository.findByChargingPointEntity(chargingPointEntity);
+		System.out.println("CpId======"+chargingPointEntity.getId()+"SDate=="+chargingStationWiseReportIncomingDto.getStartDate()+"EDate==="+chargingStationWiseReportIncomingDto.getEndDate());
+		
+		
+		List<ChargingRequestEntity> chargingRequestEntities = chargingRequestRepository.findByChargingPointEntity(chargingPointEntity.getId(), chargingStationWiseReportIncomingDto.getStartDate(), chargingStationWiseReportIncomingDto.getEndDate());
 		
 	//	ChargingRequestMapper.toChargingRequestRespDtos(chargingRequestEntities);
 		

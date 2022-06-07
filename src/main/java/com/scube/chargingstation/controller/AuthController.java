@@ -1,21 +1,22 @@
-  package com.scube.chargingstation.controller;
+package com.scube.chargingstation.controller;
   
-  import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-  import javax.validation.Valid;
+import javax.validation.Valid;
 
-  import org.slf4j.Logger;
-  import org.slf4j.LoggerFactory;
-  import org.springframework.beans.factory.annotation.Autowired;
-  import org.springframework.web.bind.annotation.CrossOrigin;
-  import org.springframework.web.bind.annotation.GetMapping;
-  import org.springframework.web.bind.annotation.PathVariable;
-  import org.springframework.web.bind.annotation.PostMapping;
-  import org.springframework.web.bind.annotation.RequestBody;
-  import org.springframework.web.bind.annotation.RequestMapping;
-  import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.scube.chargingstation.dto.AuthUserDto;
+import com.scube.chargingstation.dto.incoming.ForgetPasswordIncomingDto;
 import com.scube.chargingstation.dto.incoming.SetNewPasswordIncomingDto;
 import com.scube.chargingstation.dto.incoming.UserLoginIncomingDto;
 import com.scube.chargingstation.dto.response.Response;
@@ -94,5 +95,11 @@ import com.scube.chargingstation.service.AuthService;
   		 return Response.ok().setPayload(authService.signoutUser(loginRequest));
   	}
 
-  	
-  }
+	
+	@PostMapping( value = "/generateNewOtp", consumes = APPLICATION_JSON_VALUE) 
+	public Response generateNewOtp(@Valid @RequestBody ForgetPasswordIncomingDto forgetPasswordIncomingDto) {
+		  
+		  logger.info("***AuthController generateNewOtp***");
+		  return Response.ok().setPayload(authService.generateNewOtp(forgetPasswordIncomingDto)); }
+
+  	}

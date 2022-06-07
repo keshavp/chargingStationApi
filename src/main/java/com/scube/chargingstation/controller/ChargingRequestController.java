@@ -34,7 +34,7 @@ import com.scube.chargingstation.service.ChargingPointService;
 import com.scube.chargingstation.service.ChargingRequestService;
 import com.scube.chargingstation.util.FileStorageService;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600)  
 @RestController
 @RequestMapping(path = {"/api/v1/chargingrequest"}, produces = APPLICATION_JSON_VALUE)
 public class ChargingRequestController {
@@ -50,14 +50,14 @@ public class ChargingRequestController {
 	
 	@Autowired
 	FileStorageService fileStorageService;
-	
+	      
 	@Autowired
 	ChargingPointService chargingPointService; 	
 	
 	
 	@PostMapping(value ="/getChargingRequestDetails", consumes = APPLICATION_JSON_VALUE)
 	public Response getChargingRequestDetails(@RequestBody ChargingRequestDto chargingRequestDto) throws Exception {
-		return Response.ok().setPayload(chargingRequestService.getChargingRequestDetails(chargingRequestDto));
+		return Response.ok().setPayload(chargingRequestService.getChargingRequestDetails(chargingRequestDto));   
 	
 	}
 	
