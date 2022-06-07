@@ -100,6 +100,16 @@ import com.scube.chargingstation.service.AuthService;
 	public Response generateNewOtp(@Valid @RequestBody ForgetPasswordIncomingDto forgetPasswordIncomingDto) {
 		  
 		  logger.info("***AuthController generateNewOtp***");
-		  return Response.ok().setPayload(authService.generateNewOtp(forgetPasswordIncomingDto)); }
+		  return Response.ok().setPayload(authService.generateNewOtp(forgetPasswordIncomingDto)); 
+	}
+	
+	
+	@PostMapping( value = "/validateGeneratedOtp", consumes = APPLICATION_JSON_VALUE)
+	public Response validateGeneratedOtp(@Valid @RequestBody ForgetPasswordIncomingDto forgetPasswordIncomingDto) {
+		
+		logger.info("***AuthController validateGeneratedOtp***");
+		
+		return Response.ok().setPayload(authService.validateGeneratedOtp(forgetPasswordIncomingDto));
+	}
 
-  	}
+}

@@ -1,5 +1,6 @@
 package com.scube.chargingstation.dto;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.Set;
 
@@ -35,6 +36,11 @@ import lombok.experimental.Accessors;
 		
 		private String name;
 		private String mobileNo;
+		
+		private Instant startTime;
+		private Instant  stopTime;
+	//	private String chargingTimeForUser;
+		
 		
 		//requestedAmount, requestedKwh, chargingSpeed, currentKwh, chargingPercent, vehicleNo, estimatedTime
 		

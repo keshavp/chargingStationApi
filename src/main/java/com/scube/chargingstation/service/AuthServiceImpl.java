@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.List;
 import java.util.Random;
 
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.exception.CustomizedResponseEntityExceptionHandler;
 import com.scube.chargingstation.exception.EntityType;
 import com.scube.chargingstation.exception.ExceptionType;
+import com.scube.chargingstation.repository.UserInfoOtpRepository;
 import com.scube.chargingstation.repository.UserInfoRepository;
 import com.scube.chargingstation.security.JwtUtils;
 import com.scube.chargingstation.service.api.SmsService;
@@ -68,7 +70,8 @@ public class AuthServiceImpl implements AuthService {
 	@Autowired
 	SmsService smsService;
 	
-	
+	@Autowired
+	UserInfoOtpRepository userInfoOtpRepository;
 	  
 	
 	@Override
@@ -286,6 +289,10 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public boolean generateNewOtp(ForgetPasswordIncomingDto forgetPasswordIncomingDto) {
 		
+		if(forgetPasswordIncomingDto.getMobileNo()=="" || forgetPasswordIncomingDto.getMobileNo().trim().isEmpty()) {
+			throw BRSException.throwException("Mobile No can't be blank.");
+		}
+		
 		System.out.println("Mobile No is " + forgetPasswordIncomingDto);
 		
 		UserInfoEntity userInfoEntity = empInfoRepository.findByMobilenumber(forgetPasswordIncomingDto.getMobileNo());
@@ -311,7 +318,7 @@ public class AuthServiceImpl implements AuthService {
 		userInfoOtpEntity.setMobilenumber(forgetPasswordIncomingDto.getMobileNo());
 		userInfoOtpEntity.setOtpCode(otpCode);
 		userInfoOtpEntity.setUserInfoEntity(userInfoEntity);
-		userInfoOtpEntity.setStatus("reset_close");
+		userInfoOtpEntity.setStatus("reset_open");
 		
 		userInfoOtpService.insertOtpDate(userInfoOtpEntity);
 		
@@ -321,8 +328,52 @@ public class AuthServiceImpl implements AuthService {
 		logger.info("OTP Generated Successfully");
 		
 		return true;
-
 		
 	}
+	
+	@Override
+	public void removeOtpNotVerified() {
+		
+		List<UserInfoOtpEntity> userInfoOtpEntities = userInfoOtpRepository.findResetOpenStatus();
+		
+		for(UserInfoOtpEntity userInfoOtpEntity : userInfoOtpEntities) {
+			
+			userInfoOtpRepository.delete(userInfoOtpEntity);
+			empInfoRepository.delete(userInfoOtpEntity.getUserInfoEntity());
+			
+		}
+		
+		logger.info("Deleted OTP");
+	}
+
+
+
+	@Override
+	public boolean validateGeneratedOtp(ForgetPasswordIncomingDto forgetPasswordIncomingDto) {
+		// TODO Auto-generated method stub
+		UserInfoOtpEntity userInfoOtpEntity =  userInfoOtpRepository.findByNewGeneratedOtpCode(forgetPasswordIncomingDto.getMobileNo(),forgetPasswordIncomingDto.getOtp());
+		
+		if(userInfoOtpEntity == null) {
+			
+			 throw BRSException.throwException(EntityType.OTP, ExceptionType.ENTITY_NOT_FOUND ,""); 
+		}
+		
+		UserInfoEntity userInfoEntity = userInfoOtpEntity.getUserInfoEntity();
+		
+		userInfoEntity.setVerified("Y");
+		
+		empInfoRepository.save(userInfoEntity);
+		
+		userInfoOtpEntity.setStatus("reset_close");
+		
+		userInfoOtpRepository.save(userInfoOtpEntity);
+		
+		logger.info("OTP Verified Succesfully");
+		
+		return true;
+	}
+	
+
+	
 	
 }
