@@ -13,7 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.scube.chargingstation.dto.AuthUserDto;
-import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.UserInfoOtpDto;
 import com.scube.chargingstation.dto.incoming.OtpVerificationIncomingDto;
 import com.scube.chargingstation.dto.incoming.UserInfoIncomingDto;
@@ -244,6 +243,43 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return authUserDto;
 		
 		
+	}
+	
+	
+	@Override
+	public List<AuthUserDto> getAllPartnerUsers(String nameCode) {
+		
+		RoleEntity roleEntity = roleRepository.findByNameCode(nameCode);
+		
+		List<UserInfoEntity> userInfoEntity = userInfoRepository.findByRoleAndStatus(roleEntity,"Active");
+		
+		return AuthUserMapper.toUserLoginDto(userInfoEntity);
+		
+	}
+
+	@Override
+	public AuthUserDto getPartnerUserById(String userId) {
+		// TODO Auto-generated method stub
+		
+		UserInfoEntity userInfoEntity = userInfoRepository.findById(userId);
+		
+		AuthUserDto authUserDto = new AuthUserDto();
+		
+		authUserDto.setUserId(userInfoEntity.getId());
+		authUserDto.setUsername(userInfoEntity.getUsername());
+		authUserDto.setRole(userInfoEntity.getRole().getNameCode())  	;
+		authUserDto.setMobileno(userInfoEntity.getMobilenumber());
+		authUserDto.setEmail(userInfoEntity.getEmail());
+		authUserDto.setStatus(userInfoEntity.getStatus());
+		authUserDto.setRolename(userInfoEntity.getRole().getName());
+		
+		RoleEntity rolEntity = roleRepository.findByNameCode(userInfoEntity.getRole().getNameCode());
+		
+		String roleName = rolEntity.getName();
+		
+		authUserDto.setRolename(roleName);
+		
+		return authUserDto;
 	}
 	
 }

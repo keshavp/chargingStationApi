@@ -87,6 +87,20 @@ public class UserInfoController {
 		return Response.ok().setPayload(userInfoService.getUserById(userId));
 		
 	}
+	
+	
+	@GetMapping( value = "/getAllPartnerUsers/{roleCode}")
+	public Response getAllPartnerUsers(@PathVariable ("roleCode") String nameCode) {
+		logger.info("***UserInfoController getAllPartnerUsers***");
+		return Response.ok().setPayload(userInfoService.getAllPartnerUsers(nameCode));
+	}
+	
+	@GetMapping( value = "/getPartnerUserById/{id}")
+	public Response getPartnerUserById(@PathVariable ("id") String userId) {
+		logger.info("***UserInfoController getPartnerUserById***");
+		return Response.ok().setPayload(userInfoService.getPartnerUserById(userId));
+		
+	}
 
 	
 }

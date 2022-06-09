@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.scube.chargingstation.entity.RoleEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
 
 @Repository
@@ -14,5 +15,7 @@ public interface UserInfoRepository extends JpaRepository<UserInfoEntity, Long> 
 	UserInfoEntity findById(String userId);
 
 	UserInfoEntity findByMobilenumber(String mobilenumber);
-
+	
+	List<UserInfoEntity> findByRoleAndStatus(RoleEntity nameCode,String status);
+	
 }

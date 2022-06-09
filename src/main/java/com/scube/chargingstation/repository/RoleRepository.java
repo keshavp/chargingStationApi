@@ -19,6 +19,6 @@ public interface RoleRepository extends JpaRepository<RoleEntity, String> {
 	  
 	  List<RoleEntity> findByStatusAndIsdeleted(String status ,String isdeleted );
 
-	RoleEntity getRoleById(String id);	
+	  RoleEntity getRoleById(String id);	
 
 }
