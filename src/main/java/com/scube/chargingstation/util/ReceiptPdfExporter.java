@@ -205,7 +205,7 @@ public class ReceiptPdfExporter {
 //		table1.addCell(getCellLabelVal("Connector :",chargingRequestEntity.getConnectorEntity().getConnectorId()));
 //		layoutDocument.add(table1);
 		
-		table1.addCell(new Cell().add(new Paragraph("GSTN  :")));
+		table1.addCell(new Cell().add(new Paragraph("EV Dock GSTN  :")));
 		table1.addCell(new Cell().add(new Paragraph("27AAJCT1560G1ZB")));
 		
 		table1.addCell(new Cell().add(new Paragraph("Name  :")));

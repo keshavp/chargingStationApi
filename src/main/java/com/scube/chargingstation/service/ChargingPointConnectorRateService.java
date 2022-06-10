@@ -1,6 +1,8 @@
 package com.scube.chargingstation.service;
 
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
+import com.scube.chargingstation.entity.ChargingPointConnectorRateEntity;
+import com.scube.chargingstation.entity.ChargingPointEntity;
 
 public interface ChargingPointConnectorRateService {
 
@@ -11,4 +13,10 @@ public interface ChargingPointConnectorRateService {
 	ChargingPointConnectorRateDto getConnectorByChargingPointNameAndConnectorIdAndAmount( String chargingPointName, String connectorId , double amount);
 	
 	ChargingPointConnectorRateDto getConnectorByChargingPointNameAndConnectorIdAndKwh( String chargingPointName, String connectorId , double kwh);
+	
+	ChargingPointConnectorRateEntity getConnectorByChargingPointIdAndConnectorId( String chargingPoint,String connector);
+
+
+	ChargingPointConnectorRateEntity getConnectorByChargingPointEntity(ChargingPointEntity chargingPointEntity);
+	
 }

@@ -19,10 +19,15 @@ public interface ChargingPointService {
 	Boolean addChargingPoint(@Valid ChargingPointIncomingDto chargingPointIncomingDto);
 
 	List<ChargingPointDto> getAllChargingStations();
+	
+	 List<ChargingPointEntity> getAllChargingPointEntity();
 
 	Boolean updateChargingPoint(@Valid ChargingPointIncomingDto chargingPointIncomingDto);
 
 	List<ChargingPointDto> getAllActiveChargingStations();
 	
 	ChargingPointDto getChargingStationsById(String id);
+	
+	Boolean getChargingStationsgoLiveCheckById(String id);
+
 }

@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -30,6 +31,7 @@ import com.scube.chargingstation.dto.ChargingHistoryDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.ChargingRequestRespDto;
 import com.scube.chargingstation.dto.ChargingStatusRespDto;
+import com.scube.chargingstation.dto.MostActiveChargingStationsDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
@@ -65,9 +67,6 @@ import com.scube.chargingstation.util.StringNullEmpty;
 @Service
 public class ChargingRequestServiceImpl implements ChargingRequestService {
 
-	@Autowired
-	ChargingPointRepository chargingPointRepository;   
-	
 	@Autowired
 	ChargingRequestRepository chargingRequestRepository;
 	
@@ -294,7 +293,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	  getNearByChargingStationsOld(ChargingStationDto chargingStationDto) 
 	  { 
 	  
-	  List<ChargingPointEntity> cpEntityLst=chargingPointRepository.findAll();
+	  List<ChargingPointEntity> cpEntityLst=chargingPointService.getAllChargingPointEntity();
 	  
 	  List<ChargingPointDto> chargingPointDtoLst =
 	  ChargingPointMapper.toChargingPointDto(cpEntityLst); 
@@ -324,7 +323,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	  
 	  }
 	  
-	  List<ChargingPointEntity> cpEntityLst=chargingPointRepository.findAll();
+	  List<ChargingPointEntity> cpEntityLst=chargingPointService.getAllChargingPointEntity();
 	  List<ChargingPointDto> chargingPointDtoLst=new ArrayList<ChargingPointDto>();
 	  
 	  for(ChargingPointEntity chargingPointEntity : cpEntityLst) { 
@@ -807,8 +806,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		if (chargingStationWiseReportIncomingDto.getChargePointId() == null) {
 			throw BRSException.throwException("Error : Charge Point ID cannot be blank");
 		}
-
-		ChargingPointEntity chargingPointEntity = chargingPointRepository.findByChargingPointId(chargingStationWiseReportIncomingDto.getChargePointId());
+		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(chargingStationWiseReportIncomingDto.getChargePointId());
 //		ChargingRequestEntity entity = chargingRequestEntity.get();
 
 		if (chargingPointEntity == null) {
@@ -831,6 +829,49 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	//	ChargingRequestMapper.toChargingRequestRespDtos(chargingRequestEntities);
 		return ChargingRequestMapper.toChargingRequestRespDtos(chargingRequestEntities);  
 	
+	}
+
+	@Override
+	public int getYesterdayConsumedKwh() {
+		// TODO Auto-generated method stub
+		return chargingRequestRepository.getYesterdayConsumedKwh();
+	}
+
+	@Override
+	public int getWeekConsumedKwh() {
+		// TODO Auto-generated method stub
+		return chargingRequestRepository.getWeekConsumedKwh();
+	} 
+	
+	@Override
+	public String get30daysTotalChargingTime() {
+		// TODO Auto-generated method stub
+		return chargingRequestRepository.get30daysTotalChargingTime();
+	} 
+	
+	@Override
+	public int weekTotalChargingRequestCountSessions() {
+		// TODO Auto-generated method stub
+		return chargingRequestRepository.weekTotalChargingRequestCountSessions();
+	} 
+	
+	@Override
+	public List<MostActiveChargingStationsDto> getMostActiveChargingStations() {
+		// TODO Auto-generated method stub
+		ObjectMapper mapper = new ObjectMapper();
+		
+		List<MostActiveChargingStationsDto> activeChargingStationsDtos = new ArrayList<MostActiveChargingStationsDto>();
+		
+		List<Map<String, String>>  list =  chargingRequestRepository.getMostActiveChargingStations();
+		
+		for (int i = 0; i < list.size(); i++) 
+		{
+		
+			activeChargingStationsDtos.add(mapper.convertValue(list.get(i), MostActiveChargingStationsDto.class));
+
+		}		
+		
+		return activeChargingStationsDtos ; 
 	} 
 	
 }

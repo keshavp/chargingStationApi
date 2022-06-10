@@ -11,13 +11,12 @@ import org.springframework.stereotype.Service;
 
 import com.scube.chargingstation.dto.AmenityDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
-import com.scube.chargingstation.dto.ConnectorTypeDto;
 import com.scube.chargingstation.dto.incoming.ChargingPointIncomingDto;
 import com.scube.chargingstation.dto.incoming.ConnectorsIncomingDto;
-import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
 import com.scube.chargingstation.entity.AmenitiesEntity;
 import com.scube.chargingstation.entity.ChargepointForSeverEntity;
+import com.scube.chargingstation.entity.ChargingPointConnectorRateEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
 import com.scube.chargingstation.entity.ConnectorStatusEntity;
@@ -25,6 +24,7 @@ import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.exception.EntityType;
 import com.scube.chargingstation.exception.ExceptionType;
 import com.scube.chargingstation.repository.ChargepointForSeverRepository;
+import com.scube.chargingstation.repository.ChargingPointConnectorRateRepository;
 import com.scube.chargingstation.repository.ChargingPointRepository;
 import com.scube.chargingstation.repository.ConnectorStatusRepository;
 
@@ -48,6 +48,9 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	
 	@Autowired
 	ConnectorStatusRepository connectorStatusRepository;
+	
+	@Autowired
+	ChargingPointConnectorRateRepository chargingPointConnectorRateRepository;
 	
 	@Override
 	public ChargingPointDto getChargingPointById(String id) {
@@ -105,6 +108,8 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		chargingPointEntity.setCommunicationtype(chargingPointIncomingDto.getCommunicationtype());
 		chargingPointEntity.setPowerstandards(chargingPointIncomingDto.getPowerstandards());
 		chargingPointEntity.setStationtype(chargingPointIncomingDto.getStationtype());
+		chargingPointEntity.setRating(0.0);
+		chargingPointEntity.setIsdeleted("N");
 		
 	    Set<ConnectorsIncomingDto> connectors =  chargingPointIncomingDto.getConnectors();
 	    
@@ -124,10 +129,11 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	    	
 	    	connectorEntity.setConnectorId(connectorDto.getConnectorId());
 	    	connectorEntity.setChargerTypeEntity(connectorTypeService.getChargerTypeEntityByName(connectorDto.getName()));
-	    	
+	    	connectorEntity.setIsdeleted("N");
 			
 			  connectorStatusEntity.setConnectorId(Integer.parseInt(connectorDto.getConnectorId()));
 			  connectorStatusEntity.setChargePointId(chargingPointIncomingDto.getChargingPointId());
+			  connectorStatusEntity.setLastStatus("Available");
 			  
 			  ConnectorStatusEntity connectorStatusEntitya = connectorStatusRepository.save(connectorStatusEntity);
 			  
@@ -160,6 +166,12 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	}
 	
 	@Override
+	public List<ChargingPointEntity> getAllChargingPointEntity() {
+		// TODO Auto-generated method stub
+		return chargingPointRepository.findAll();
+	}
+	
+	@Override
 	public List<ChargingPointDto> getAllActiveChargingStations() {
 		// TODO Auto-generated method stub
 		List<ChargingPointEntity> chargingPointEntity =	chargingPointRepository.findByIsdeleted("N");
@@ -171,6 +183,38 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		// TODO Auto-generated method stub
 		ChargingPointEntity chargingPointEntity = chargingPointRepository.findById(id).get();
 		return ChargingPointMapper.toChargingPointDto(chargingPointEntity);
+	}
+	
+	@Override
+	public Boolean getChargingStationsgoLiveCheckById(String id) {
+		// TODO Auto-generated method stub
+		
+		ChargingPointEntity chargingPointEntity = chargingPointRepository.findById(id).get();
+		
+		if(chargingPointEntity == null) {
+			throw BRSException.throwException(EntityType.CHARGINGSTATION, ExceptionType.VALUE_NOT_FOUND , chargingPointEntity.getChargingPointId()); 
+		}
+	    
+	    ChargepointForSeverEntity	chargepointForSeverEntity = chargepointForSeverRepository.findByChargePointId(chargingPointEntity.getChargingPointId());
+	    
+	    if(chargepointForSeverEntity == null) {
+			throw BRSException.throwException(EntityType.CHARGINGSTATIONFORSEVER, ExceptionType.VALUE_NOT_FOUND , chargingPointEntity.getChargingPointId()); 
+		}
+	    
+	    List<ConnectorStatusEntity> connectorStatusEntitya = connectorStatusRepository.findByChargePointId(chargingPointEntity.getChargingPointId());
+		
+	    if(connectorStatusEntitya.size() == 0) {
+			throw BRSException.throwException(EntityType.CONNECTORSTATUS, ExceptionType.VALUE_NOT_FOUND , chargingPointEntity.getChargingPointId()); 
+		}
+	    
+	    
+	    ChargingPointConnectorRateEntity chargingPointConnectorRateEntity = chargingPointConnectorRateRepository.findByChargingPointEntity(chargingPointEntity);
+		
+	    if(chargingPointConnectorRateEntity == null) {
+			throw BRSException.throwException(EntityType.CHARGINGPOINTCONNECTORRATE, ExceptionType.VALUE_NOT_FOUND , chargingPointEntity.getChargingPointId()); 
+		}
+	    
+		return true;
 	}
 
 	@Override

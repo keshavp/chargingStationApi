@@ -91,7 +91,7 @@ public class ChargingRequestEntity extends BaseEntity {
 	@Column(name = "receipt_no")
 	private String  receiptNo;
 	
-	@Column(name = "charging_time")
+	@Column(name = "charging_time", columnDefinition = "00:00:00")
 	private String  chargingTime;
 	
 }

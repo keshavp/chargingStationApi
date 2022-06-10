@@ -8,4 +8,6 @@ import com.scube.chargingstation.entity.ChargepointForSeverEntity;
 @Repository
 public interface ChargepointForSeverRepository  extends JpaRepository<ChargepointForSeverEntity, String>  {
 
+	ChargepointForSeverEntity findByChargePointId(String chargingPointId);
+
 }

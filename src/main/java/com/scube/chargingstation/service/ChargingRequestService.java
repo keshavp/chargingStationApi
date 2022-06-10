@@ -9,6 +9,7 @@ import com.scube.chargingstation.dto.ChargingHistoryDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.ChargingRequestRespDto;
 import com.scube.chargingstation.dto.ChargingStatusRespDto;
+import com.scube.chargingstation.dto.MostActiveChargingStationsDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationWiseReportIncomingDto;
@@ -44,5 +45,13 @@ public interface ChargingRequestService {
 	public List<ChargingRequestRespDto> getChargingHistoryDetailsByStation(ChargingStationWiseReportIncomingDto chargingStationWiseReportIncomingDto);
 	
 //	public ChargingRequestRespDto getChargingHistoryByStation(ChargingRequestDto chargingRequestDto); 
+	
+	
+	int getYesterdayConsumedKwh();
+	int getWeekConsumedKwh();
+	String get30daysTotalChargingTime();
+	int weekTotalChargingRequestCountSessions();
+	
+	List<MostActiveChargingStationsDto> getMostActiveChargingStations();
 	
 }

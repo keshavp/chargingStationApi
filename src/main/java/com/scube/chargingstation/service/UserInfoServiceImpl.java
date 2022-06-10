@@ -217,6 +217,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return AuthUserMapper.toUserLoginDto(userInfoEntities);
 	
 	}
+	
+	@Override
+	public int findCountForWeekNewAddedUser() {
+		// TODO Auto-generated method stub
+		return userInfoRepository.findCountForWeekNewAddedUser();
+	
+	}
 
 	@Override
 	public AuthUserDto getUserById(String userId) {

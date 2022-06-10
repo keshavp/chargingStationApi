@@ -252,4 +252,12 @@ public class ChargingStationController {
 				return Response.ok().setPayload(chargingPointService.updateChargingPoint(chargingPointIncomingDto));
 		
 	}
+	
+	@GetMapping( value = "/goLiveCheck/{id}" )
+	public Response goLiveCheckById(@PathVariable("id") String id) {
+		logger.info("***addChargingStations***");
+		
+		return Response.ok().setPayload(chargingPointService.getChargingStationsgoLiveCheckById(id));
+		
+	}
 }

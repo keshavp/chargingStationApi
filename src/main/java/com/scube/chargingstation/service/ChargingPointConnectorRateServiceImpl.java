@@ -88,4 +88,24 @@ public class ChargingPointConnectorRateServiceImpl implements ChargingPointConne
 		
 		return ChargingPointConnectorRateMapper.toChargingPointConnectorRateDto(chargingPointConnectorRateEntity);
 	}
+
+	@Override
+	public ChargingPointConnectorRateEntity getConnectorByChargingPointIdAndConnectorId(String chargingPoint,
+			String connector) {
+		// TODO Auto-generated method stub
+		
+		ChargingPointEntity	chargingPointEntity = chargingPointService.getChargingPointEntityById(chargingPoint);
+		
+		ConnectorEntity	connectorEntity = connectorService.getConnectorEntityById(connector) ;
+		
+		return chargingPointConnectorRateRepository.findByChargingPointEntityAndConnectorEntity(chargingPointEntity,connectorEntity);
+		
+	}
+	
+	
+	@Override
+	public ChargingPointConnectorRateEntity getConnectorByChargingPointEntity(ChargingPointEntity chargingPointEntity) {
+		// TODO Auto-generated method stub
+		return chargingPointConnectorRateRepository.findByChargingPointEntity(chargingPointEntity);
+	}
 }
