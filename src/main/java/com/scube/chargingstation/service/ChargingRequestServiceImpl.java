@@ -60,6 +60,7 @@ import com.scube.chargingstation.repository.UserInfoRepository;
 import com.scube.chargingstation.repository.UserWalletDtlRepository;
 import com.scube.chargingstation.repository.UserWalletRepository;
 import com.scube.chargingstation.util.StaticPathContUtils;
+import com.scube.chargingstation.util.StringNullEmpty;
 
 @Service
 public class ChargingRequestServiceImpl implements ChargingRequestService {
@@ -381,7 +382,11 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	  }
 	  
 	  CPDto.setAddress(chargingPointEntity.getAddress());
-	  CPDto.setDistance(chargingPointEntity.getDistance());
+	  
+	//  Double dist=0.0;
+	  
+	//  CPDto.setDistance(StringNullEmpty.stringNullAndEmptyToBlank(chargingPointEntity.getDistance()));
+	  CPDto.setDistance(0.0);
 	  CPDto.setLatitude(chargingPointEntity.getLatitude());
 	  CPDto.setLongitude(chargingPointEntity.getLongitude());
 	  CPDto.setName(chargingPointEntity.getName());
