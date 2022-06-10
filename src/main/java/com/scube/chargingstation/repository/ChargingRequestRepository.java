@@ -63,19 +63,19 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	 		+ " between DATE_FORMAT(STR_TO_DATE((?2), '%d-%M-%Y'), '%d%m%Y') and DATE_FORMAT(STR_TO_DATE((?3), '%d-%M-%Y'), '%d%m%Y')",nativeQuery = true)
 	List<ChargingRequestEntity> findByChargingPointEntity(String chargingPoint , String startDate, String endDate);
 
-	 @Query(value = "SELECT sum(final_kwh) as kwh FROM charging_request where charging_status = 'Done' and DATE_FORMAT(created_at, '%Y%m%d') = DATE_FORMAT(DATE_SUB(now(), INTERVAL 1 DAY), '%Y%m%d');", nativeQuery = true)
+	 @Query(value = "SELECT IFNULL(sum(final_kwh),0) as kwh FROM charging_request where charging_status = 'Done' and DATE_FORMAT(created_at, '%Y%m%d') = DATE_FORMAT(DATE_SUB(now(), INTERVAL 1 DAY), '%Y%m%d');", nativeQuery = true)
 	 int getYesterdayConsumedKwh();
 
-	 @Query(value = "SELECT sum(final_kwh) as kwh FROM charging_request where charging_status = 'Done' and created_at between DATE_SUB(now(), INTERVAL 7 DAY) and now();", nativeQuery = true)
+	 @Query(value = "SELECT IFNULL(sum(final_kwh),0) as kwh FROM charging_request where charging_status = 'Done' and created_at between DATE_SUB(now(), INTERVAL 7 DAY) and now();", nativeQuery = true)
 	 int getWeekConsumedKwh();
 
-	 @Query(value = "SELECT sum(final_kwh) as kwh ,fk_charging_point as name FROM charging_request group by fk_charging_point order by created_at , kwh;", nativeQuery = true)
+	 @Query(value = "SELECT IFNULL(sum(final_kwh),0) as kwh ,IFNULL(fk_charging_point,'') as name FROM charging_request group by fk_charging_point order by created_at , kwh;", nativeQuery = true)
 	 List<Map<String, String>> getMostActiveChargingStations();
 
 	 @Query(value = "SELECT SEC_TO_TIME( SUM( TIME_TO_SEC(charging_time) ) ) AS timeSum FROM charging_request where charging_status = 'Done' and created_at between DATE_SUB(now(), INTERVAL 30 DAY) and now()", nativeQuery = true)
 	 String get30daysTotalChargingTime();
 	 
-	 @Query(value = "SELECT count(id) AS timeSum FROM charging_request where charging_status = 'Done' and created_at between DATE_SUB(now(), INTERVAL 7 DAY) and now()", nativeQuery = true)
+	 @Query(value = "SELECT IFNULL(count(id),0) AS timeSum FROM charging_request where charging_status = 'Done' and created_at between DATE_SUB(now(), INTERVAL 7 DAY) and now()", nativeQuery = true)
 	 int weekTotalChargingRequestCountSessions();
 	 
 //	ChargingRequestEntity findByChargingPointEntity(ChargingPointEntity chargingPointEntity);
