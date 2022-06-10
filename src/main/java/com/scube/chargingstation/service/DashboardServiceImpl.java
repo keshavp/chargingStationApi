@@ -10,6 +10,10 @@ import com.scube.chargingstation.dto.MostActiveChargingStationsDto;
 import com.scube.chargingstation.dto.RecentRehargeDto;
 import com.scube.chargingstation.dto.UserDashboardDto;
 import com.scube.chargingstation.dto.mapper.AverageSessionMapper;
+import com.scube.chargingstation.entity.ChargingRequestEntity;
+import com.scube.chargingstation.entity.UserInfoEntity;
+import com.scube.chargingstation.exception.BRSException;
+import com.scube.chargingstation.repository.UserInfoRepository;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -19,6 +23,9 @@ public class DashboardServiceImpl implements DashboardService {
 	
 	@Autowired
 	ChargingRequestService chargingRequestService;
+	
+	@Autowired
+	UserInfoRepository userInfoRepository;
 	
 	
 	public AdminDashboardDto getAdminDashboard() {
@@ -46,20 +53,28 @@ public class DashboardServiceImpl implements DashboardService {
 		return null;
 	}
 
-	public Object getUserDashboardById(String id) {
+	public UserDashboardDto getUserDashboardByMobileNumber(String mobileNumber) {
 		// TODO Auto-generated method stub
 		
+		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(mobileNumber);
+		if(userInfoEntity==null)
+		{
+			throw BRSException.throwException("Error: User does not exist"); 
+		}
 		
+		UserDashboardDto userDashboardDto = chargingRequestService.getUserChargingRequestDetails(userInfoEntity.getId());
+		
+		ChargingRequestEntity chargingRequestEntity  = chargingRequestService.getRecentReharge(userInfoEntity.getId()) ;
 		
 		
 		return new UserDashboardDto()
-				.setWalletBalance(0)
-				.setTotalRecharge(0)
-				.setTotalAmountSpent(0)
+				.setWalletBalance(userDashboardDto.getWalletBalance())
+				.setTotalRecharge(userDashboardDto.getTotalRecharge())
+				.setTotalAmountSpent(userDashboardDto.getTotalAmountSpent())
 				.setRecentReharge(new RecentRehargeDto()
-						.setRechargeDate(id)
-						.setRechargePlace(id)
-						.setRechargeAmount(0)
+						.setRechargeDate(chargingRequestEntity.getStartTime())
+						.setRechargePlace(chargingRequestEntity.getChargingPointEntity().getName())
+						.setRechargeAmount(chargingRequestEntity.getFinalAmount())
 						);
 	}
 

@@ -1,5 +1,7 @@
 package com.scube.chargingstation.dto;
 
+import java.time.Instant;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -18,7 +20,7 @@ import lombok.experimental.Accessors;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RecentRehargeDto {
 
-	private String rechargeDate;
+	private Instant rechargeDate;
 	private String 	rechargePlace;
 	private double 	rechargeAmount;
 }

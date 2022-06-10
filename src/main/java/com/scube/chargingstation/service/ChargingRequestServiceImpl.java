@@ -32,6 +32,7 @@ import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.ChargingRequestRespDto;
 import com.scube.chargingstation.dto.ChargingStatusRespDto;
 import com.scube.chargingstation.dto.MostActiveChargingStationsDto;
+import com.scube.chargingstation.dto.UserDashboardDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
@@ -872,6 +873,26 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		}		
 		
 		return activeChargingStationsDtos ; 
+	} 
+	
+	
+	@Override
+	public UserDashboardDto getUserChargingRequestDetails(String id) {
+		// TODO Auto-generated method stub
+		ObjectMapper mapper = new ObjectMapper();
+		
+		Map<String, String>  userDashboardMap =  chargingRequestRepository.getUserChargingRequestDetails(id);
+		
+		
+		UserDashboardDto userDashboardDto = mapper.convertValue(userDashboardMap, UserDashboardDto.class);
+		
+		return userDashboardDto ; 
+	}
+
+	@Override
+	public ChargingRequestEntity getRecentReharge(String id) {
+		// TODO Auto-generated method stub
+		return chargingRequestRepository.getRecentReharge(id);
 	} 
 	
 }

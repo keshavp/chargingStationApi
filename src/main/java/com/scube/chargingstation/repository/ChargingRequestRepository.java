@@ -69,7 +69,7 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	 @Query(value = "SELECT IFNULL(sum(final_kwh),0) as kwh FROM charging_request where charging_status = 'Done' and created_at between DATE_SUB(now(), INTERVAL 7 DAY) and now();", nativeQuery = true)
 	 int getWeekConsumedKwh();
 
-	 @Query(value = "SELECT IFNULL(sum(final_kwh),0) as kwh ,IFNULL(fk_charging_point,'') as name FROM charging_request group by fk_charging_point order by created_at , kwh;", nativeQuery = true)
+	 @Query(value = "SELECT IFNULL(sum(cr.final_kwh),0) as kwh ,IFNULL(cp.name,'') as name FROM charging_request cr left join mst_charging_point cp on cr.fk_charging_point = cp.id group by cr.fk_charging_point order by cr.created_at , kwh;", nativeQuery = true)
 	 List<Map<String, String>> getMostActiveChargingStations();
 
 	 @Query(value = "SELECT SEC_TO_TIME(IFNULL(SUM( TIME_TO_SEC(charging_time) ),'00:00:00')) AS timeSum FROM charging_request where charging_status = 'Done' and created_at between DATE_SUB(now(), INTERVAL 30 DAY) and now()", nativeQuery = true)
@@ -82,8 +82,13 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 
 //	ChargingRequestEntity findByChargingPointId(ChargingPointEntity chargingPointEntity);
 	 
-//	 SELECT sum(cr.final_kwh) as  totalRecharge , sum(cr.final_amount) as totalAmountSpent , cr.fk_user , ew.current_balance as walletBalance++ FROM charging_request cr left join emp_wallet ew on cr.fk_user = ew.fk_user  where cr.fk_user = '182f254410'
+//	 
 	
+	 @Query(value = "SELECT IFNULL(sum(cr.final_kwh),0) as  totalRecharge , IFNULL(sum(cr.final_amount),0) as totalAmountSpent , cr.fk_user , IFNULL(ew.current_balance,0) as walletBalance  FROM charging_request cr left join emp_wallet ew on cr.fk_user = ew.fk_user  where cr.fk_user = (?1);", nativeQuery = true)
+	 Map<String, String> getUserChargingRequestDetails(String id);
+	 
+	 @Query(value = "SELECT *  FROM charging_request where fk_user = (?1) order by created_at desc limit 1;", nativeQuery = true)
+	 ChargingRequestEntity getRecentReharge(String id);
 }
 
 

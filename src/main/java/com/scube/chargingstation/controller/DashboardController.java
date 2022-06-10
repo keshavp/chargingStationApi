@@ -39,10 +39,10 @@ public class DashboardController {
 		return Response.ok().setPayload(dashboardService.getPartnerDashboardById(id));    
 	}
 	
-	@GetMapping( value = "/uDashboard/{id}")
-	public Response getUserDashboard(@PathVariable("id") String id) {    
+	@GetMapping( value = "/uDashboard/{mobilenumber}")
+	public Response getUserDashboard(@PathVariable("mobilenumber") String mobilenumber) {    
 		logger.info("***DashboardController getUserDashboard***");
 		
-		return Response.ok().setPayload(dashboardService.getUserDashboardById(id));    
+		return Response.ok().setPayload(dashboardService.getUserDashboardByMobileNumber(mobilenumber));    
 	}
 }
