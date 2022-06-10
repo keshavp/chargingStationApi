@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.scube.chargingstation.dto.AdminDashboardDto;
 import com.scube.chargingstation.dto.MostActiveChargingStationsDto;
+import com.scube.chargingstation.dto.RecentRehargeDto;
+import com.scube.chargingstation.dto.UserDashboardDto;
 import com.scube.chargingstation.dto.mapper.AverageSessionMapper;
 
 @Service
@@ -46,7 +48,19 @@ public class DashboardServiceImpl implements DashboardService {
 
 	public Object getUserDashboardById(String id) {
 		// TODO Auto-generated method stub
-		return null;
+		
+		
+		
+		
+		return new UserDashboardDto()
+				.setWalletBalance(0)
+				.setTotalRecharge(0)
+				.setTotalAmountSpent(0)
+				.setRecentReharge(new RecentRehargeDto()
+						.setRechargeDate(id)
+						.setRechargePlace(id)
+						.setRechargeAmount(0)
+						);
 	}
 
 }
