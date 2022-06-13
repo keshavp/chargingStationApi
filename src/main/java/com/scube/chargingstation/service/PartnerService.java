@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import com.scube.chargingstation.dto.PartnerDto;
 import com.scube.chargingstation.dto.incoming.PartnerIncomingDto;
+import com.scube.chargingstation.entity.PartnerInfoEntity;
 
 public interface PartnerService {
 	
@@ -18,4 +19,8 @@ public interface PartnerService {
 	PartnerDto getPartnerUserById(String id);
 	
 	List<PartnerDto> getAllActivePartners();
+	
+	PartnerInfoEntity getPartnersById(String id);
+	
+	PartnerInfoEntity getPartnerById(String id);
 }

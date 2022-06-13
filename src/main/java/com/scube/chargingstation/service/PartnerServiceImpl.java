@@ -1,7 +1,6 @@
 package com.scube.chargingstation.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -185,6 +184,21 @@ public class PartnerServiceImpl implements PartnerService {
 		
 		return PartnerMapper.toPartnersDtos(partnerInfoEntities);
 	}
-	
+
+	@Override
+	public PartnerInfoEntity getPartnersById(String id) {
+		// TODO Auto-generated method stub
+		PartnerInfoEntity partnerInfoEntity = partnerRepository.findById(id).get();
+			
+		return partnerInfoEntity;
+	}
+
+	@Override
+	public PartnerInfoEntity getPartnerById(String id) {
+		// TODO Auto-generated method stub
+		PartnerInfoEntity partnerInfoEntity = partnerRepository.findById(id).get();
+		
+		return partnerInfoEntity;
+	}
 
 }

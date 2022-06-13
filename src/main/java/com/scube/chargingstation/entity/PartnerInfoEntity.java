@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.print.DocFlavor.STRING;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,5 +27,9 @@ public class PartnerInfoEntity extends BaseEntity{
 	
 	private String gstn;
 	private String status;
+	
+	@OneToOne
+    @JoinColumn(name = "fk_userInfo")
+	private UserInfoEntity userInfoEntity;
 	
 }

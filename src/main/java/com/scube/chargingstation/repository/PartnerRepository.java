@@ -10,7 +10,7 @@ import com.scube.chargingstation.entity.PartnerInfoEntity;
 
 @Repository
 public interface PartnerRepository extends JpaRepository<PartnerInfoEntity, String>{
-		
+	
 	Optional<PartnerInfoEntity> findById(String id);
 	
 	List<PartnerInfoEntity> findByStatus(String status);

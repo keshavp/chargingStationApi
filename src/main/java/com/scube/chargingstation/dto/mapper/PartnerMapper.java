@@ -18,6 +18,7 @@ public class PartnerMapper {
         		.setPincode(partnerInfoEntity.getPincode())
         		.setMobileno(partnerInfoEntity.getMobileno())
         		.setAlternateMobileNo(partnerInfoEntity.getAlternateMobileNo())
+        		.setEmail(partnerInfoEntity.getEmail())
         		.setGstn(partnerInfoEntity.getGstn())
         		.setStatus(partnerInfoEntity.getStatus());
 	}

@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.print.DocFlavor.STRING;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
@@ -32,6 +33,9 @@ public class UserInfoIncomingDto {
 	private String mobilenumber;
 	private String role;
 	private String password;
+	private String partnerId;
 	private String status;
+	
+	private String partnerName;
 	
 }

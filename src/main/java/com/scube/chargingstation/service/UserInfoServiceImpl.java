@@ -17,6 +17,7 @@ import com.scube.chargingstation.dto.UserInfoOtpDto;
 import com.scube.chargingstation.dto.incoming.OtpVerificationIncomingDto;
 import com.scube.chargingstation.dto.incoming.UserInfoIncomingDto;
 import com.scube.chargingstation.dto.mapper.AuthUserMapper;
+import com.scube.chargingstation.entity.PartnerInfoEntity;
 import com.scube.chargingstation.entity.RoleEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.entity.UserInfoOtpEntity;
@@ -47,7 +48,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Autowired
 	SmsService	smsService;
 	
-	
+	@Autowired
+	PartnerService partnerService;
 	
 	BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 	
@@ -127,7 +129,16 @@ public class UserInfoServiceImpl implements UserInfoService {
 		 * else { userInfoEntity.setVerified("Y"); }
 		 */
 		
+		if(roleEntity.getNameCode().equals("PU")) {
+			
+			PartnerInfoEntity partnerInfoEntity = partnerService.getPartnersById(userInfoIncomingDto.getPartnerId());
+			
+			 userInfoEntity.setPartner(partnerInfoEntity);
+	//		 userInfoEntity.setPartnerInfoEntity(partnerInfoEntity);
+		}
+		
 		userInfoEntity = userInfoRepository.save(userInfoEntity);
+
 
 		if(roleEntity.getNameCode().equals("MU")) {
 			String otpCode = "";
@@ -184,6 +195,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		userInfoEntity.setEmail(userInfoIncomingDto.getEmail());
 		userInfoEntity.setUsername(userInfoIncomingDto.getUsername());
 		userInfoEntity.setStatus(userInfoIncomingDto.getStatus());
+//		userInfoEntity.setPartner(userInfoIncomingDto.getPartnerName());
 		userInfoRepository.save(userInfoEntity);
 		
 		// TODO Auto-generated method stub
@@ -232,12 +244,17 @@ public class UserInfoServiceImpl implements UserInfoService {
 		UserInfoEntity userInfo=userInfoRepository.findById(userId);	
 		AuthUserDto authUserDto = new AuthUserDto();
 		authUserDto.setUserId(userInfo.getId());
+		authUserDto.setPartnerId(userInfo.getPartner().getId());
 		authUserDto.setUsername(userInfo.getUsername());
-		authUserDto.setRole(userInfo.getRole().getNameCode())  	;
+		authUserDto.setRole(userInfo.getRole().getNameCode());
 		authUserDto.setMobileno(userInfo.getMobilenumber());
 		authUserDto.setEmail(userInfo.getEmail());
 		authUserDto.setStatus(userInfo.getStatus());
 		authUserDto.setRolename(userInfo.getRole().getName());
+		
+		if(userInfo.getPartner() != null) {
+			authUserDto.setPartnerName(userInfo.getPartner().getPartnerName());
+		}
 		
 		RoleEntity rolentityEntity=roleRepository.findByNameCode(userInfo.getRole().getNameCode());
 		
@@ -254,7 +271,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	
 	
 	@Override
-	public List<AuthUserDto> getAllPartnerUsers(String nameCode) {
+	public List<AuthUserDto> getPartnerUsersByRoleCode(String nameCode) {
 		
 		RoleEntity roleEntity = roleRepository.findByNameCode(nameCode);
 		

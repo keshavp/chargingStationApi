@@ -28,5 +28,8 @@ public class AuthUserDto {
 	private String status;
 	private String email;
 	private String rolename;
-
+	
+	private String partnerName;
+	private String partnerId;
+	
 }

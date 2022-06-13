@@ -24,6 +24,10 @@ public interface UserInfoService {
 	
 	AuthUserDto getPartnerUserById(String userId);
 	
+
 	List<AuthUserDto> getAllPartnerUsers(String string);
 	int findCountForWeekNewAddedUser();
+
+	List<AuthUserDto> getPartnerUsersByRoleCode(String string);
+
 }

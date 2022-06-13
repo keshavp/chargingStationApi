@@ -89,10 +89,10 @@ public class UserInfoController {
 	}
 	
 	
-	@GetMapping( value = "/getAllPartnerUsers/{roleCode}")
-	public Response getAllPartnerUsers(@PathVariable ("roleCode") String nameCode) {
-		logger.info("***UserInfoController getAllPartnerUsers***");
-		return Response.ok().setPayload(userInfoService.getAllPartnerUsers(nameCode));
+	@GetMapping( value = "/getPartnerUsersByRoleCode/{roleCode}")
+	public Response getPartnerUsersByRoleCode(@PathVariable ("roleCode") String nameCode) {
+		logger.info("***UserInfoController getPartnerUsersByRoleCode***");
+		return Response.ok().setPayload(userInfoService.getPartnerUsersByRoleCode(nameCode));
 	}
 	
 	@GetMapping( value = "/getPartnerUserById/{id}")

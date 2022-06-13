@@ -32,8 +32,13 @@ public class UserInfoEntity extends BaseEntity{
 	private String resetpassword;
 	private String fcmToken;
 	private int resetpasswordcount;
+	
 	@UpdateTimestamp
 	@Column(name = "reset_password_instance")
 	private Instant resetPassInstance;
+	
+	@OneToOne
+	@JoinColumn(name = "fk_partner")
+	private PartnerInfoEntity partner;
 	
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.scube.chargingstation.dto.AuthUserDto;
+import com.scube.chargingstation.entity.PartnerInfoEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
 
 public class AuthUserMapper {
@@ -24,6 +25,7 @@ public class AuthUserMapper {
         		.setEmail(userInfo.getEmail());
         		
     }	
+	
 	public static List<AuthUserDto> toUserLoginDto(List<UserInfoEntity> userInfoEntities) {
 		// TODO Auto-generated method stub
 		

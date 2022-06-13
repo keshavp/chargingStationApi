@@ -45,11 +45,13 @@ public class PartnerController {
 				
 	}
 	
+	
 	@GetMapping ( value = "/getAllPartners")
 	public Response getAllPartners() {
 		Logger.info("***PartnerController getAllPartners***");
 		return Response.ok().setPayload(partnerService.getAllPartners());
 	}
+	
 	
 	@GetMapping ( value = "/getPartnerUserById/{id}")
 	public Response getPartnerUserById(@PathVariable String id) {
@@ -57,6 +59,7 @@ public class PartnerController {
 		return Response.ok().setPayload(partnerService.getPartnerUserById(id));
 		
 	}
+	
 	
 	@GetMapping ( value = "/getAllActivePartners")
 	public Response getAllActivePartners() {
