@@ -52,9 +52,35 @@ public class DashboardServiceImpl implements DashboardService {
 
 	}
 
-	public Object getPartnerDashboardById(String id) {
+	public AdminDashboardDto getPartnerDashboardById(String mobileNumber) {
 		// TODO Auto-generated method stub
-		return null;
+		
+		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(mobileNumber);
+		if(userInfoEntity==null)
+		{
+			throw BRSException.throwException("Error: User does not exist"); 
+		}
+		
+		if(!userInfoEntity.getRole().getNameCode().equals("PU"))
+		{
+			throw BRSException.throwException("Error: User does not exist"); 
+		}
+		
+//		int weekaddedUserCount =  userInfoService.findCountForWeekNewAddedUserByPartnerId();
+		int yesterdayConsumedKwh = chargingRequestService.getYesterdayConsumedKwhByPartnerId(userInfoEntity);
+		int weekConsumedKwh = chargingRequestService.getWeekConsumedKwhByPartnerId(userInfoEntity);
+		String MonthdaysTotalChargingTime = chargingRequestService.get30daysTotalChargingTimeByPartnerId(userInfoEntity); 
+		int weekTotalChargingRequestCountSessions  = chargingRequestService.weekTotalChargingRequestCountSessionsByPartnerId(userInfoEntity);
+		List<MostActiveChargingStationsDto> getMostActiveChargingStations = chargingRequestService.getMostActiveChargingStationsByPartnerId(userInfoEntity);
+		
+		return  new AdminDashboardDto()
+				.setYesterdayConsumedKwh(yesterdayConsumedKwh)
+//				.setWeekNewUserCount(weekaddedUserCount)
+        		.setMostActiveChargingStations(getMostActiveChargingStations)
+        		.setAverageSession(AverageSessionMapper.toAverageSessionDto("Total Time",MonthdaysTotalChargingTime))        		
+        		.setWeekConsumedKwh(weekConsumedKwh)
+        		.setWeekSessionscount(weekTotalChargingRequestCountSessions);
+
 	}
 
 	public UserDashboardDto getUserDashboardByMobileNumber(String mobileNumber) {

@@ -8,7 +8,7 @@ import com.scube.chargingstation.dto.UserDashboardDto;
 
 public interface DashboardService {
 
-	Object getPartnerDashboardById(String id);
+	AdminDashboardDto getPartnerDashboardById(String mobilenumber);
 
 	UserDashboardDto getUserDashboardByMobileNumber(String id);
 

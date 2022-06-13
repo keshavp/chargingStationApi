@@ -893,6 +893,51 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	public ChargingRequestEntity getRecentReharge(String id) {
 		// TODO Auto-generated method stub
 		return chargingRequestRepository.getRecentReharge(id);
+	}
+
+// 	
+	
+	@Override
+	public int getYesterdayConsumedKwhByPartnerId(UserInfoEntity userInfoEntity) {
+		// TODO Auto-generated method stub
+		return chargingRequestRepository.getYesterdayConsumedKwhByPartnerId(userInfoEntity.getPartner().getId());
+	}
+
+	@Override
+	public int getWeekConsumedKwhByPartnerId(UserInfoEntity userInfoEntity) {
+		// TODO Auto-generated method stub
+		return chargingRequestRepository.getWeekConsumedKwhByPartnerId(userInfoEntity.getPartner().getId());
+	}
+
+	@Override
+	public String get30daysTotalChargingTimeByPartnerId(UserInfoEntity userInfoEntity) {
+		// TODO Auto-generated method stub
+		return chargingRequestRepository.get30daysTotalChargingTimeByPartnerId(userInfoEntity.getPartner().getId());
+	}
+
+	@Override
+	public int weekTotalChargingRequestCountSessionsByPartnerId(UserInfoEntity userInfoEntity) {
+		// TODO Auto-generated method stub
+		return chargingRequestRepository.weekTotalChargingRequestCountSessionsByPartnerId(userInfoEntity.getPartner().getId());
+	}
+
+	@Override
+	public List<MostActiveChargingStationsDto> getMostActiveChargingStationsByPartnerId(UserInfoEntity userInfoEntity) {
+		// TODO Auto-generated method stub
+		ObjectMapper mapper = new ObjectMapper();
+		
+		List<MostActiveChargingStationsDto> activeChargingStationsDtos = new ArrayList<MostActiveChargingStationsDto>();
+		
+		List<Map<String, String>>  list =  chargingRequestRepository.getMostActiveChargingStationsByPartnerId(userInfoEntity.getPartner().getId());
+		
+		for (int i = 0; i < list.size(); i++) 
+		{
+		
+			activeChargingStationsDtos.add(mapper.convertValue(list.get(i), MostActiveChargingStationsDto.class));
+
+		}		
+		
+		return activeChargingStationsDtos ; 
 	} 
 	
 }

@@ -89,6 +89,29 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	 
 	 @Query(value = "SELECT *  FROM charging_request where fk_user = (?1) order by created_at desc limit 1;", nativeQuery = true)
 	 ChargingRequestEntity getRecentReharge(String id);
+
+// ========================================for partner ================
+	 @Query(value = "SELECT IFNULL(sum(cr.final_kwh),0) as kwh FROM charging_request cr "
+		 		+ "left join mst_charging_point cp on  cr.fk_charging_point = cp.id "
+		 		+ "where cr.charging_status = 'Done' and cp.fk_partner = (?1) and DATE_FORMAT(cr.created_at, '%Y%m%d') = DATE_FORMAT(DATE_SUB(now(), INTERVAL 1 DAY), '%Y%m%d');", nativeQuery = true)	 
+	 int getYesterdayConsumedKwhByPartnerId(String partnerid);
+	 
+	 @Query(value = "SELECT IFNULL(sum(cr.final_kwh),0) as kwh FROM charging_request cr "
+		 		+ "left join mst_charging_point cp on  cr.fk_charging_point = cp.id "
+		 		+ "where cr.charging_status = 'Done' and cp.fk_partner = (?1) and cr.created_at between DATE_SUB(now(), INTERVAL 7 DAY) and now();", nativeQuery = true)
+	 int getWeekConsumedKwhByPartnerId(String partnerid);
+
+	 @Query(value = "SELECT IFNULL(sum(cr.final_kwh),0) as kwh ,IFNULL(cp.name,'') as name FROM charging_request cr left join mst_charging_point cp on cr.fk_charging_point = cp.id  where  cp.fk_partner = (?1)  group by cr.fk_charging_point order by cr.created_at , kwh;", nativeQuery = true)
+	 List<Map<String, String>> getMostActiveChargingStationsByPartnerId(String partnerid);
+
+	 @Query(value = "SELECT SEC_TO_TIME(IFNULL(SUM( TIME_TO_SEC(cr.charging_time) ),'00:00:00')) AS timeSum FROM charging_request cr left join mst_charging_point cp on  cr.fk_charging_point = cp.id "
+	 		+ " where cr.charging_status = 'Done' and cp.fk_partner = (?1) and cr.created_at between DATE_SUB(now(), INTERVAL 30 DAY) and now() ", nativeQuery = true)
+	 String get30daysTotalChargingTimeByPartnerId(String partnerid);
+	 
+	 @Query(value = "SELECT IFNULL(count(cr.id),0) AS timeSum FROM charging_request cr left join mst_charging_point cp on  cr.fk_charging_point = cp.id "
+	 		+ " where cr.charging_status = 'Done' and cp.fk_partner = (?1) and cr.created_at between DATE_SUB(now(), INTERVAL 7 DAY) and now() ", nativeQuery = true)
+	 int weekTotalChargingRequestCountSessionsByPartnerId(String partnerid);
+	 
 }
 
 

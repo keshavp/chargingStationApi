@@ -17,6 +17,7 @@ import com.scube.chargingstation.dto.incoming.ChargingStationWiseReportIncomingD
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
+import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.dto.response.Response;
 
 
@@ -57,5 +58,15 @@ public interface ChargingRequestService {
 	
 	UserDashboardDto getUserChargingRequestDetails(String id);
 	ChargingRequestEntity getRecentReharge(String id);
+
+	public int getYesterdayConsumedKwhByPartnerId(UserInfoEntity userInfoEntity);
+
+	public int getWeekConsumedKwhByPartnerId(UserInfoEntity userInfoEntity);
+
+	public String get30daysTotalChargingTimeByPartnerId(UserInfoEntity userInfoEntity);
+
+	public int weekTotalChargingRequestCountSessionsByPartnerId(UserInfoEntity userInfoEntity);
+
+	public List<MostActiveChargingStationsDto> getMostActiveChargingStationsByPartnerId(UserInfoEntity userInfoEntity);
 	
 }
