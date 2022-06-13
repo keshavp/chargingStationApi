@@ -24,6 +24,7 @@ public class ChargingPointIncomingDto {
 	private String id;
 	private String chargingPointId;
 	private String name;
+	private String partnerId;
 	private String partnerName;
 	private String startTime;
 	private String endTime;
@@ -44,5 +45,5 @@ public class ChargingPointIncomingDto {
 	private String stationtype;
 	
     private Set<ConnectorsIncomingDto> connectors;
-    private Set<AmenityDto> amenities ;
+    private Set<AmenityDto> amenities;
 }

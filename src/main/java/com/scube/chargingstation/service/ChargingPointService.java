@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.incoming.ChargingPointIncomingDto;
 import com.scube.chargingstation.entity.ChargingPointEntity;
+import com.scube.chargingstation.entity.PartnerInfoEntity;
 
 public interface ChargingPointService {
 
@@ -20,7 +21,7 @@ public interface ChargingPointService {
 
 	List<ChargingPointDto> getAllChargingStations();
 	
-	 List<ChargingPointEntity> getAllChargingPointEntity();
+	List<ChargingPointEntity> getAllChargingPointEntity();
 
 	Boolean updateChargingPoint(@Valid ChargingPointIncomingDto chargingPointIncomingDto);
 
@@ -29,5 +30,7 @@ public interface ChargingPointService {
 	ChargingPointDto getChargingStationsById(String id);
 	
 	Boolean getChargingStationsgoLiveCheckById(String id);
+	
+	PartnerInfoEntity findByPartnerId(String id);
 
 }

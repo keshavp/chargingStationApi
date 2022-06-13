@@ -6,7 +6,9 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
@@ -39,6 +41,10 @@ public class ChargingPointEntity  extends BaseEntity {
 	private String communicationtype;
 	private String powerstandards;
 	private String stationtype;
+	
+	@OneToOne
+	@JoinColumn(name = "fk_partner")
+	private PartnerInfoEntity partner;
 	
 	@OneToMany(mappedBy="chargingPointEntity" , cascade = CascadeType.ALL)
     private Set<ConnectorEntity> connectorEntities;
@@ -204,6 +210,14 @@ public class ChargingPointEntity  extends BaseEntity {
 
 	public void setStationtype(String stationtype) {
 		this.stationtype = stationtype;
+	}
+
+	public PartnerInfoEntity getPartner() {
+		return partner;
+	}
+
+	public void setPartner(PartnerInfoEntity partner) {
+		this.partner = partner;
 	}
 	
 

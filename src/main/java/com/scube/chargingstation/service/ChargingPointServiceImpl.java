@@ -20,6 +20,7 @@ import com.scube.chargingstation.entity.ChargingPointConnectorRateEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
 import com.scube.chargingstation.entity.ConnectorStatusEntity;
+import com.scube.chargingstation.entity.PartnerInfoEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.exception.EntityType;
 import com.scube.chargingstation.exception.ExceptionType;
@@ -52,6 +53,9 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	@Autowired
 	ChargingPointConnectorRateRepository chargingPointConnectorRateRepository;
 	
+	@Autowired
+	PartnerService partnerService;
+	
 	@Override
 	public ChargingPointDto getChargingPointById(String id) {
 		// TODO Auto-generated method stub
@@ -80,6 +84,9 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		// TODO Auto-generated method stub
 		
 		ChargingPointEntity	chargingPointEntity = new ChargingPointEntity();
+		Set<ConnectorEntity> connectorEntities = new HashSet<ConnectorEntity>() ;
+		Set<AmenitiesEntity> amenitiesEntities = new HashSet<AmenitiesEntity>();
+
 		
 		ChargingPointEntity	chargingPointDuplicateEntity = chargingPointRepository.findByChargingPointId(chargingPointIncomingDto.getChargingPointId());
 		
@@ -88,14 +95,21 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 			 throw BRSException.throwException(EntityType.CHARGINGSTATION, ExceptionType.DUPLICATE_ENTITY , chargingPointIncomingDto.getChargingPointId()); 
 		}
 		
+		System.out.println("==============asasas======================"+chargingPointIncomingDto.getPartnerId());
 		
-		Set<ConnectorEntity> connectorEntities = new HashSet<ConnectorEntity>() ;
+		PartnerInfoEntity partnerInfoEntity = partnerService.getPartnerById(chargingPointIncomingDto.getPartnerId());
+
+		// null	
+		if(partnerInfoEntity == null) {
+			
+			throw BRSException.throwException(EntityType.CHARGINGSTATION, ExceptionType.ENTITY_NOT_FOUND , chargingPointIncomingDto.getChargingPointId()); 
 		
-		Set<AmenitiesEntity> amenitiesEntities = new HashSet<AmenitiesEntity>();
+		}
 		
 		chargingPointEntity.setName(chargingPointIncomingDto.getName());
 		chargingPointEntity.setChargingPointId(chargingPointIncomingDto.getChargingPointId());
-		chargingPointEntity.setPartnerName(chargingPointIncomingDto.getPartnerName());
+//		chargingPointEntity.setPartnerName(chargingPointIncomingDto.getPartnerName());
+		chargingPointEntity.setPartner(partnerInfoEntity);
 		chargingPointEntity.setStartTime(chargingPointIncomingDto.getStartTime());
 		chargingPointEntity.setEndTime(chargingPointIncomingDto.getEndTime());
 		chargingPointEntity.setAddress(chargingPointIncomingDto.getAddress());
@@ -230,7 +244,7 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		
 		chargingPointEntity.setName(chargingPointIncomingDto.getName());
 //		chargingPointEntity.setChargingPointId(chargingPointIncomingDto.getChargingPointId());
-		chargingPointEntity.setPartnerName(chargingPointIncomingDto.getPartnerName());
+		chargingPointEntity.setPartnerName(chargingPointIncomingDto.getPartnerId());
 		chargingPointEntity.setStartTime(chargingPointIncomingDto.getStartTime());
 		chargingPointEntity.setEndTime(chargingPointIncomingDto.getEndTime());
 		chargingPointEntity.setAddress(chargingPointIncomingDto.getAddress());
@@ -287,6 +301,12 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	    chargingPointRepository.save(chargingPointEntity);
 	    
 		return true;
+	}
+
+	
+	public PartnerInfoEntity findByPartnerId(String id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	
