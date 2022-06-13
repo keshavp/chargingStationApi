@@ -280,6 +280,17 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return AuthUserMapper.toUserLoginDto(userInfoEntity);
 		
 	}
+	
+	@Override
+	public List<AuthUserDto> getAllPartnerUsers(String nameCode) {
+		
+		RoleEntity roleEntity = roleRepository.findByNameCode(nameCode);
+		
+		List<UserInfoEntity> userInfoEntity = userInfoRepository.findByRoleAndStatus(roleEntity,"Active");
+		
+		return AuthUserMapper.toUserLoginDto(userInfoEntity);
+		
+	}
 
 	@Override
 	public AuthUserDto getPartnerUserById(String userId) {
