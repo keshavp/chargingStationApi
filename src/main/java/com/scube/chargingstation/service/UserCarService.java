@@ -14,7 +14,7 @@ public interface UserCarService {
 	public boolean addUserCars(UserCarDto userCarDto);
 	
 
-	public List<UserCarRespDto> getUserCars(UserInfoEntity userInfoEntity);
+	public List<UserCarRespDto> getUserCars(String mobileUser_Id);
 
 
 	public Object removeUserCar(@Valid UserCarDto userCarDto);

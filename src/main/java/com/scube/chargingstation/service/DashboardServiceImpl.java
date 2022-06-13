@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.scube.chargingstation.dto.AdminDashboardDto;
 import com.scube.chargingstation.dto.MostActiveChargingStationsDto;
 import com.scube.chargingstation.dto.RecentRehargeDto;
+import com.scube.chargingstation.dto.UserCarRespDto;
 import com.scube.chargingstation.dto.UserDashboardDto;
 import com.scube.chargingstation.dto.mapper.AverageSessionMapper;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
@@ -26,6 +27,9 @@ public class DashboardServiceImpl implements DashboardService {
 	
 	@Autowired
 	UserInfoRepository userInfoRepository;
+	
+	@Autowired
+	UserCarService userCarService;
 	
 	
 	public AdminDashboardDto getAdminDashboard() {
@@ -76,6 +80,12 @@ public class DashboardServiceImpl implements DashboardService {
 						.setRechargePlace(chargingRequestEntity.getChargingPointEntity().getName())
 						.setRechargeAmount(chargingRequestEntity.getFinalAmount())
 						);
+	}
+
+	@Override
+	public List<UserCarRespDto> getUserProfileByMobileNumber(String mobilenumber) {
+		// TODO Auto-generated method stub
+		return userCarService.getUserCars(mobilenumber);
 	}
 
 }

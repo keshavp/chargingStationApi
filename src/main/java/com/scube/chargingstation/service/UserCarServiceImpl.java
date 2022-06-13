@@ -117,15 +117,20 @@ public class UserCarServiceImpl implements UserCarService {
 
 
 	@Override
-	public List<UserCarRespDto> getUserCars(UserInfoEntity userInfoEntity) {
+	public List<UserCarRespDto> getUserCars(String mobileUser_Id) {
 		// TODO Auto-generated method stub
 		
+		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(mobileUser_Id);
+		if(userInfoEntity==null)
+		{
+			throw BRSException.throwException("Error: User does not exist"); 
+		}
+		
+		logger.info("***getUserCars***");
+		
 		List<UserCarsEntity> userCarsEntity=userCarsRepository.findByUserInfoEntityAndIsdeleted(userInfoEntity, "N");
-		
-		return UserCarMapper.toUserCarDto(userCarsEntity);
-		
-		
 		//return null;
+		return UserCarMapper.toUserCarDto(userCarsEntity);
 	}
 
 
