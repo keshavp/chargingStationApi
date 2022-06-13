@@ -25,6 +25,7 @@ public class ChargingPointDto {
 	private String chargingPointId;
 	private String name;
 	private String partnerName;
+	private String partner;
 	private String startTime;
 	private String endTime;
 	private String status;

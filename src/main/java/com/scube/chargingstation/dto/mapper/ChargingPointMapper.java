@@ -22,6 +22,7 @@ public class ChargingPointMapper {
 				.setEndTime(chargingPointEntity.getEndTime())
 				.setStatus(chargingPointEntity.getStatus())
 				
+				
 				.setAddress(chargingPointEntity.getAddress())
 				.setAddress2(chargingPointEntity.getAddress2())
 				.setPincode(chargingPointEntity.getPincode())
@@ -35,7 +36,7 @@ public class ChargingPointMapper {
 				.setCommunicationtype(chargingPointEntity.getCommunicationtype())
 				.setPowerstandards(chargingPointEntity.getPowerstandards())
 				.setStationtype(chargingPointEntity.getStationtype())
-				
+				.setPartner(chargingPointEntity.getPartner().getId())
 				.setAmenities(AmenityMapper.toAmenitiesDto(chargingPointEntity.getAmenities()))
 				.setConnectors(ConnectorMapper.toConnectorsDto(chargingPointEntity.getConnectorEntities()));
 								

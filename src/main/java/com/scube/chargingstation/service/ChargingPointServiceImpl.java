@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.validation.Valid;
 
+import org.hibernate.validator.internal.engine.messageinterpolation.ParameterTermResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -241,10 +242,19 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		
 		ChargingPointEntity chargingPointEntity = chargingPointRepository.findById(chargingPointIncomingDto.getId()).get();
 		
+		PartnerInfoEntity partnerInfoEntity = partnerService.getPartnerById(chargingPointIncomingDto.getPartnerId());
+
+		// null	
+		if(partnerInfoEntity == null) {
+			
+			throw BRSException.throwException(EntityType.CHARGINGSTATION, ExceptionType.ENTITY_NOT_FOUND , chargingPointIncomingDto.getChargingPointId()); 
+		
+		}
+		
 		
 		chargingPointEntity.setName(chargingPointIncomingDto.getName());
 //		chargingPointEntity.setChargingPointId(chargingPointIncomingDto.getChargingPointId());
-		chargingPointEntity.setPartnerName(chargingPointIncomingDto.getPartnerId());
+		chargingPointEntity.setPartner(partnerInfoEntity);
 		chargingPointEntity.setStartTime(chargingPointIncomingDto.getStartTime());
 		chargingPointEntity.setEndTime(chargingPointIncomingDto.getEndTime());
 		chargingPointEntity.setAddress(chargingPointIncomingDto.getAddress());
