@@ -57,14 +57,8 @@ public class UserCarController {
 	@GetMapping(value ="/getUserCars/{mobileUser_Id}", consumes = APPLICATION_JSON_VALUE)
 	public Response getUserCars(@PathVariable String mobileUser_Id)  {
 		
-		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(mobileUser_Id);
-		if(userInfoEntity==null)
-		{
-			throw BRSException.throwException("Error: User does not exist"); 
-		}
 		
-		logger.info("***getUserCars***");
-		return Response.ok().setPayload(userCarService.getUserCars(userInfoEntity));
+		return Response.ok().setPayload(userCarService.getUserCars(mobileUser_Id));
 		
 	}
 	

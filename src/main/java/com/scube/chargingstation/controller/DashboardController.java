@@ -45,4 +45,11 @@ public class DashboardController {
 		
 		return Response.ok().setPayload(dashboardService.getUserDashboardByMobileNumber(mobilenumber));    
 	}
+	
+	@GetMapping( value = "/uProfile/{mobilenumber}")
+	public Response getUserProfile(@PathVariable("mobilenumber") String mobilenumber) {    
+		logger.info("***DashboardController getUserDashboard***");
+		
+		return Response.ok().setPayload(dashboardService.getUserProfileByMobileNumber(mobilenumber));    
+	}
 }

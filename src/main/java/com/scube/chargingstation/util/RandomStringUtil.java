@@ -1,4 +1,10 @@
 package com.scube.chargingstation.util;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * Created by Keshav Patel.
  */
@@ -27,4 +33,18 @@ public class RandomStringUtil {
 
         return sb.toString();
     }
+    
+    
+    
+	/*
+	 * public String getUniqueID(){ DateFormat dateFormat = new
+	 * SimpleDateFormat("yyddmm"); Date date = new Date(); String
+	 * dt=String.valueOf(dateFormat.format(date)); Calendar cal =
+	 * Calendar.getInstance(); SimpleDateFormat time = new SimpleDateFormat("HHmm");
+	 * String tm= String.valueOf(time.format(new Date()));//time in 24 hour format
+	 * String id= dt+tm; System.out.println(id); return id; }
+	 */
+    
+    
+    
 }

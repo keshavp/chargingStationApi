@@ -64,7 +64,7 @@ public class UserCarController {
 		}
 		
 		logger.info("***getUserCars***");
-		return Response.ok().setPayload(userCarService.getUserCars(userInfoEntity));
+		return Response.ok().setPayload(userCarService.getUserCars(mobileUser_Id));
 		
 	}
 	

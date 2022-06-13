@@ -304,7 +304,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 					notificationReqDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
 					notificationReqDto.setTitle(title);
 					notificationReqDto.setBody(body);
-//					notificationService.sendNotification(notificationReqDto);
+					notificationService.sendNotification(notificationReqDto);
 					//notification sent
 					
 				}
