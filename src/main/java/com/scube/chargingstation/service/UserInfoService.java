@@ -30,12 +30,7 @@ public interface UserInfoService {
 	int findCountForWeekNewAddedUser();
 
 	List<AuthUserDto> getPartnerUsersByRoleCode(String string);
-<<<<<<< Updated upstream
-=======
-	
 	UserInfoEntity getChargingStationByPartnerId(String id);
 
 	UserInfoEntity getUserByMobilenumber(String mobilenumber);
-
->>>>>>> Stashed changes
 }
