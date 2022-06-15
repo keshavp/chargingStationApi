@@ -3,6 +3,7 @@ package com.scube.chargingstation.util;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.Date;
 
 import javax.swing.text.StyleConstants.ColorConstants;
@@ -55,6 +56,10 @@ public class ReceiptPdfExporter {
 	private Path fileStorageLocation;
 	
 	private final String fileBaseLocation;
+	
+	
+	 private static final DecimalFormat df = new DecimalFormat("0.00");
+	
 	
 	/*
 	 * @Autowired public PayslipPdfExporter(FileStorageProperties
@@ -262,9 +267,9 @@ public class ReceiptPdfExporter {
 	    
 		double finalAmount = chargingRequestEntity.getFinalAmount();
 		
-		double WithoutGSTAmount = Math.round(finalAmount/1.18);
+		double WithoutGSTAmount = finalAmount/1.18;
 		
-		double GSTAmount = Math.round(WithoutGSTAmount*0.18);
+		double GSTAmount = WithoutGSTAmount*0.18;
 		
 		
 //		tableCost.addCell(getCellLabelVal("Charging fee :",String.valueOf(WithoutGSTAmount)));
@@ -273,11 +278,11 @@ public class ReceiptPdfExporter {
 //		tableCost.addCell(getCellLabelVal("Total Cost",String.valueOf(finalAmount)));
 
 		tableCost.addCell(new Cell().add(new Paragraph("Charging fee  :")));
-		tableCost.addCell(new Cell().add(new Paragraph(String.valueOf(WithoutGSTAmount))));
+		tableCost.addCell(new Cell().add(new Paragraph(String.valueOf(df.format(WithoutGSTAmount)))));
 		tableCost.addCell(new Cell().add(new Paragraph("GST 18%   :")));
-		tableCost.addCell(new Cell().add(new Paragraph(String.valueOf(GSTAmount))));
+		tableCost.addCell(new Cell().add(new Paragraph(String.valueOf(df.format(GSTAmount)))));
 		tableCost.addCell(new Cell().add(new Paragraph("Total Cost  :")));
-		tableCost.addCell(new Cell().add(new Paragraph(String.valueOf(finalAmount))));
+		tableCost.addCell(new Cell().add(new Paragraph(String.valueOf(df.format(finalAmount)))));
 		
 		layoutDocument.add(tableCost);
 		

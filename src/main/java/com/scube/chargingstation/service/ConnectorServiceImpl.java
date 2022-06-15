@@ -62,5 +62,18 @@ public class ConnectorServiceImpl implements ConnectorService {
 		return connectorRepository.findByConnectorId(chargerId);
 	}
 
+	@Override
+	public boolean deleteConnector(String id) {
+		// TODO Auto-generated method stub
+		
+		ConnectorEntity connectorEntity = connectorRepository.findById(id).get();
+		
+		connectorEntity.setIsdeleted("Y");
+		
+		connectorRepository.save(connectorEntity);
+		
+		return true; 
+	}
+
 
 }
