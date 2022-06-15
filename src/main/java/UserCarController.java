@@ -54,7 +54,7 @@ public class UserCarController {
 	 */
 	
 	
-	@GetMapping(value ="/getUserCars/{mobileUser_Id}", consumes = APPLICATION_JSON_VALUE)
+	@GetMapping(value ="/getUserCars/{mobileUser_Id}")
 	public Response getUserCars(@PathVariable String mobileUser_Id)  {
 		
 		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(mobileUser_Id);

@@ -138,7 +138,8 @@ public class CarModelServiceImpl implements CarModelService {
 	  public List<CarModelDto> getCarModels() {
 		// TODO Auto-generated method stub
 		
-	 List<CarModelEntity> carModellist=carModelRepository.findAll();
+	 
+		List<CarModelEntity> carModellist=carModelRepository.findByStatus("ACTIVE");
 		
 		return  CarModelMapper.toCarModelDto(carModellist);
 		
