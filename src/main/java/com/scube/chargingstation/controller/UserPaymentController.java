@@ -94,4 +94,12 @@ public class UserPaymentController {
 		
 	}
 	
+	@PostMapping( value = "/initiateAvenueTransaction" , consumes = APPLICATION_JSON_VALUE)
+	public Response initiateAvenueTransaction(@Valid @RequestBody UserWalletRequestDto userWalletRequestDto)  {
+		logger.info("***addWalletMoneyTransaction***");
+		
+		return Response.ok().setPayload(userPaymentService.initiateAvenueTransaction(userWalletRequestDto));
+		
+	}
+	
 }

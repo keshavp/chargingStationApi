@@ -36,14 +36,24 @@ public class RandomStringUtil {
     
     
     
-	/*
-	 * public String getUniqueID(){ DateFormat dateFormat = new
-	 * SimpleDateFormat("yyddmm"); Date date = new Date(); String
-	 * dt=String.valueOf(dateFormat.format(date)); Calendar cal =
-	 * Calendar.getInstance(); SimpleDateFormat time = new SimpleDateFormat("HHmm");
-	 * String tm= String.valueOf(time.format(new Date()));//time in 24 hour format
-	 * String id= dt+tm; System.out.println(id); return id; }
-	 */
+	
+	  public static String getUniqueID()
+	  {
+	  DateFormat dateFormat = new
+	  SimpleDateFormat("yyddmm"); Date date = new Date(); String
+	  dt=String.valueOf(dateFormat.format(date)); Calendar cal =
+	  Calendar.getInstance(); 
+	  SimpleDateFormat time = new SimpleDateFormat("HHmmss");
+	  String tm= String.valueOf(time.format(new Date()));//time in 24 hour format
+	  
+	  String randomStr=getAlphaNumericString(3,"ccorderidavenueevdock");
+	  
+	  String id= dt+tm+randomStr; 
+	  System.out.println(id); 
+	  return id; 
+	  
+	  }
+	 
     
     
     

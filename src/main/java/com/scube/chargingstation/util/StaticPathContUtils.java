@@ -18,6 +18,16 @@ public class StaticPathContUtils {
 		
 		public static final String SET_CHARGER_TYPE_FILE_URL_DIR = "images/getImage/CT/";
 		
+		//AWS
+	//	public static final String CCAVENUE_CANCELURL = "http://evdock.app/chargingStation/cancelUrl";
+	//	public static final String CCAVENUE_REDIRECTURL = "http://evdock.app/chargingStation/redirectUrl";
+
+		//internal server
+	//	public static final String CCAVENUE_CANCELURL = "http://125.99.153.126:8085/chargingStation/cancelUrl";
+	//	public static final String CCAVENUE_REDIRECTURL = "http://125.99.153.126:8085/chargingStation/redirectUrl";
 		
-		
+		//localhost
+		public static final String CCAVENUE_CANCELURL = "http://localhost:8080/chargingStation/cancelUrl";
+		public static final String CCAVENUE_REDIRECTURL = "http://localhost:8080/chargingStation/redirectUrl";
+			
 }

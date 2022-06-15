@@ -480,7 +480,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			try 
 			{
 				callResetConnectorAPI(chargingRequestEntity);
-				notificationService.sendNotification(notificationReqDto);
+			//	notificationService.sendNotification(notificationReqDto);
 				//call ocpp server reset connector API to free the connector
 				
 				

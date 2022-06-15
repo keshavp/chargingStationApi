@@ -31,6 +31,7 @@ import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.razorpay.Utils;
 import com.scube.chargingstation.dto.AuthUserDto;
+import com.scube.chargingstation.dto.CcavenueInitDto;
 import com.scube.chargingstation.dto.ChargingHistoryDto;
 import com.scube.chargingstation.dto.ChargingHistoryRespDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
@@ -50,6 +51,10 @@ import com.scube.chargingstation.repository.ChargingRequestRepository;
 import com.scube.chargingstation.repository.UserInfoRepository;
 import com.scube.chargingstation.repository.UserWalletDtlRepository;
 import com.scube.chargingstation.repository.UserWalletRepository;
+import com.scube.chargingstation.util.AesCryptUtil;
+import com.scube.chargingstation.util.RandomStringUtil;
+import com.scube.chargingstation.util.StaticPathContUtils;
+import com.scube.chargingstation.util.StringNullEmpty;
 
 @Service
 public class UserPaymentServiceImpl implements UserPaymentService {
@@ -90,7 +95,20 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 
 	@Value("${razorPaySecret}")
 	private String razorPaySecret;
+	
+	@Value("${ccAvenueAccessCode}")
+	private String ccAvenueAccessCode;
 
+	@Value("${ccAvenueMerchantId}")
+	private String ccAvenueMerchantId;
+	
+	@Value("${ccAvenueEncKey}")
+	private String ccAvenueEncKey;
+	
+	
+	
+	
+	
 	@Override
 	public boolean processWalletMoney(UserWalletRequestDto userWalletRequestDto) {
 		// TODO Auto-generated method stub
@@ -156,9 +174,10 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		if (userWalletRequestDto.getTransactionType().equals("Credit")) {
 			balance = curBal + amount;
 		} else if (userWalletRequestDto.getTransactionType().equals("Debit")) {
-			if (curBal < amount) {
-				throw BRSException.throwException("Error: Insufficient balance");
-			}
+			/*
+			 * if (curBal < amount) { throw
+			 * BRSException.throwException("Error: Insufficient balance"); }
+			 */
 			balance = curBal - amount;
 		}
 		userWaltEntity.setUserInfoEntity(userInfoEntity);
@@ -586,4 +605,43 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 	 * return flag; }
 	 */
 
+	public String generateEncVal(String EncValData)
+	{
+		AesCryptUtil aesUtil=new AesCryptUtil (ccAvenueEncKey);
+		String encRequest=aesUtil.encrypt (EncValData);
+		 
+		System.out.println("encRequest"+encRequest);	
+				
+		return encRequest;
+	}
+
+	@Override
+	public CcavenueInitDto initiateAvenueTransaction(@Valid UserWalletRequestDto userWalletRequestDto) {
+		// TODO Auto-generated method stub
+		
+		if (userWalletRequestDto.getRequestAmount() == null)
+			throw BRSException.throwException("Error: Amount can not be blank");
+		
+		CcavenueInitDto ccavenueInitDto=new CcavenueInitDto();
+		String OrderId=RandomStringUtil.getUniqueID();
+		ccavenueInitDto.setOrderId(OrderId);
+		ccavenueInitDto.setAccessCode(ccAvenueAccessCode);
+		ccavenueInitDto.setRedirectUrl(StaticPathContUtils.CCAVENUE_REDIRECTURL);
+		ccavenueInitDto.setCancelUrl(StaticPathContUtils.CCAVENUE_CANCELURL);
+		
+		String EncValData="",RedirectUrl="StaticPathContUtils.CCAVENUE_REDIRECTURL",CancelUrl="StaticPathContUtils.CCAVENUE_CANCELURL";
+				
+		EncValData="merchant_id="+ccAvenueMerchantId+"&order_id="+OrderId+
+				"&redirect_url="+RedirectUrl+"&cancel_url="+CancelUrl+"&amount="+userWalletRequestDto.getRequestAmount()+"&currency=INR&language=EN";
+			
+		String genEncVal=generateEncVal(EncValData);
+		ccavenueInitDto.setEncVal(genEncVal);
+		
+		
+		return ccavenueInitDto;
+	}
+	
+	//getUniqueID
+	
 }
+
