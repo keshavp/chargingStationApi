@@ -49,23 +49,23 @@ public interface ChargingRequestService {
 //	public ChargingRequestRespDto getChargingHistoryByStation(ChargingRequestDto chargingRequestDto); 
 	
 	
-	int getYesterdayConsumedKwh();
-	int getWeekConsumedKwh();
+	Double getYesterdayConsumedKwh();
+	Double getWeekConsumedKwh();
 	String get30daysTotalChargingTime();
-	int weekTotalChargingRequestCountSessions();
+	Double weekTotalChargingRequestCountSessions();
 	
 	List<MostActiveChargingStationsDto> getMostActiveChargingStations();
 	
 	UserDashboardDto getUserChargingRequestDetails(String id);
 	ChargingRequestEntity getRecentReharge(String id);
 
-	public int getYesterdayConsumedKwhByPartnerId(UserInfoEntity userInfoEntity);
+	public Double getYesterdayConsumedKwhByPartnerId(UserInfoEntity userInfoEntity);
 
-	public int getWeekConsumedKwhByPartnerId(UserInfoEntity userInfoEntity);
+	public Double getWeekConsumedKwhByPartnerId(UserInfoEntity userInfoEntity);
 
 	public String get30daysTotalChargingTimeByPartnerId(UserInfoEntity userInfoEntity);
 
-	public int weekTotalChargingRequestCountSessionsByPartnerId(UserInfoEntity userInfoEntity);
+	public Double weekTotalChargingRequestCountSessionsByPartnerId(UserInfoEntity userInfoEntity);
 
 	public List<MostActiveChargingStationsDto> getMostActiveChargingStationsByPartnerId(UserInfoEntity userInfoEntity);
 	

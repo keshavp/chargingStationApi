@@ -25,7 +25,7 @@ public class AdminDashboardDto {
 	private List<MostActiveChargingStationsDto> mostActiveChargingStations;
 	private AverageSessionDto averageSession;
 	private double WeekConsumedKwh;
-	private int weekSessionscount;
+	private Double weekSessionscount;
 	
 //	private List<AverageSessionDto> averageSession;
 	

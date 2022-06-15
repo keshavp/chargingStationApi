@@ -480,7 +480,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			try 
 			{
 				callResetConnectorAPI(chargingRequestEntity);
-			//	notificationService.sendNotification(notificationReqDto);
+				notificationService.sendNotification(notificationReqDto);
 				//call ocpp server reset connector API to free the connector
 				
 				
@@ -833,13 +833,13 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	}
 
 	@Override
-	public int getYesterdayConsumedKwh() {
+	public Double getYesterdayConsumedKwh() {
 		// TODO Auto-generated method stub
 		return chargingRequestRepository.getYesterdayConsumedKwh();
 	}
 
 	@Override
-	public int getWeekConsumedKwh() {
+	public Double getWeekConsumedKwh() {
 		// TODO Auto-generated method stub
 		return chargingRequestRepository.getWeekConsumedKwh();
 	} 
@@ -851,7 +851,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	} 
 	
 	@Override
-	public int weekTotalChargingRequestCountSessions() {
+	public Double weekTotalChargingRequestCountSessions() {
 		// TODO Auto-generated method stub
 		return chargingRequestRepository.weekTotalChargingRequestCountSessions();
 	} 
@@ -898,13 +898,13 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 // 	
 	
 	@Override
-	public int getYesterdayConsumedKwhByPartnerId(UserInfoEntity userInfoEntity) {
+	public Double getYesterdayConsumedKwhByPartnerId(UserInfoEntity userInfoEntity) {
 		// TODO Auto-generated method stub
 		return chargingRequestRepository.getYesterdayConsumedKwhByPartnerId(userInfoEntity.getPartner().getId());
 	}
 
 	@Override
-	public int getWeekConsumedKwhByPartnerId(UserInfoEntity userInfoEntity) {
+	public Double getWeekConsumedKwhByPartnerId(UserInfoEntity userInfoEntity) {
 		// TODO Auto-generated method stub
 		return chargingRequestRepository.getWeekConsumedKwhByPartnerId(userInfoEntity.getPartner().getId());
 	}
@@ -916,7 +916,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	}
 
 	@Override
-	public int weekTotalChargingRequestCountSessionsByPartnerId(UserInfoEntity userInfoEntity) {
+	public Double weekTotalChargingRequestCountSessionsByPartnerId(UserInfoEntity userInfoEntity) {
 		// TODO Auto-generated method stub
 		return chargingRequestRepository.weekTotalChargingRequestCountSessionsByPartnerId(userInfoEntity.getPartner().getId());
 	}

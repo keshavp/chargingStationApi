@@ -36,10 +36,10 @@ public class DashboardServiceImpl implements DashboardService {
 		// TODO Auto-generated method stub
 		
 		int weekaddedUserCount =  userInfoService.findCountForWeekNewAddedUser();
-		int yesterdayConsumedKwh = chargingRequestService.getYesterdayConsumedKwh();
-		int weekConsumedKwh = chargingRequestService.getWeekConsumedKwh();
+		Double yesterdayConsumedKwh = chargingRequestService.getYesterdayConsumedKwh();
+		Double weekConsumedKwh = chargingRequestService.getWeekConsumedKwh();
 		String MonthdaysTotalChargingTime = chargingRequestService.get30daysTotalChargingTime(); 
-		int weekTotalChargingRequestCountSessions  = chargingRequestService.weekTotalChargingRequestCountSessions();
+		Double weekTotalChargingRequestCountSessions  = chargingRequestService.weekTotalChargingRequestCountSessions();
 		List<MostActiveChargingStationsDto> getMostActiveChargingStations = chargingRequestService.getMostActiveChargingStations();
 		
 		return  new AdminDashboardDto()
@@ -66,11 +66,11 @@ public class DashboardServiceImpl implements DashboardService {
 			throw BRSException.throwException("Error: User does not exist"); 
 		}
 		
-//		int weekaddedUserCount =  userInfoService.findCountForWeekNewAddedUserByPartnerId();
-		int yesterdayConsumedKwh = chargingRequestService.getYesterdayConsumedKwhByPartnerId(userInfoEntity);
-		int weekConsumedKwh = chargingRequestService.getWeekConsumedKwhByPartnerId(userInfoEntity);
+//		Double weekaddedUserCount =  userInfoService.findCountForWeekNewAddedUserByPartnerId();
+		Double yesterdayConsumedKwh = chargingRequestService.getYesterdayConsumedKwhByPartnerId(userInfoEntity);
+		Double weekConsumedKwh = chargingRequestService.getWeekConsumedKwhByPartnerId(userInfoEntity);
 		String MonthdaysTotalChargingTime = chargingRequestService.get30daysTotalChargingTimeByPartnerId(userInfoEntity); 
-		int weekTotalChargingRequestCountSessions  = chargingRequestService.weekTotalChargingRequestCountSessionsByPartnerId(userInfoEntity);
+		Double weekTotalChargingRequestCountSessions  = chargingRequestService.weekTotalChargingRequestCountSessionsByPartnerId(userInfoEntity);
 		List<MostActiveChargingStationsDto> getMostActiveChargingStations = chargingRequestService.getMostActiveChargingStationsByPartnerId(userInfoEntity);
 		
 		return  new AdminDashboardDto()
