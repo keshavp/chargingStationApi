@@ -244,7 +244,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		UserInfoEntity userInfo=userInfoRepository.findById(userId);	
 		AuthUserDto authUserDto = new AuthUserDto();
 		authUserDto.setUserId(userInfo.getId());
-		authUserDto.setPartnerId(userInfo.getPartner().getId());
+//		authUserDto.setPartnerId(userInfo.getPartner().getId());
 		authUserDto.setUsername(userInfo.getUsername());
 		authUserDto.setRole(userInfo.getRole().getNameCode());
 		authUserDto.setMobileno(userInfo.getMobilenumber());
@@ -315,6 +315,18 @@ public class UserInfoServiceImpl implements UserInfoService {
 		authUserDto.setRolename(roleName);
 		
 		return authUserDto;
+	}
+
+	@Override
+	public UserInfoEntity getChargingStationByPartnerId(String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public UserInfoEntity getUserByMobilenumber(String mobilenumber) {
+		// TODO Auto-generated method stub
+		return userInfoRepository.findByMobilenumber(mobilenumber);
 	}
 	
 }

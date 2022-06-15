@@ -50,6 +50,7 @@ import com.scube.chargingstation.entity.ChargerTypeEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
+import com.scube.chargingstation.entity.PartnerInfoEntity;
 import com.scube.chargingstation.entity.TransactionsEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.entity.UserWalletEntity;
@@ -58,6 +59,7 @@ import com.scube.chargingstation.repository.CarModelRepository;
 import com.scube.chargingstation.repository.ChargerTypeRepository;
 import com.scube.chargingstation.repository.ChargingPointRepository;
 import com.scube.chargingstation.repository.ChargingRequestRepository;
+import com.scube.chargingstation.repository.PartnerRepository;
 import com.scube.chargingstation.repository.TransactionsRepository;
 import com.scube.chargingstation.repository.UserInfoRepository;
 import com.scube.chargingstation.repository.UserWalletDtlRepository;
@@ -101,7 +103,8 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	@Autowired
 	TransactionsRepository transactionsRepository;
 	
-	
+	@Autowired
+	PartnerRepository partnerRepository;
 	
 	 @Value("${chargingstation.chargertype}")
 	private   String imgLocation;
@@ -813,6 +816,10 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		if (chargingPointEntity == null) {
 			throw BRSException.throwException("Error: No Charging Point present");
 		}
+		
+//		UserInfoEntity userInfoEntity = userInfoRepository.findById(chargingStationWiseReportIncomingDto.getPartnerName());
+		
+//		PartnerInfoEntity partnerInfoEntity = partnerRepository.getById(chargingStationWiseReportIncomingDto.getPartnerName());
 		
 		System.out.println("CpId======"+chargingPointEntity.getId()+"SDate=="+chargingStationWiseReportIncomingDto.getStartDate()+"EDate==="+chargingStationWiseReportIncomingDto.getEndDate());
 		

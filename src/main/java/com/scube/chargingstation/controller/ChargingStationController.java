@@ -28,6 +28,7 @@ import com.scube.chargingstation.dto.incoming.ChargingStationDto;
 import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
 import com.scube.chargingstation.dto.response.Response;
 import com.scube.chargingstation.entity.ChargingPointEntity;
+import com.scube.chargingstation.entity.RoleEntity;
 import com.scube.chargingstation.repository.ChargerTypeRepository;
 import com.scube.chargingstation.service.ChargingPointService;
 import com.scube.chargingstation.service.ChargingRequestService;
@@ -228,6 +229,16 @@ public class ChargingStationController {
 				return Response.ok().setPayload(chargingPointService.getAllChargingStations());
 		
 	}
+	
+	@GetMapping( value = "/allChargingStationsByUser/{mobile}" )
+	public Response getAllChargingStations(@PathVariable("mobile") String mobile) {
+		logger.info("***addChargingStations***");
+		
+				return Response.ok().setPayload(chargingPointService.getAllChargingStationsByUserMobile(mobile));
+		
+	}
+	
+	
 	
 	@GetMapping( value = "/allActive" )
 	public Response getAllActiveChargingStations() {

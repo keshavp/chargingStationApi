@@ -22,6 +22,8 @@ import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
 import com.scube.chargingstation.entity.ConnectorStatusEntity;
 import com.scube.chargingstation.entity.PartnerInfoEntity;
+import com.scube.chargingstation.entity.RoleEntity;
+import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.exception.EntityType;
 import com.scube.chargingstation.exception.ExceptionType;
@@ -29,6 +31,7 @@ import com.scube.chargingstation.repository.ChargepointForSeverRepository;
 import com.scube.chargingstation.repository.ChargingPointConnectorRateRepository;
 import com.scube.chargingstation.repository.ChargingPointRepository;
 import com.scube.chargingstation.repository.ConnectorStatusRepository;
+import com.scube.chargingstation.repository.RoleRepository;
 
 @Service
 public class ChargingPointServiceImpl implements ChargingPointService {
@@ -56,6 +59,12 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	
 	@Autowired
 	PartnerService partnerService;
+	
+	@Autowired
+	UserInfoService userInfoService;
+	
+	@Autowired
+	RoleRepository roleRepository;
 	
 	@Override
 	public ChargingPointDto getChargingPointById(String id) {
@@ -98,19 +107,20 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		
 		System.out.println("==============asasas======================"+chargingPointIncomingDto.getPartnerId());
 		
-		PartnerInfoEntity partnerInfoEntity = partnerService.getPartnerById(chargingPointIncomingDto.getPartnerId());
-
-		// null	
-		if(partnerInfoEntity == null) {
-			
-			throw BRSException.throwException(EntityType.CHARGINGSTATION, ExceptionType.ENTITY_NOT_FOUND , chargingPointIncomingDto.getChargingPointId()); 
 		
-		}
+		  PartnerInfoEntity partnerInfoEntity = partnerService.getPartnerById(chargingPointIncomingDto.getPartnerId());
+		  
+		  if(partnerInfoEntity == null) {
+		  
+			  throw BRSException.throwException(EntityType.CHARGINGSTATION,ExceptionType.ENTITY_NOT_FOUND , chargingPointIncomingDto.getChargingPointId());
+		  
+		  }
+		 
 		
 		chargingPointEntity.setName(chargingPointIncomingDto.getName());
 		chargingPointEntity.setChargingPointId(chargingPointIncomingDto.getChargingPointId());
 //		chargingPointEntity.setPartnerName(chargingPointIncomingDto.getPartnerName());
-		chargingPointEntity.setPartner(partnerInfoEntity);
+//		chargingPointEntity.setPartner(partnerInfoEntity);
 		chargingPointEntity.setStartTime(chargingPointIncomingDto.getStartTime());
 		chargingPointEntity.setEndTime(chargingPointIncomingDto.getEndTime());
 		chargingPointEntity.setAddress(chargingPointIncomingDto.getAddress());
@@ -176,7 +186,38 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	@Override
 	public List<ChargingPointDto> getAllChargingStations() {
 		// TODO Auto-generated method stub
-		List<ChargingPointEntity> chargingPointEntity =	chargingPointRepository.findAll();
+		
+		List<ChargingPointEntity>	chargingPointEntity = chargingPointRepository.findAll();
+			
+		 
+		return ChargingPointMapper.toChargingPointDto(chargingPointEntity);
+	}
+	
+	
+	@Override
+	public List<ChargingPointDto> getAllChargingStationsByUserMobile(String id) {
+		// TODO Auto-generated method stub
+		
+		List<ChargingPointEntity> chargingPointEntity = null;
+		
+		UserInfoEntity userInfoEntity = userInfoService.getUserByMobilenumber(id);
+		
+		if(userInfoEntity.getRole().getNameCode().equals("AU")) {
+			
+			chargingPointEntity = chargingPointRepository.findAll();
+			
+		}
+		
+		if(userInfoEntity.getRole().getNameCode().equals("PU")) {
+			
+			chargingPointEntity = chargingPointRepository.findChargingStationsByPartnerId(userInfoEntity.getPartner().getId());
+		}
+		
+		// role  		if 
+		// admin 		 chargingPointEntity =	chargingPointRepository.findAll(); 
+		 
+		// PU		else 
+		 
 		return ChargingPointMapper.toChargingPointDto(chargingPointEntity);
 	}
 	
