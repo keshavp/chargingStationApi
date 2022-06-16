@@ -97,10 +97,10 @@ public class CarModelServiceImpl implements CarModelService {
 		}
 			
 		
-		if(carModelIncomigDto.getStatus()==" " )
-		{
-			throw BRSException.throwException("Staus can't be blank");
-		}
+		/*
+		 * if(carModelIncomigDto.getStatus()==" " ) { throw
+		 * BRSException.throwException("Staus can't be blank"); }
+		 */
 	/*	if(carModelIncomigDto.getImgPath()==" " )
 		{
 			throw BRSException.throwException("ImagePath can't be balnk");
@@ -157,10 +157,11 @@ public class CarModelServiceImpl implements CarModelService {
         {
         	throw BRSException.throwException("Car Description can't be blank or null");
         }
-		if(carModelIncomigDto.getStatus()==" "|| carModelIncomigDto.getStatus()==null)
-		{
-			throw BRSException.throwException("Car Status can't be blank or null");
-		}
+		/*
+		 * if(carModelIncomigDto.getStatus()==" "||
+		 * carModelIncomigDto.getStatus()==null) { throw
+		 * BRSException.throwException("Car Status can't be blank or null"); }
+		 */
         Set<ChargerTypeEntity> chargerTypeEntities =new HashSet<ChargerTypeEntity>();
 		
 		for(ChargerTypeDto  chargerTypeDtos : carModelIncomigDto.getChargertypes()) {
@@ -182,7 +183,7 @@ public class CarModelServiceImpl implements CarModelService {
 	    
 	    carModelEntity.setModel(carModelIncomigDto.getModel());
 	    carModelEntity.setDescription(carModelIncomigDto.getDescription());
-	    carModelEntity.setStatus(carModelIncomigDto.getStatus());	
+//	    carModelEntity.setStatus(carModelIncomigDto.getStatus());	
 	    carModelEntity.setChargertypes(chargerTypeEntities);
 	    carModelEntity.setImagePath(carModelIncomigDto.getImgPath());
 	    carModelRepository.save(carModelEntity);
@@ -195,11 +196,11 @@ public class CarModelServiceImpl implements CarModelService {
 		CarModelEntity carModelEntity=carModelRepository.findById(id).get();
 		if(carModelEntity.getId()==" "|| carModelEntity.getId()==null)
 		{
-			throw BRSException.throwException("CarModel id can't be blank");
+			throw BRSException.throwException("Car Model id can't be blank");
 		}
 		
-		carModelEntity.setIsdeleted("Y");
-		carModelRepository.save(carModelEntity);
+//		carModelEntity.setIsdeleted("Y");
+		carModelRepository.delete(carModelEntity);
 		return true;
 	}
 	

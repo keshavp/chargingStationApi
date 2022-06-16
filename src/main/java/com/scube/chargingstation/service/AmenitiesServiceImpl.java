@@ -39,9 +39,11 @@ public class AmenitiesServiceImpl implements AmenitiesService{
 			throw BRSException.throwException("Error : Amenity name can't be blank");
 		}
 		
-		if((amenitiesIncomingDto.getStatus()=="") || (amenitiesIncomingDto.getStatus().trim().isEmpty())) {
-			throw BRSException.throwException("Error : Status can't be blank");
-		}
+		/*
+		 * if((amenitiesIncomingDto.getStatus()=="") ||
+		 * (amenitiesIncomingDto.getStatus().trim().isEmpty())) { throw
+		 * BRSException.throwException("Error : Status can't be blank"); }
+		 */
 		
 		
 		logger.info(amenitiesIncomingDto.getName());
@@ -82,10 +84,11 @@ public class AmenitiesServiceImpl implements AmenitiesService{
 		}	
 	
 		
-		if((amenitiesIncomingDto.getStatus()=="") || (amenitiesIncomingDto.getStatus().trim().isEmpty())) {
-			throw BRSException.throwException("Error : Status can't be blank");
-		}
-		
+		/*
+		 * if((amenitiesIncomingDto.getStatus()=="") ||
+		 * (amenitiesIncomingDto.getStatus().trim().isEmpty())) { throw
+		 * BRSException.throwException("Error : Status can't be blank"); }
+		 */
 		/*
 		AmenitiesEntity checkIdEntity = amenitiesRepository.findById(amenitiesIncomingDto.getId()).get();
 		if(checkIdEntity!=null) {
@@ -108,7 +111,7 @@ public class AmenitiesServiceImpl implements AmenitiesService{
 	//	AmenitiesEntity amenitiesEntity = amenitiesRepository.findById(amenitiesIncomingDto.getId()).get();
 	//	AmenitiesEntity amenitiesEntity = new AmenitiesEntity();
 		amenitiesEntity.setName(amenitiesIncomingDto.getName());
-		amenitiesEntity.setStatus(amenitiesIncomingDto.getStatus());
+//		amenitiesEntity.setStatus(amenitiesIncomingDto.getStatus());
 		// amenitiesEntity.setId(amenitiesIncomingDto.getId());
 		amenitiesEntity.setIsdeleted("N");
 		
@@ -150,9 +153,9 @@ public class AmenitiesServiceImpl implements AmenitiesService{
 		}
 	
 		
-		amenitiesEntity.setIsdeleted("Y");
-		amenitiesEntity.setStatus("Inactive");
-		amenitiesRepository.save(amenitiesEntity);
+//		amenitiesEntity.setIsdeleted("Y");
+//		amenitiesEntity.setStatus("Inactive");
+		amenitiesRepository.delete(amenitiesEntity);
 		
 		return true;
 	}

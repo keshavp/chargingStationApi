@@ -109,13 +109,15 @@ import com.scube.chargingstation.repository.RoleRepository;
 		
 	   if(roleIncomingDto.getNamecode() == "" || roleIncomingDto.getNamecode() ==null ) {
 			
-			throw BRSException.throwException("Role namecode can't be blank or null");
+			throw BRSException.throwException("Role Name code can't be blank or null");
 		}
 		
-	   if(roleIncomingDto.getStatus() == "" || roleIncomingDto.getStatus() ==null ) {
-			
-			throw BRSException.throwException("Role namecode can't be blank or null");
-		}
+		/*
+		 * if(roleIncomingDto.getStatus() == "" || roleIncomingDto.getStatus() ==null )
+		 * {
+		 * 
+		 * throw BRSException.throwException("Role namecode can't be blank or null"); }
+		 */
 	  	
 		RoleEntity roleEntity = roleRepository.findById(roleIncomingDto.getId()).get();
 		
@@ -123,7 +125,7 @@ import com.scube.chargingstation.repository.RoleRepository;
 		
 		roleEntity.setName(roleIncomingDto.getName());
 		roleEntity.setNameCode(roleIncomingDto.getNamecode());
-		roleEntity.setStatus(roleIncomingDto.getStatus());
+	//	roleEntity.setStatus(roleIncomingDto.getStatus());
 		roleRepository.save(roleEntity);
 		return true;
 	}
@@ -138,11 +140,13 @@ import com.scube.chargingstation.repository.RoleRepository;
 			
 			throw BRSException.throwException("Role id can't be blank or null");
 		}
-	
 		
-		roleEntity.setIsdeleted("Y");
-		roleEntity.setStatus("INACTIVE");
-		roleRepository.save(roleEntity);
+		/*
+		 * roleEntity.setIsdeleted("Y"); roleEntity.setStatus("INACTIVE");
+		 * roleRepository.save(roleEntity);
+		 */
+		
+		 roleRepository.delete(roleEntity);
 		
 		return true;
 	}

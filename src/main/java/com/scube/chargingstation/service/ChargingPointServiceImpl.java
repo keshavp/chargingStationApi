@@ -120,7 +120,7 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		chargingPointEntity.setName(chargingPointIncomingDto.getName());
 		chargingPointEntity.setChargingPointId(chargingPointIncomingDto.getChargingPointId());
 //		chargingPointEntity.setPartnerName(chargingPointIncomingDto.getPartnerName());
-//		chargingPointEntity.setPartner(partnerInfoEntity);
+		chargingPointEntity.setPartner(partnerInfoEntity);
 		chargingPointEntity.setStartTime(chargingPointIncomingDto.getStartTime());
 		chargingPointEntity.setEndTime(chargingPointIncomingDto.getEndTime());
 		chargingPointEntity.setAddress(chargingPointIncomingDto.getAddress());
@@ -128,7 +128,8 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		chargingPointEntity.setPincode(chargingPointIncomingDto.getPincode());
 		chargingPointEntity.setLatitude(chargingPointIncomingDto.getLatitude());
 		chargingPointEntity.setLongitude(chargingPointIncomingDto.getLongitude());
-		chargingPointEntity.setStatus(chargingPointIncomingDto.getStatus());
+//		chargingPointEntity.setStatus(chargingPointIncomingDto.getStatus());
+		chargingPointEntity.setStatus("CLOSE");
 		chargingPointEntity.setManufractures(chargingPointIncomingDto.getManufractures());
 		chargingPointEntity.setCommunicationtype(chargingPointIncomingDto.getCommunicationtype());
 		chargingPointEntity.setPowerstandards(chargingPointIncomingDto.getPowerstandards());
@@ -254,7 +255,7 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	    ChargepointForSeverEntity	chargepointForSeverEntity = chargepointForSeverRepository.findByChargePointId(chargingPointEntity.getChargingPointId());
 	    
 	    if(chargepointForSeverEntity == null) {
-			throw BRSException.throwException(EntityType.CHARGINGSTATIONFORSEVER, ExceptionType.VALUE_NOT_FOUND , chargingPointEntity.getChargingPointId()); 
+			throw BRSException.throwException(EntityType.CONNECTORSTATUS, ExceptionType.CONTACT_ADMINISTRATOR); 
 		}
 	    
 	    List<ConnectorStatusEntity> connectorStatusEntitya = connectorStatusRepository.findByChargePointId(chargingPointEntity.getChargingPointId());
@@ -269,6 +270,10 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	    if(chargingPointConnectorRateEntity == null) {
 			throw BRSException.throwException(EntityType.CHARGINGPOINTCONNECTORRATE, ExceptionType.VALUE_NOT_FOUND , chargingPointEntity.getChargingPointId()); 
 		}
+	    
+	    chargingPointEntity.setStatus("OPEN");
+	    
+	    chargingPointRepository.save(chargingPointEntity);
 	    
 		return true;
 	}
@@ -303,7 +308,8 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		chargingPointEntity.setPincode(chargingPointIncomingDto.getPincode());
 		chargingPointEntity.setLatitude(chargingPointIncomingDto.getLatitude());
 		chargingPointEntity.setLongitude(chargingPointIncomingDto.getLongitude());
-		chargingPointEntity.setStatus(chargingPointIncomingDto.getStatus());
+//		chargingPointEntity.setStatus(chargingPointIncomingDto.getStatus());
+		chargingPointEntity.setStatus("CLOSE");
 		chargingPointEntity.setManufractures(chargingPointIncomingDto.getManufractures());
 		chargingPointEntity.setCommunicationtype(chargingPointIncomingDto.getCommunicationtype());
 		chargingPointEntity.setPowerstandards(chargingPointIncomingDto.getPowerstandards());

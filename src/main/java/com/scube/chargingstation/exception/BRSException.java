@@ -1,4 +1,6 @@
 package com.scube.chargingstation.exception;
+import org.hibernate.JDBCException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -122,4 +124,16 @@ public class BRSException {
         }
     }
 
+    public static class ConstraintViolationException extends RuntimeException {
+        public ConstraintViolationException(String message) {
+            super(message);
+        }
+    }
+    
+    public static class DataIntegrityViolationException extends RuntimeException {
+        public DataIntegrityViolationException(String message) {
+            super(message);
+        }
+    }
+    
 }

@@ -53,10 +53,11 @@ public class ConnectorTypeServiceimpl implements ConnectorTypeService {
 			throw BRSException.throwException("Connector image can't be blank");	
 		}
 		
-		if((connectorTypeIncomingDto.getStatus()=="") || (connectorTypeIncomingDto.getName().trim().isEmpty()))
-		{
-			throw BRSException.throwException("Connector status can't be blank");
-		}
+		/*
+		 * if((connectorTypeIncomingDto.getStatus()=="") ||
+		 * (connectorTypeIncomingDto.getName().trim().isEmpty())) { throw
+		 * BRSException.throwException("Connector status can't be blank"); }
+		 */
 		
 		ChargerTypeEntity chargerCodeDuplicateCheck=connectorTypeRepository.findByName(connectorTypeIncomingDto.getName());
 		if(chargerCodeDuplicateCheck!= null) {
@@ -90,10 +91,11 @@ public class ConnectorTypeServiceimpl implements ConnectorTypeService {
 			throw BRSException.throwException("Connector image can't be blank");	
 		}
 		
-		if((connectorTypeIncomingDto.getStatus()=="") || connectorTypeIncomingDto.getStatus().trim().isEmpty())
-		{
-			throw BRSException.throwException("Connector status can't be blank");
-		}
+		/*
+		 * if((connectorTypeIncomingDto.getStatus()=="") ||
+		 * connectorTypeIncomingDto.getStatus().trim().isEmpty()) { throw
+		 * BRSException.throwException("Connector status can't be blank"); }
+		 */
 		
 	   	ChargerTypeEntity chargerTypeEntity=connectorTypeRepository.findById(connectorTypeIncomingDto.getId()).get();
 		ChargerTypeEntity chargerCodeDuplicateCheck=connectorTypeRepository.findByNameAndIdNot(connectorTypeIncomingDto.getName(), connectorTypeIncomingDto.getId());
@@ -104,7 +106,7 @@ public class ConnectorTypeServiceimpl implements ConnectorTypeService {
 		}
 		chargerTypeEntity.setName(connectorTypeIncomingDto.getName());
 		chargerTypeEntity.setImagePath(connectorTypeIncomingDto.getImagePath());
-		chargerTypeEntity.setStatus(connectorTypeIncomingDto.getStatus());
+		// chargerTypeEntity.setStatus(connectorTypeIncomingDto.getStatus());
 		connectorTypeRepository.save(chargerTypeEntity);	
 		
 		return true;
@@ -118,9 +120,10 @@ public class ConnectorTypeServiceimpl implements ConnectorTypeService {
         	throw BRSException.throwException("Connector id can't be blank or null");
         	
         }
-        chargerTypeEntity.setStatus("INACTIVE");
-        chargerTypeEntity.setIsdeleted("Y");
-        connectorTypeRepository.save(chargerTypeEntity);	
+		/*
+		 * chargerTypeEntity.setStatus("INACTIVE"); chargerTypeEntity.setIsdeleted("Y");
+		 */
+        connectorTypeRepository.delete(chargerTypeEntity);	
 		return true;
 	}
 

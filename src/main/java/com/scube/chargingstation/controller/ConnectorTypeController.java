@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.common.net.MediaType;
 import com.scube.chargingstation.dto.incoming.ConnectorTypeIncomingDto;
 import com.scube.chargingstation.dto.response.Response;
 import com.scube.chargingstation.service.ConnectorTypeService;

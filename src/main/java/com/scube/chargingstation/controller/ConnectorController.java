@@ -31,7 +31,7 @@ public class ConnectorController {
 	
 	  @Autowired ConnectorService connectorService;
 	  
-	  @GetMapping( value = "/deleteConnector/{id}" ) 
+	  @GetMapping( value = "/deleteConnectorbyId/{id}" ) 
 	  public Response deleteConnector(@PathVariable("id") String id) {
 		  logger.info("***ConnectorController deleteConnector***");
 		  return Response.ok().setPayload(connectorService.deleteConnector(id)); 

@@ -68,9 +68,11 @@ public class ConnectorServiceImpl implements ConnectorService {
 		
 		ConnectorEntity connectorEntity = connectorRepository.findById(id).get();
 		
-		connectorEntity.setIsdeleted("Y");
+		//connectorEntity.setIsdeleted("Y");
 		
-		connectorRepository.save(connectorEntity);
+		//connectorRepository.save(connectorEntity);
+		
+		connectorRepository.delete(connectorEntity);
 		
 		return true; 
 	}

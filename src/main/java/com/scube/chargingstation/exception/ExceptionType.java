@@ -9,7 +9,8 @@ public enum ExceptionType {
     UNAUTHORIZED("unauthorized"),
     ENTITY_EXCEPTION("exception"),
     FILE_SIZE_EXCEPTION("size.exceed"),
-    VALUE_NOT_FOUND("value.not.found");
+    VALUE_NOT_FOUND("value.not.found"),
+	CONTACT_ADMINISTRATOR("contact.to.Administrator");
 
     String value;
 
