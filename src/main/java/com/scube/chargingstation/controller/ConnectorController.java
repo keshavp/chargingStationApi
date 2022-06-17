@@ -36,5 +36,14 @@ public class ConnectorController {
 		  logger.info("***ConnectorController deleteConnector***");
 		  return Response.ok().setPayload(connectorService.deleteConnector(id)); 
 	  }
+	  
+
+		@GetMapping( value = "/getConnectorByCpId/{id}" )
+		public Response getConnectorById(@PathVariable("id") String id) {
+			logger.info("***ConnectorController  getConnectorByCpId ***");
+		//	logger.info(NEW_ORDER_LOG, createdUser.toString());
+			return Response.ok().setPayload(connectorService.getConnectorEntityByChargingPoint(id));
+			
+		}
 
 }

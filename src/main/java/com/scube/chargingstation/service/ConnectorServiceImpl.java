@@ -76,6 +76,14 @@ public class ConnectorServiceImpl implements ConnectorService {
 		
 		return true; 
 	}
+	
+	
+	@Override
+	public List<ConnectorEntity> getConnectorEntityByChargingPoint(String chargingPoint) {
+		// TODO Auto-generated method stub
+		
+		return connectorRepository.getConnectorByChargingPointEntity(chargingPoint);
+	}
 
 
 }

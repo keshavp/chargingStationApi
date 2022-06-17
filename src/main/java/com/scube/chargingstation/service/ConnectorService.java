@@ -24,5 +24,8 @@ public interface ConnectorService {
 	ConnectorEntity getConnectorEntityByConnectorId(String chargerId);
 
 	boolean deleteConnector(String id);
+	
+	
+	 List<ConnectorEntity> getConnectorEntityByChargingPoint(String chargingPoint);
 
 	}
