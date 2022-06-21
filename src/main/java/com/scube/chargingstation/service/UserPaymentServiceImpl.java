@@ -607,10 +607,10 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 
 	public String generateEncVal(String EncValData)
 	{
+		logger.info("before encryption--" + EncValData);
 		AesCryptUtil aesUtil=new AesCryptUtil (ccAvenueEncKey);
 		String encRequest=aesUtil.encrypt (EncValData);
-		 
-		System.out.println("encRequest"+encRequest);	
+		logger.info("after encryption--" + encRequest);
 				
 		return encRequest;
 	}
@@ -622,6 +622,9 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		if (userWalletRequestDto.getRequestAmount() == null)
 			throw BRSException.throwException("Error: Amount can not be blank");
 		
+		logger.info("ccAvenueAccessCode--" + ccAvenueAccessCode);
+
+		
 		CcavenueInitDto ccavenueInitDto=new CcavenueInitDto();
 		String OrderId=RandomStringUtil.getUniqueID();
 		ccavenueInitDto.setOrderId(OrderId);
@@ -629,7 +632,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		ccavenueInitDto.setRedirectUrl(StaticPathContUtils.CCAVENUE_REDIRECTURL);
 		ccavenueInitDto.setCancelUrl(StaticPathContUtils.CCAVENUE_CANCELURL);
 		
-		String EncValData="",RedirectUrl="StaticPathContUtils.CCAVENUE_REDIRECTURL",CancelUrl="StaticPathContUtils.CCAVENUE_CANCELURL";
+		String EncValData="",RedirectUrl="StaticPathContUtils.CCAVENUE_REDIRECT_API_URL",CancelUrl="StaticPathContUtils.CCAVENUE_CANCELURL";
 				
 		EncValData="merchant_id="+ccAvenueMerchantId+"&order_id="+OrderId+
 				"&redirect_url="+RedirectUrl+"&cancel_url="+CancelUrl+"&amount="+userWalletRequestDto.getRequestAmount()+"&currency=INR&language=EN";

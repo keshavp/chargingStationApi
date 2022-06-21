@@ -13,7 +13,7 @@ public class UserWalletRequestDto{
 	private String  transactionId;
 	private String  orderId;
 	private String  razorSignature;
-	
+	private String  encResp;
 	
 	
 }

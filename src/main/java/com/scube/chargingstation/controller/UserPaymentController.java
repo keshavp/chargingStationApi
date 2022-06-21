@@ -5,6 +5,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.google.api.client.http.HttpHeaders;
 import com.scube.chargingstation.dto.AuthUserDto;
 import com.scube.chargingstation.dto.ChargingHistoryDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
@@ -27,7 +30,9 @@ import com.scube.chargingstation.dto.response.Response;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.service.ChargingRequestService;
 import com.scube.chargingstation.service.UserPaymentService;
+import com.scube.chargingstation.util.StaticPathContUtils;
 
+import java.net.URI;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +52,6 @@ public class UserPaymentController {
 	@Autowired 
 	UserPaymentService userPaymentService;
 	
-   
 	
 	@PostMapping( value = "/processWalletMoney" , consumes = APPLICATION_JSON_VALUE)
 	public Response processWalletMoney(@Valid @RequestBody UserWalletRequestDto userWalletRequestDto) {
@@ -101,5 +105,17 @@ public class UserPaymentController {
 		return Response.ok().setPayload(userPaymentService.initiateAvenueTransaction(userWalletRequestDto));
 		
 	}
+	
+	
+	@PostMapping(value = "/goToRedirectUrl", consumes = APPLICATION_JSON_VALUE)
+	public ResponseEntity<Void>  goToRedirectUrl(@Valid @RequestBody UserWalletRequestDto userWalletRequestDto) {
+		 
+		
+		
+	     return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(StaticPathContUtils.CCAVENUE_REDIRECTURL)).build();
+	 }
+
+
+	
 	
 }

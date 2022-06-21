@@ -132,7 +132,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			}
 			
 			
-			ConnectorEntity	connectorEntity = connectorService.getConnectorEntityById(connectorId) ;
+			ConnectorEntity	connectorEntity = connectorService.getConnectorEntityByConnectorIdAndChargingPointEntity(connectorId,chargingPointEntity) ;
 			if(connectorEntity==null)
 			{
 				throw BRSException.throwException("Error: Connector does not exist"); 
