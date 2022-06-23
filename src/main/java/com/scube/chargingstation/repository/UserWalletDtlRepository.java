@@ -23,6 +23,8 @@ public interface UserWalletDtlRepository extends JpaRepository<UserWalletDtlEnti
 	
 	UserWalletDtlEntity findByUserInfoEntityAndOrderId(UserInfoEntity userInfoEntity,String OrderId);
 	
+	UserWalletDtlEntity findByOrderId(String OrderId);
+
 	
 	@Query(value="select trhistory.amount as amount,DATE_FORMAT(trhistory.created_at, '%d %M %Y %r') as transactionDate, trhistory.transaction_type as transactionType,trhistory.remark,trhistory.fk_chargingreq as chargingRequestId "
 			+ " from (SELECT * ,'Added Money'as remark FROM  emp_wallet_dtl ewd where ewd.fk_user =?1 and transaction_type='Credit' and ewd.transaction_id is not null"+

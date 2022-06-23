@@ -106,16 +106,22 @@ public class UserPaymentController {
 		
 	}
 	
-	
+	  
 	@PostMapping(value = "/goToRedirectUrl", consumes = APPLICATION_JSON_VALUE)
 	public ResponseEntity<Void>  goToRedirectUrl(@Valid @RequestBody UserWalletRequestDto userWalletRequestDto) {
 		 
-		
+		logger.info("***goToRedirectUrl***"+userWalletRequestDto.getEncResp());
 		
 	     return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(StaticPathContUtils.CCAVENUE_REDIRECTURL)).build();
 	 }
 
-
+	@PostMapping(value = "/postCCavenueResponse", consumes = APPLICATION_JSON_VALUE)
+	public Response  postCCavenueResponse(@Valid @RequestBody UserWalletRequestDto userWalletRequestDto) {
+		 
+		logger.info("***postCCavenueResponse***"+userWalletRequestDto.getEncResp());
+		return Response.ok().setPayload(userPaymentService.postCCavenueResponse(userWalletRequestDto));
+		
+	 }
 	
 	
 }

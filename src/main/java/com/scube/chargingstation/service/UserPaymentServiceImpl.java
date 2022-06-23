@@ -9,9 +9,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.StringTokenizer;
 
 import javax.validation.Valid;
 
@@ -617,34 +619,175 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 
 	@Override
 	public CcavenueInitDto initiateAvenueTransaction(@Valid UserWalletRequestDto userWalletRequestDto) {
+		////
+		// TODO Auto-generated method stub
+				df.setRoundingMode(RoundingMode.UP);
+				UserWalletDtlEntity userWalletDtlEntity = new UserWalletDtlEntity();
+				ChargingRequestEntity crEntity = null;
+
+				UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(userWalletRequestDto.getMobileUser_Id());
+
+				if (userInfoEntity == null) {
+					throw BRSException.throwException("Error: User does not exist");
+				}
+
+				if (userWalletRequestDto.getRequestAmount() == null)
+					throw BRSException.throwException("Error: Amount can not be blank");
+
+				if ((userWalletRequestDto.getRequestAmount().isEmpty())) {
+					throw BRSException.throwException("Error: Amount can not be blank");
+				}
+				String OrderId=RandomStringUtil.getUniqueID();
+				userWalletDtlEntity.setTransactionType("Credit");
+				userWalletDtlEntity.setUserInfoEntity(userInfoEntity);
+				userWalletDtlEntity.setAmount(Double.parseDouble(df.format(Double.parseDouble(userWalletRequestDto.getRequestAmount()))));
+				userWalletDtlEntity.setOrderId(OrderId);
+				userWalletDtlRepository.save(userWalletDtlEntity);
+				logger.info("ccAvenueAccessCode--" + ccAvenueAccessCode);
+				
+				CcavenueInitDto ccavenueInitDto=new CcavenueInitDto();
+				ccavenueInitDto.setOrderId(OrderId);
+				ccavenueInitDto.setAccessCode(ccAvenueAccessCode);
+				ccavenueInitDto.setRedirectUrl(StaticPathContUtils.CCAVENUE_REDIRECTURL);
+				ccavenueInitDto.setCancelUrl(StaticPathContUtils.CCAVENUE_CANCELURL);
+				
+				String EncValData="",RedirectUrl=StaticPathContUtils.CCAVENUE_REDIRECTURL,CancelUrl=StaticPathContUtils.CCAVENUE_CANCELURL;
+						
+				EncValData="merchant_id="+ccAvenueMerchantId+"&order_id="+OrderId+
+						"&redirect_url="+RedirectUrl+"&cancel_url="+CancelUrl+"&amount="+userWalletRequestDto.getRequestAmount()+"&currency=INR&language=EN";
+					
+				String genEncVal=generateEncVal(EncValData);
+				ccavenueInitDto.setEncVal(genEncVal);
+				
+				return ccavenueInitDto;
+	}
+
+	@Override
+	public boolean postCCavenueResponse(@Valid UserWalletRequestDto userWalletRequestDto) {
 		// TODO Auto-generated method stub
 		
-		if (userWalletRequestDto.getRequestAmount() == null)
-			throw BRSException.throwException("Error: Amount can not be blank");
+		String orderId="",orderstatus="",bank_ref_no="",paymentMode="",transactionId="";
+		Double amount=0.0;
 		
-		logger.info("ccAvenueAccessCode--" + ccAvenueAccessCode);
+		String encResp= userWalletRequestDto.getEncResp();
+		
+		if(StringNullEmpty.stringNullAndEmptyToBlank(encResp).equals(""))
+		{
+			throw BRSException.throwException("Error: CCavenue response can't be blank");
+		}
+		
+		logger.info("CCavenue encResp"+encResp);
+		AesCryptUtil aesUtil=new AesCryptUtil(ccAvenueEncKey);
+		String decResp = aesUtil.decrypt(encResp);
+		StringTokenizer tokenizer = new StringTokenizer(decResp, "&");
+		Hashtable hs=new Hashtable();
+		String pair=null, pname=null, pvalue=null;
+		while (tokenizer.hasMoreTokens()) {
+			pair = (String)tokenizer.nextToken();
+			if(pair!=null) {
+				StringTokenizer strTok=new StringTokenizer(pair, "=");
+				pname=""; pvalue="";
+				if(strTok.hasMoreTokens()) {
+					pname=(String)strTok.nextToken();
+					if(strTok.hasMoreTokens())
+						pvalue=(String)strTok.nextToken();
+					hs.put(pname, pvalue);
+					
+					if(pname.equals("amount"))
+						amount=Double.parseDouble(pvalue);
+					
+					if(pname.equals("order_status"))
+						orderstatus=pvalue;
+					
+					if(pname.equals("bank_ref_no"))
+						bank_ref_no=pvalue;
+					
+					if(pname.equals("order_id"))
+						orderId=pvalue;
+					
+					if(pname.equals("payment_mode"))
+						paymentMode=pvalue;
+					
+					if(pname.equals("tracking_id"))
+						transactionId=pvalue;
+					
+				}
+			}
+		} 
+		
+		logger.info("orderstatus="+orderstatus+"amount="+amount+"bank_ref_no="+bank_ref_no+"orderId="+orderId+"paymentMode="+paymentMode+"transactionId="+transactionId);
 
 		
-		CcavenueInitDto ccavenueInitDto=new CcavenueInitDto();
-		String OrderId=RandomStringUtil.getUniqueID();
-		ccavenueInitDto.setOrderId(OrderId);
-		ccavenueInitDto.setAccessCode(ccAvenueAccessCode);
-		ccavenueInitDto.setRedirectUrl(StaticPathContUtils.CCAVENUE_REDIRECTURL);
-		ccavenueInitDto.setCancelUrl(StaticPathContUtils.CCAVENUE_CANCELURL);
 		
-		String EncValData="",RedirectUrl="StaticPathContUtils.CCAVENUE_REDIRECT_API_URL",CancelUrl="StaticPathContUtils.CCAVENUE_CANCELURL";
-				
-		EncValData="merchant_id="+ccAvenueMerchantId+"&order_id="+OrderId+
-				"&redirect_url="+RedirectUrl+"&cancel_url="+CancelUrl+"&amount="+userWalletRequestDto.getRequestAmount()+"&currency=INR&language=EN";
-			
-		String genEncVal=generateEncVal(EncValData);
-		ccavenueInitDto.setEncVal(genEncVal);
+	//	UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(userWalletRequestDto.getMobileUser_Id());
+		df.setRoundingMode(RoundingMode.UP);
+		/*
+		 * if (userInfoEntity == null) { throw
+		 * BRSException.throwException("Error: User does not exist"); }
+		 */
+		
+		if(!orderstatus.equals("Success"))
+		{
+			throw BRSException.throwException("Error: Payment Failed");
+		}
+		
+		if (amount == null||amount==0.0)
+			throw BRSException.throwException("Error: Amount can not be blank");
+
+		
+		if ((transactionId == null)|| (transactionId.isEmpty()))
+		{
+			throw BRSException.throwException("Error: TransactionId can not be blank");
+		}
+		
+		if ((orderId == null)|| (orderId.isEmpty()))
+		{
+			throw BRSException.throwException("Error: OrderId can not be blank");
+		}
+		 
+		//UserWalletDtlEntity userWalletDtlEntity=userWalletDtlRepository.findByUserInfoEntityAndOrderId(userInfoEntity, userWalletRequestDto.getOrderId());
+		
+		UserWalletDtlEntity userWalletDtlEntity=userWalletDtlRepository.findByOrderId(orderId);
+		
+		if(userWalletDtlEntity==null)
+		{
+			throw BRSException.throwException("Error: Invalid OrderId");
+		}
+		
+		userWalletDtlEntity.setTransactionId(transactionId);
+		userWalletDtlEntity.setAmount(amount);
+		
+		userWalletDtlRepository.save(userWalletDtlEntity);
+		
+		Double balance = 0.0;
+		UserWalletEntity userWaltEntity = new UserWalletEntity();
+
+		UserWalletEntity userchkWaltEntity = userWalletRepository.findByUserInfoEntity(userWalletDtlEntity.getUserInfoEntity());
+
+		if (userchkWaltEntity != null)
+			userWaltEntity = userchkWaltEntity;
+
+		
+	//	Double amount = Double.parseDouble(userWalletRequestDto.getRequestAmount());
+		
+		UserWalletEntity userbalWaltEntity = userWalletRepository.findBalanceByUserId(userWalletDtlEntity.getUserInfoEntity().getId());
+		Double curBal=0.0;
+		
+		if(userbalWaltEntity!=null)
+		{
+			curBal = userbalWaltEntity.getCurrentBalance();
+		}
+		
+		balance = curBal + amount;
+
+		userWaltEntity.setUserInfoEntity(userWalletDtlEntity.getUserInfoEntity());
+		userWaltEntity.setCurrentBalance(balance);
+		userWalletRepository.save(userWaltEntity);
 		
 		
-		return ccavenueInitDto;
+		return true;
 	}
 	
-	//getUniqueID
 	
 }
 

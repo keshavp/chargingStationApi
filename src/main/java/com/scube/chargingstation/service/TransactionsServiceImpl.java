@@ -187,12 +187,14 @@ public class TransactionsServiceImpl implements TransactionsService {
 					chargingRequestEntity.setStartTime(transactionsEntity.getStartTime());
 					chargingRequestEntity.setMeterStart(transactionsEntity.getMeterStart());
 					chargingRequestEntity.setStopTime(transactionsEntity.getStopTime());
-					
+					logger.info("***1***");
+
 					String chargingTime = Snippet.twoInstantDifference(transactionsEntity.getStartTime(), transactionsEntity.getStopTime());
 					
 					double chargingKwh = 0;
 					
-					
+					logger.info("***11***");
+
 					if(transactionsEntity.getStopReason().equals("PowerLoss")) {
 						chargingRequestEntity.setMeterStop(transactionsEntity.getLastMeter());
 						
@@ -202,6 +204,8 @@ public class TransactionsServiceImpl implements TransactionsService {
 						chargingRequestEntity.setMeterStop(transactionsEntity.getMeterStop());	
 						
 						 chargingKwh = transactionsEntity.getMeterStop() - transactionsEntity.getMeterStart();
+							logger.info("***111***");
+
 					}
 					
 					
@@ -215,7 +219,10 @@ public class TransactionsServiceImpl implements TransactionsService {
 					
 					
 					double minKwh = 0.01;
-					ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndKwh(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getConnectorId(),minKwh);
+					//.getConnectorId()
+					ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndKwh(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getId(),minKwh);
+					logger.info("***1111***");
+
 					
 					if(chargingRequestEntity.getRequestAmount() == 0) {
 						
@@ -234,9 +241,12 @@ public class TransactionsServiceImpl implements TransactionsService {
 						
 						// Api amount cut in wallet 
 						userPaymentService.processWalletMoney(userWalletRequestDto);
+						
+						logger.info("***11111***");
+
 					
 					}else {
-						
+						logger.info("***111111***");
 						if(chargingRequestEntity.getRequestKwh() == chargingKwh) {
 							differenceAmount = 0;
 							differenceKwh = 0;
@@ -244,7 +254,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 							finalKwh	= chargingKwh;
 						}else {
 						
-						
+							logger.info("***1111111***");
 							if(chargingRequestEntity.getRequestKwh() > chargingKwh) {
 								statusCrDr = "Credit";
 								
@@ -254,9 +264,13 @@ public class TransactionsServiceImpl implements TransactionsService {
 								
 								finalAmount = chargingRequestEntity.getRequestAmount() - differenceAmount; //
 								finalKwh	= chargingKwh;
+								logger.info("***2***");
+
 							}
 		
 							if(chargingRequestEntity.getRequestKwh() < chargingKwh) {
+								logger.info("***3***");
+
 								statusCrDr = "Debit"; 
 								
 								differenceKwh = chargingKwh - chargingRequestEntity.getRequestKwh();
@@ -265,6 +279,8 @@ public class TransactionsServiceImpl implements TransactionsService {
 								
 								finalAmount = chargingRequestEntity.getRequestAmount() + differenceAmount ; //
 								finalKwh	= chargingKwh;
+								logger.info("***4***");
+
 							}
 						
 							UserWalletRequestDto	userWalletRequestDto = new UserWalletRequestDto();
@@ -276,6 +292,8 @@ public class TransactionsServiceImpl implements TransactionsService {
 							
 							// Api amount cut in wallet 
 							userPaymentService.processWalletMoney(userWalletRequestDto);
+							logger.info("***5***");
+
 							
 						}
 					}
@@ -288,11 +306,15 @@ public class TransactionsServiceImpl implements TransactionsService {
 					chargingRequestEntity.setChargingTime(chargingTime);
 					
 					ChargingRequestEntity chargingRequestEntityfilename =  payslipPdfExporter.generatePdf(chargingRequestEntity);
-					
+					logger.info("***6***");
+
 					chargingRequestEntity.setInvoiceFilePath(chargingRequestEntityfilename.getInvoiceFilePath());
 					chargingRequestEntity.setReceiptNo(chargingRequestEntityfilename.getReceiptNo());
 					
 					chargingRequestRepository.save(chargingRequestEntity);
+					
+					logger.info("***7***");
+
 					
 					//send notification
 					Double requestAmt=chargingRequestEntity.getRequestAmount();

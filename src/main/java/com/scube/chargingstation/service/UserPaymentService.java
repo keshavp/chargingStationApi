@@ -34,5 +34,7 @@ public interface UserPaymentService {
 	List<ChargingHistoryRespDto> getChargingTrHistory (UserWalletRequestDto userWalletRequestDto) ;
 
 	public CcavenueInitDto initiateAvenueTransaction(@Valid UserWalletRequestDto userWalletRequestDto);
+
+	public boolean postCCavenueResponse(@Valid UserWalletRequestDto userWalletRequestDto);
 	
 }

@@ -473,17 +473,19 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			}
 			logger.info("***sending sendGunInsertNotification for***"+chargingRequestEntity.getUserInfoEntity().getMobilenumber());
 			
-			String title="Thank you for using EV-Dock.";
-			String body="Please insert the gun";
-			NotificationReqDto notificationReqDto =new NotificationReqDto();
-			notificationReqDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
-			notificationReqDto.setTitle(title);
-			notificationReqDto.setBody(body);
+			/*
+			 * String title="Thank you for using EV-Dock."; String
+			 * body="Please insert the gun"; NotificationReqDto notificationReqDto =new
+			 * NotificationReqDto();
+			 * notificationReqDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity()
+			 * .getMobilenumber()); notificationReqDto.setTitle(title);
+			 * notificationReqDto.setBody(body);
+			 */
 
 			try 
 			{
 				callResetConnectorAPI(chargingRequestEntity);
-				notificationService.sendNotification(notificationReqDto);
+			//	notificationService.sendNotification(notificationReqDto);
 				//call ocpp server reset connector API to free the connector
 				
 				
