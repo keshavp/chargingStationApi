@@ -4,17 +4,24 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
+import com.scube.chargingstation.dto.PartnerDto;
+import com.scube.chargingstation.dto.PriceDto;
 import com.scube.chargingstation.dto.incoming.ChargingPointConnectorRateIncomingDto;
 import com.scube.chargingstation.dto.incoming.PriceMasterDto;
+import com.scube.chargingstation.dto.mapper.PriceMapper;
 import com.scube.chargingstation.entity.ChargingPointConnectorRateEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
@@ -22,6 +29,9 @@ import com.scube.chargingstation.repository.ChargingPointConnectorRateRepository
 
 @Service
 public class PriceServiceImpl implements PriceService{
+	
+	
+	private static final Logger logger = (Logger) LoggerFactory.getLogger(PriceServiceImpl.class); 
 
 	@Autowired
 	ChargingPointConnectorRateRepository chargingPointConnectorRateRepository;
@@ -105,12 +115,13 @@ public class PriceServiceImpl implements PriceService{
 	public boolean editPriceRate(@Valid ChargingPointConnectorRateIncomingDto chargingPointConnectorRateIncomingDto) {
 		// TODO Auto-generated method stub
 		
-List<ChargingPointConnectorRateEntity> chargingpointconnectorRateEntities=new ArrayList< ChargingPointConnectorRateEntity>();
-		
+	List<ChargingPointConnectorRateEntity> chargingpointconnectorRateEntities=new ArrayList< ChargingPointConnectorRateEntity>();
 		
 		
 		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(chargingPointConnectorRateIncomingDto.getChargingPointId());
 		// Cp
+		
+	//	ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityById(chargingPointConnectorRateIncomingDto.getChargingPointId());
 		
 		
 		// Cp + connTy
@@ -129,7 +140,7 @@ List<ChargingPointConnectorRateEntity> chargingpointconnectorRateEntities=new Ar
 			chargingpointconnectorRateEntity.setCgst(priceMasterDtos.getCgst());
 			chargingpointconnectorRateEntity.setKwh(priceMasterDtos.getKwh());
 			chargingpointconnectorRateEntity.setSgst(priceMasterDtos.getSgst());
-		
+			
 			
 			chargingpointconnectorRateEntity.setConnectorEntity(connectorEntity);
 			chargingpointconnectorRateEntity.setChargingPointEntity(chargingPointEntity);
@@ -143,6 +154,34 @@ List<ChargingPointConnectorRateEntity> chargingpointconnectorRateEntities=new Ar
 		chargingPointConnectorRateRepository.saveAll(chargingpointconnectorRateEntities);
 		
 		return true;
+	}
+
+
+	@Override
+	public List<PriceDto> getAllPricingDetailsForAllStations() {
+		// TODO Auto-generated method stub
+		logger.info("***PriceServiceImpl getAllPricingDetailsForAllStations***");
+		
+		List<ChargingPointConnectorRateEntity> chargingPointConnectorRateEntities = chargingPointConnectorRateRepository.getAllAddedConnectorRateGroupByChargingPointEntityAndConnectEntity();
+		
+		return PriceMapper.toPriceDtos(chargingPointConnectorRateEntities);
+	}
+
+
+	@Override
+	public PriceDto getPricingHistoryById(String pricingId) {
+		// TODO Auto-generated method stub
+		logger.info("***PriceServiceImpl getPricingDetailsById***");
+		
+		Optional<ChargingPointConnectorRateEntity> chargingPointConnectorRateEntity = chargingPointConnectorRateRepository.findById(pricingId);
+		
+		ChargingPointConnectorRateEntity chargingPointConnectorRateEntities = new ChargingPointConnectorRateEntity();
+		
+		if(chargingPointConnectorRateEntities != null) {
+			chargingPointConnectorRateEntities = chargingPointConnectorRateEntity.get();
+		}
+		
+		return PriceMapper.toPriceMasterDto(chargingPointConnectorRateEntities);
 	}
 
 	

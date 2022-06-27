@@ -22,14 +22,25 @@ public class ChargingPointConnectorRateMapper {
 				.setKWh(chargingpointconnectorRateEntity.getKwh());
 	}
 
-public static List<PriceMasterDto>topriceMasterDtos(List<PriceMasterDto> psd) {
+	
+	  public static List<PriceMasterDto> topriceMasterDtos(List<PriceMasterDto> psd) {
+	  
+	  List<PriceMasterDto> priceMasterDtos = new ArrayList<PriceMasterDto>();
+	  for(PriceMasterDto chargingpointconnectorRateEntity : psd) {
+	  //priceMasterDtos.add(topriceMasterDtos(chargingpointconnectorRateEntity)); }
+	    
+	  }
+	  	return priceMasterDtos; 
+	  }
+	  
+	public static List<ChargingPointConnectorRateDto> toChargingPointConnectorRateDtos(List<ChargingPointConnectorRateEntity> chargingPointConnectorRateEntities) {
  		
-		List<PriceMasterDto> priceMasterDtos = new ArrayList<PriceMasterDto>();
-		for(PriceMasterDto chargingpointconnectorRateEntity : psd) {
-		//priceMasterDtos.add(topriceMasterDtos(chargingpointconnectorRateEntity)); 
+		List<ChargingPointConnectorRateDto> chargingPointConnectorRateDtos = new ArrayList<ChargingPointConnectorRateDto>();
+		for(ChargingPointConnectorRateEntity chargingpointconnectorRateEntity : chargingPointConnectorRateEntities) {
+			chargingPointConnectorRateDtos.add(toChargingPointConnectorRateDto(chargingpointconnectorRateEntity)); 
 		}
 		
-        return priceMasterDtos;
+        return chargingPointConnectorRateDtos;
 	}
 
 	

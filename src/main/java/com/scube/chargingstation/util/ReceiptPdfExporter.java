@@ -6,25 +6,38 @@ import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.Date;
 
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.plaf.LayerUI;
 import javax.swing.text.StyleConstants.ColorConstants;
 
+import org.apache.catalina.filters.AddDefaultCharsetFilter;
+import org.apache.poi.hssf.util.HSSFColor.BLACK;
+import org.apache.poi.hssf.util.HSSFColor.BLUE;
+import org.apache.poi.hssf.util.HSSFColor.GREY_25_PERCENT;
+import org.apache.poi.hssf.util.HSSFColor.WHITE;
+import org.apache.poi.ss.format.CellFormatPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.itextpdf.forms.xfdf.ElementContentEncodingFormat;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.Color;
 import com.itextpdf.kernel.colors.DeviceCmyk;
+import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.kernel.pdf.canvas.draw.DottedLine;
+import com.itextpdf.kernel.pdf.canvas.parser.PdfDocumentContentParser;
 import com.itextpdf.kernel.pdf.canvas.parser.listener.TextChunk;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.Style;
 import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.borders.Border3D;
 import com.itextpdf.layout.borders.DashedBorder;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
@@ -33,10 +46,13 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.BorderCollapsePropertyValue;
 import com.itextpdf.layout.properties.BorderRadius;
+import com.itextpdf.layout.properties.HorizontalAlignment;
+import com.itextpdf.layout.properties.TabAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.renderer.DrawContext;
 import com.itextpdf.layout.renderer.IRenderer;
+import com.itextpdf.layout.renderer.ParagraphRenderer;
 import com.itextpdf.layout.renderer.TableRenderer;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -67,9 +83,10 @@ public class ReceiptPdfExporter {
 	 * fileStorageProperties.getUploadDir(); }
 	 */
 	
-	  public ReceiptPdfExporter(FileStorageProperties fileStorageProperties) 
-	  {    
-	  this.fileBaseLocation = fileStorageProperties.getUploadDir();
+	  public ReceiptPdfExporter(FileStorageProperties fileStorageProperties) {    
+		  
+		  this.fileBaseLocation = fileStorageProperties.getUploadDir();
+	  
 	  }
 	
 	public final static String fileExtension = ".pdf";
@@ -104,353 +121,442 @@ public class ReceiptPdfExporter {
 		
 		logger.info("file dest: "+dest);
 		
-		PdfWriter writer = new PdfWriter(dest); 
-		PdfDocument pdfDocument = new PdfDocument(writer);		
-		Document layoutDocument = new Document(pdfDocument, PageSize.A4);
+		String receiptNo = chargingRequestEntity.getId()+"_"+RandomNumber.getRandomNumberString()+RandomStringUtil.getAlphaNumericString(4, "EVDock");
 		
-		PdfCanvas  canvas = new PdfCanvas(pdfDocument.addNewPage());
-
-		//PdfService.addHeader(layoutDocument,pdfDocument);
+		logger.info("Receipt No : "+ receiptNo);
 		
-		//PdfService.addTitle(layoutDocument);
+		// PDF Creation		
+		PdfWriter writer = new PdfWriter(dest);
 		
-		Table maintTable = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
+		PdfDocument pdfDocument = new PdfDocument(writer);
 		
-		/*
-		 * Cell cellImage1 = new Cell(); cellImage1.setBorder(Border.NO_BORDER);
-		 * maintTable.addCell(cellImage1);
-		 */		
+		Document layoutDocument = new Document(pdfDocument,PageSize.A4);   
+		 
+		PdfCanvas canvas = new PdfCanvas(pdfDocument.addNewPage());		
+		
+		// Table for Image
+		Table mainTable = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
+		
 		Cell cellImage = new Cell();
-		//cellImage.set
 		cellImage.setTextAlignment(TextAlignment.CENTER);
+		
 		ImageData data = ImageDataFactory.create(imageFile);
+		
 		Image img = new Image(data); 
-		//img.setHeight(1f);
-		//img.scaleAbsolute(70f, 50f);
+		
 		img.scaleAbsolute(130f, 125f);
 		img.setTextAlignment(TextAlignment.CENTER);
+//		img.setHorizontalAlignment(HorizontalAlignment.CENTER);   // --> Image Center Alignment
 		cellImage.setBorder(Border.NO_BORDER);
 		cellImage.add(img);
 		
-		maintTable.addCell(cellImage);
-		/*
-		 * Cell cellImage2 = new Cell(); cellImage2.setBorder(Border.NO_BORDER);
-		 * maintTable.addCell(cellImage2);
-		 */
+		mainTable.addCell(cellImage);
 		
-		layoutDocument.add(maintTable);
+		layoutDocument.add(mainTable);
+		
+		layoutDocument.add(new Paragraph());
+		
+		// Draw Border Line
+		Table drawBorderLine = new Table(UnitValue.createPercentArray(4)).useAllAvailableWidth();
+		drawBorderLine.setWidth(500);
+		
+		// Cell for Border
+		drawBorderLine.addCell(new Cell().add(new Paragraph())
+				.setBold()
+				.setBorder(Border.NO_BORDER)
+				.setBackgroundColor(new DeviceRgb(143, 188, 143)));
+		
+		drawBorderLine.addCell(new Cell().add(new Paragraph())
+				.setBold()
+				.setBorder(Border.NO_BORDER)
+				.setBackgroundColor(new DeviceRgb(143, 188, 143)));
+		
+		drawBorderLine.addCell(new Cell().add(new Paragraph())
+				.setBold()
+				.setBorder(Border.NO_BORDER)
+				.setBackgroundColor(new DeviceRgb(143, 188, 143)));
+		
+		drawBorderLine.addCell(new Cell().add(new Paragraph())
+				.setBold()
+				.setBorder(Border.NO_BORDER)
+				.setBackgroundColor(new DeviceRgb(143, 188, 143)));
+		
+		layoutDocument.add(drawBorderLine);
 
+		// Drawing Line below the Logo
+/*		canvas.moveTo(100, 500);
+		canvas.lineTo(500, 300);
+		canvas.closePathStroke();
 		
-		Table maintInvoice = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
-		
-		// Populating row 1 and adding it to the table
-		/*
-		 * Cell cell1 = new Cell(); cell1.setBorder(Border.NO_BORDER); cell1.add(img);
-		 * table.addCell(cell1);
-		 */
+	*/	
 
-		Cell cellInvoiceH = new Cell();
-//		cell2.setPaddingTop(35);
-		cellInvoiceH.setBorder(Border.NO_BORDER);
+		// Table for Customer Thank You Message
+		Table customerMsgTable = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
+		// Cell for Paragraph
+		Cell customerMsgCell = new Cell();
+		customerMsgCell.setBold();
+		customerMsgCell.setBorder(Border.NO_BORDER);
+//		customerMsgCell.setBackgroundColor(null);
 		
-//		Color color = WebColors.getRGBColor("#161a47");
-		Paragraph paraInvoiceH = new Paragraph("Receipt");
-//		para.setPaddingTop(5);
-//		para.setPaddingLeft(55);
-//		para.setPaddingBottom(5);
-		paraInvoiceH.setBold();
-		paraInvoiceH.setTextAlignment(TextAlignment.CENTER);
-//		para.setFontColor(Color.WHITE);
-//		para.setBackgroundColor(color);
-		cellInvoiceH.add(paraInvoiceH);
-		maintInvoice.addCell(cellInvoiceH);
+		String customerName = chargingRequestEntity.getCustName();
+		String chargingPointId = chargingRequestEntity.getChargingPointEntity().getChargingPointId();
 		
-		Cell cellInvoiceVal = new Cell();
-		cellInvoiceVal.setBorder(Border.NO_BORDER);
-//		Color color = WebColors.getRGBColor("#161a47");
+		// Thank You Message
+		Paragraph customerNameMsgParagraph = new Paragraph(" Thank you for charging with us, " + customerName + "!");
+		customerNameMsgParagraph.setBold();
+		customerNameMsgParagraph.setFontColor(new DeviceRgb(34, 139, 34));
+		customerNameMsgParagraph.setTextAlignment(TextAlignment.CENTER);
+		customerNameMsgParagraph.setFontSize(20);
 		
-		String receiptNo = chargingRequestEntity.getId()+"_"+RandomNumber.getRandomNumberString()+RandomStringUtil.getAlphaNumericString(4, "EVDock");
+		customerMsgCell.add(customerNameMsgParagraph);
 		
-		Paragraph paraInvoiceVal = new Paragraph(receiptNo);
-//		invoiceIdpara2.setPaddingTop(5);
-//		invoiceIdpara2.setBorder(Border.NO_BORDER);
-//		invoiceIdpara2.setPaddingLeft(55);
-//		invoiceIdpara2.setPaddingBottom(5);
-//		invoiceIdpara2.setBold();
-		paraInvoiceVal.setTextAlignment(TextAlignment.CENTER);
-//		para.setFontColor(Color.WHITE);
-//		para.setBackgroundColor(color);
-		cellInvoiceVal.add(paraInvoiceVal);
-		maintInvoice.addCell(cellInvoiceVal);
+		customerMsgTable.addCell(customerMsgCell);
 		
-		layoutDocument.add(maintInvoice);
-		/*
-		 * // Initial point of the line canvas.moveTo(100, 300); // Drawing the line
-		 * canvas.lineTo(500, 300); // Closing the path stroke canvas.closePathStroke();
-		 */
+		layoutDocument.add(customerMsgTable);
 		
-		Table tableAll = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth(); 
-		tableAll.setFontSize(8);
+		// Blank Space
+		layoutDocument.add(new Paragraph());		
+
+		// Table for Invoice Data
+		Table invoiceDataTableVal = new Table(UnitValue.createPercentArray(4)).useAllAvailableWidth(); 
+		invoiceDataTableVal.setFontSize(10);
+		invoiceDataTableVal.setHorizontalAlignment(HorizontalAlignment.CENTER);
+		invoiceDataTableVal.setWidth(500);
+		invoiceDataTableVal.setBorder(Border.NO_BORDER);
+		invoiceDataTableVal.setTextAlignment(TextAlignment.LEFT);
+
+		// Invoice No
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+				.setBorder(Border.NO_BORDER));
 		
-		Table table1 = new Table(UnitValue.createPercentArray(2)).useAllAvailableWidth(); 
-		table1.setFontSize(8);
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+				.setBorder(Border.NO_BORDER));
 		
-//	    table1.addCell(getCellBold("Charge Point :"));
-//	    table1.addCell(getCellWithOutBold("{Charge Point }"));
-	  //  table1.addCell(new Paragraph(chargingRequestEntity.getChargingPointEntity().getChargingPointId()));
-	    // layoutDocument.add(table1);
-	    
-//	    table1.addCell(getCellBold("Connector :"));
-//	    table1.addCell(getCellWithOutBold("Connector :"));
-	    //table1.addCell(new Paragraph(chargingRequestEntity.getConnectorEntity().getConnectorId()));
-	    // layoutDocument.add(table1);
-	    
-//	    tableAll.addCell(table1);
-//		table1.addCell(getCellLabelVal("Charge Point  :",chargingRequestEntity.getChargingPointEntity().getChargingPointId()));
-//		table1.addCell(getCellLabelVal("Connector :",chargingRequestEntity.getConnectorEntity().getConnectorId()));
-//		layoutDocument.add(table1);
 		
-		table1.addCell(new Cell().add(new Paragraph("EV Dock GSTN  :")));
-		table1.addCell(new Cell().add(new Paragraph("27AAJCT1560G1ZB")));
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph("Invoice No"))
+				.setBold()
+				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
 		
-		table1.addCell(new Cell().add(new Paragraph("Name  :")));
-		table1.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getCustName()))));
-		table1.addCell(new Cell().add(new Paragraph("Mobile No.  :")));
-		table1.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getMobileNo()))));
-		table1.addCell(new Cell().add(new Paragraph("Vehicle No.  :")));
-		table1.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getVehicleNO()))));
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getId() + " _ " + 
+				RandomNumber.getRandomNumberString()+RandomStringUtil.getAlphaNumericString(4, "EVDock")))));
 		
-		table1.addCell(new Cell().add(new Paragraph("Charge Point  :")));
-		table1.addCell(new Cell().add(new Paragraph(chargingRequestEntity.getChargingPointEntity().getChargingPointId())));
-		table1.addCell(new Cell().add(new Paragraph("Connector  :")));
-		table1.addCell(new Cell().add(new Paragraph(chargingRequestEntity.getConnectorEntity().getConnectorId())));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+				.setBorder(Border.NO_BORDER));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+				.setBorder(Border.NO_BORDER));
+		
+		// Invoice Date 
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph("Invoice Date"))
+				.setBold()
+				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getCreatedAt()))));
+		
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+				.setBorder(Border.NO_BORDER));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+				.setBorder(Border.NO_BORDER));
+		
+		// Booking ID
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph("Booking ID"))
+				.setBold()
+				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getId()))));
+		
+
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+				.setBorder(Border.NO_BORDER));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+				.setBorder(Border.NO_BORDER));
+
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+				.setBorder(Border.NO_BORDER));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+				.setBorder(Border.NO_BORDER));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+				.setBorder(Border.NO_BORDER));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+				.setBorder(Border.NO_BORDER));
+
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+				.setBorder(Border.NO_BORDER));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+				.setBorder(Border.NO_BORDER));
+		
+		
+		// Customer Details Tag
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(" Invoice To "))
+				.setBorder(Border.NO_BORDER)
+				.setBold()
+				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
+		
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+				.setBorder(Border.NO_BORDER)
+				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
+		
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(" Charge Point ID : "))
+				.setBorder(Border.NO_BORDER)
+				.setTextAlignment(TextAlignment.LEFT)
+				.setBold()
+				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
+		
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(chargingPointId))
+				.setBorder(Border.NO_BORDER)
+				.setTextAlignment(TextAlignment.LEFT)
+				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
+		
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(" Customer Name "))
+				.setBorder(Border.NO_BORDER)
+				.setBold()
+				.setTextAlignment(TextAlignment.LEFT));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getCustName())))
+				.setBorder(Border.NO_BORDER)
+				.setTextAlignment(TextAlignment.LEFT));
+
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(" Charge Spot Name "))
+				.setBold()
+				.setBorder(Border.NO_BORDER)
+				.setTextAlignment(TextAlignment.LEFT));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getChargingPointEntity().getName())))
+				.setBorder(Border.NO_BORDER)
+				.setTextAlignment(TextAlignment.LEFT));
 				
-		layoutDocument.add(table1);
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(" Contact No "))
+				.setBorder(Border.NO_BORDER)
+				.setBold()
+				.setTextAlignment(TextAlignment.LEFT));
 		
-	    Table tableTime = new Table(UnitValue.createPercentArray(2)).useAllAvailableWidth(); 
-	    tableTime.setFontSize(8); 
-	    
-//		tableTime.addCell(getCellBold("Charging Time :"));
-//		tableTime.addCell(getCellWithOutBold("Charging Time :"));
-	    //table1.addCell(new Paragraph(String.valueOf(chargingRequestEntity.getMeterStop())));
-	    //  layoutDocument.add(table1);
-	    
-//		tableTime.addCell(getCellBold("Energy Delivered / kwh :"));
-//		tableTime.addCell(getCellWithOutBold("Energy Delivered / kwh :"));
-	    //table1.addCell(new Paragraph(String.valueOf(chargingRequestEntity.getTransactionsEntity().getAllowedCharge())));
-	    // layoutDocument.add(table1);
-        
-//		tableAll.addCell(tableTime);
-	
-	//	tableTime.addCell(getCellLabelVal("Charging Time :",String.valueOf(chargingRequestEntity.getMeterStop())));
-	//	tableTime.addCell(getCellLabelVal("Energy Delivered / kwh :",String.valueOf(chargingRequestEntity.getTransactionsEntity().getAllowedCharge())));
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getMobileNo())))
+				.setBorder(Border.NO_BORDER)
+				.setTextAlignment(TextAlignment.LEFT));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(" Address "))
+				.setBorder(Border.NO_BORDER)
+				.setBold()
+				.setTextAlignment(TextAlignment.LEFT));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getChargingPointEntity().getAddress() + 
+				" " + chargingRequestEntity.getChargingPointEntity().getAddress2() + " " + chargingRequestEntity.getChargingPointEntity().getPincode())))
+				.setBorder(Border.NO_BORDER)
+				.setTextAlignment(TextAlignment.LEFT));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(" Email ID "))
+				.setBorder(Border.NO_BORDER)
+				.setBold()
+				.setTextAlignment(TextAlignment.LEFT));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getUserInfoEntity().getEmail())))
+				.setBorder(Border.NO_BORDER)
+				.setTextAlignment(TextAlignment.LEFT));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(" Charging Date & Time "))
+				.setBorder(Border.NO_BORDER)
+				.setBold()
+				.setTextAlignment(TextAlignment.LEFT));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getStartTime() 
+				+ " " + chargingRequestEntity.getStopTime())))
+				.setBorder(Border.NO_BORDER)
+				.setTextAlignment(TextAlignment.LEFT));
+
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(" Vehicle No "))
+				.setBorder(Border.NO_BORDER)
+				.setBold()
+				.setTextAlignment(TextAlignment.LEFT));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getVehicleNO())))
+				.setBorder(Border.NO_BORDER)
+				.setTextAlignment(TextAlignment.LEFT));
+			
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(" Charging Duration (HH:MM:SS) "))
+				.setBorder(Border.NO_BORDER)
+				.setBold()
+				.setTextAlignment(TextAlignment.LEFT));
+		
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getChargingTime())))
+				.setBorder(Border.NO_BORDER)
+				.setTextAlignment(TextAlignment.LEFT));
 		
 		
-		tableTime.addCell(new Cell().add(new Paragraph("Charging Time  :")));
-		tableTime.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getChargingTime()))));
-		tableTime.addCell(new Cell().add(new Paragraph("Energy Delivered / kwh :")));
-		tableTime.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalKwh()))));
+		layoutDocument.add(invoiceDataTableVal);
 		
-		layoutDocument.add(tableTime);
+		layoutDocument.add(new Paragraph());
 		
-		Table tableCost = new Table(UnitValue.createPercentArray(2)).useAllAvailableWidth(); 
-		tableCost.setFontSize(8); 
-	    
-//		tableCost.addCell(getCellBold("Charging fee :"));
-//		tableCost.addCell(getCellWithOutBold("Charging fee :"));
-	    //table1.addCell(new Paragraph(String.valueOf(chargingRequestEntity.getRequestAmount())));
-	   // layoutDocument.add(table1);
-	    
-	    
-	    //table1.addCell(new Paragraph(String.valueOf(chargingRequestEntity.getRequestAmount())));
-	   // layoutDocument.add(table1);
-	    
+		
 		double finalAmount = chargingRequestEntity.getFinalAmount();
 		
-		double WithoutGSTAmount = finalAmount/1.18;
+		double WithoutGSTAmount = finalAmount/1.09;
 		
-		double GSTAmount = WithoutGSTAmount*0.18;
+		double CGSTAmount = WithoutGSTAmount*0.09;
+		
+		double SGSTAmount = WithoutGSTAmount*0.09;
+		
+		// Description Table
+		Table chargingDescriptionTable = new Table(UnitValue.createPercentArray(4)).useAllAvailableWidth();
+		chargingDescriptionTable.setFontSize(10);
+		chargingDescriptionTable.setTextAlignment(TextAlignment.CENTER);
+		chargingDescriptionTable.setHorizontalAlignment(HorizontalAlignment.CENTER);
+		chargingDescriptionTable.setWidth(500);		
+		
+		// Cell for Description Table
+		Style cellDescriptionVal = new Style();
+		cellDescriptionVal.setBorder(Border.NO_BORDER);
+		cellDescriptionVal.setTextAlignment(TextAlignment.CENTER);
+		
+		chargingDescriptionTable.addStyle(cellDescriptionVal);
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" Description "))
+				.setTextAlignment(TextAlignment.LEFT)
+				.setBold()
+				.setFontSize(12)
+				.setBorder(Border.NO_BORDER));
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph())
+				.setTextAlignment(TextAlignment.CENTER)
+				.setBold()
+				.setBorder(Border.NO_BORDER));
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph())
+				.setTextAlignment(TextAlignment.CENTER)
+				.setBold()
+				.setBorder(Border.NO_BORDER));
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph())
+				.setTextAlignment(TextAlignment.CENTER)
+				.setBold()
+				.setBorder(Border.NO_BORDER));
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph())
+				.setTextAlignment(TextAlignment.CENTER)
+				.setBold()
+				.setBorder(Border.NO_BORDER));
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph())
+				.setTextAlignment(TextAlignment.CENTER)
+				.setBold()
+				.setBorder(Border.NO_BORDER));
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph())
+				.setTextAlignment(TextAlignment.CENTER)
+				.setBold()
+				.setBorder(Border.NO_BORDER));
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph())
+				.setTextAlignment(TextAlignment.CENTER)
+				.setBold()
+				.setBorder(Border.NO_BORDER));
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" Description "))
+				.setTextAlignment(TextAlignment.CENTER)
+				.setBold()
+				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" Price Per Unit (INR) "))
+				.setTextAlignment(TextAlignment.CENTER)
+				.setBold()
+				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" Unit Consumed (KWH) "))
+				.setTextAlignment(TextAlignment.CENTER)
+				.setBold()
+				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" Amount (INR) "))
+				.setTextAlignment(TextAlignment.CENTER)
+				.setBold()
+				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" Service Charges "))
+				.setTextAlignment(TextAlignment.LEFT)
+				.setBold());
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalAmount()))));
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalAmount()))));
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" CGST (9.00%)"))
+				.setTextAlignment(TextAlignment.LEFT)
+				.setBold());
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(CGSTAmount))));
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" SGST (9.00%)"))
+				.setTextAlignment(TextAlignment.LEFT)
+				.setBold());
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(SGSTAmount))));
+		
+		/*
+		 * chargingDescriptionTable.addCell(new Cell(1,3).add(new Paragraph())
+		 * .setBorder(Border.NO_BORDER) .setBackgroundColor(new DeviceRgb(63,169,219)));
+		 */
+		
+		/*
+		 * chargingDescriptionTable.addCell(new Cell().add(new Paragraph())
+		 * .setBorder(Border.NO_BORDER) .setBackgroundColor(new DeviceRgb(63,169,219)));
+		 */
+		
+		chargingDescriptionTable.addCell(new Cell(1,3).add(new Paragraph(" Total Payable Amount "))
+				.setBackgroundColor(new DeviceRgb(63,169,219))
+				.setBold()
+				.setTextAlignment(TextAlignment.RIGHT));
+		
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalAmount())))
+				.setBackgroundColor(new DeviceRgb(63,169,219)));
 		
 		
-//		tableCost.addCell(getCellLabelVal("Charging fee :",String.valueOf(WithoutGSTAmount)));
-//		layoutDocument.add(tableCost.addCell(getCellLabelVal("Idling fee :","0")));
-//		tableCost.addCell(getCellLabelVal("GST 18% :",String.valueOf(GSTAmount)));
-//		tableCost.addCell(getCellLabelVal("Total Cost",String.valueOf(finalAmount)));
-
-		tableCost.addCell(new Cell().add(new Paragraph("Charging fee  :")));
-		tableCost.addCell(new Cell().add(new Paragraph(String.valueOf(df.format(WithoutGSTAmount)))));
-		tableCost.addCell(new Cell().add(new Paragraph("GST 18%   :")));
-		tableCost.addCell(new Cell().add(new Paragraph(String.valueOf(df.format(GSTAmount)))));
-		tableCost.addCell(new Cell().add(new Paragraph("Total Cost  :")));
-		tableCost.addCell(new Cell().add(new Paragraph(String.valueOf(df.format(finalAmount)))));
+		layoutDocument.add(chargingDescriptionTable);
 		
-		layoutDocument.add(tableCost);
+		// Blank Space
+		layoutDocument.add(new Paragraph());
+		layoutDocument.add(new Paragraph());
 		
-		Table tablePayStatus = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth(); 
-		tablePayStatus.setFontSize(8);
+		Table totalAmtMsgTable = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
 		
-	    layoutDocument.add(tablePayStatus.addCell(getCellLabelVal("Payment status","Success")));
-	    
-	    
-		Cell cellRound = new Cell();
-//		cell2.setPaddingTop(35);
-		cellRound.setBorder(Border.NO_BORDER);
+		Cell totalAmtMsgCell = new Cell();
+		totalAmtMsgCell.setBold();
+		totalAmtMsgCell.setBorder(null);
 		
-//		Color color = WebColors.getRGBColor("#161a47");
-		Paragraph paraRound = new Paragraph("*Total cost is result for Rounding off (Charging fee + GST)");
-		paraRound.setFontSize(3);
-//		para.setPaddingTop(5);
-//		para.setPaddingLeft(55);
-//		para.setPaddingBottom(5);
-//		paraRound.setBold();
-		paraRound.setTextAlignment(TextAlignment.RIGHT);
-//		para.setFontColor(Color.WHITE);
-//		para.setBackgroundColor(color);
-		cellRound.add(paraRound);
-	    
-		 layoutDocument.add(cellRound);
-	    
+		
+		double finalPaidAmount = chargingRequestEntity.getFinalAmount();
+		
+		Paragraph totalAmtPaidMsg = new Paragraph(" Total Amount Paid (INR) : " + finalPaidAmount);
+		totalAmtPaidMsg.setBold();
+		totalAmtPaidMsg.setFontColor(new DeviceRgb(34, 139, 34));
+		totalAmtPaidMsg.setTextAlignment(TextAlignment.CENTER);
+		totalAmtPaidMsg.setFontSize(20);
+		
+		totalAmtMsgCell.add(totalAmtPaidMsg);
+		
+		totalAmtMsgTable.addCell(totalAmtMsgCell);
+		
+		layoutDocument.add(totalAmtMsgTable);
+		
 		layoutDocument.close();
-		
-		System.out.println("filename==="+filename);
-		System.out.println("receiptNo==="+receiptNo);
 		
 		chargingRequestEntity.setInvoiceFilePath(filename);
 		chargingRequestEntity.setReceiptNo(receiptNo);
 		
+		return chargingRequestEntity;      
 		
-		return chargingRequestEntity;
 	}
-
-	/*
-	 * private static Cell getCell(String content) { Cell cell = new Cell().add(new
-	 * Paragraph(content)); cell.setBorderTopRightRadius(new BorderRadius(4));
-	 * cell.setBorderTopLeftRadius(new BorderRadius(4)); return cell; }
-	 */
-	
-	private static Cell getCellBold(String content) {
- //       Cell cell = new Cell().add(new Paragraph(content));
- //       cell.setBorderTopRightRadius(new BorderRadius(4));
- //       cell.setBorderTopLeftRadius(new BorderRadius(4));
-        
-        Cell cell = new Cell().add(new Paragraph(content).setBold());
-//		cell2.setPaddingTop(35);
-        cell.setBorder(Border.NO_BORDER);
-//		para.setPaddingBottom(5);
-//        cell.setBold();
-        cell.setTextAlignment(TextAlignment.CENTER);
-//		para.setFontColor(Color.WHITE);
-//		para.setBackgroundColor(color);
-        
-        return cell;
-    }
-	
-	private static Cell getCellWithOutBold(String content) {
- //     Cell cell = new Cell().add(new Paragraph(content));
- //     cell.setBorderTopRightRadius(new BorderRadius(4));
- //     cell.setBorderTopLeftRadius(new BorderRadius(4));
-		        
-    	Cell cell = new Cell().add(new Paragraph(content));
-//		cell2.setPaddingTop(35);
-        cell.setBorder(Border.NO_BORDER);
-//		para.setPaddingBottom(5);
-//        cell.setBold();
-        cell.setTextAlignment(TextAlignment.CENTER);
-//		para.setFontColor(Color.WHITE);
-//		para.setBackgroundColor(color);
-        return cell;
-    }
-	
-	
-	private static Table getCellLabelVal(String labelContent , String valContent) {
- //     Cell cell = new Cell().add(new Paragraph(content));
- //     cell.setBorderTopRightRadius(new BorderRadius(4));
- //     cell.setBorderTopLeftRadius(new BorderRadius(4));
-		
-		Table cell = new Table(UnitValue.createPercentArray(2)).useAllAvailableWidth();;
-		
-//		cell.setBorder(new SolidBorder(1));
-    	Cell cellLabel = new Cell().add(new Paragraph(labelContent));
-//		cell2.setPaddingTop(35);
-		cellLabel.setBorder(Border.NO_BORDER);
-//		para.setPaddingBottom(5);
-//        cell.setBold();
-		cellLabel.setTextAlignment(TextAlignment.CENTER);
-//		para.setFontColor(Color.WHITE);
-//		para.setBackgroundColor(color);
-		
-		
-		Cell cellVal = new Cell().add(new Paragraph(valContent));
-//		cell2.setPaddingTop(35);
-		cellVal.setBorder(Border.NO_BORDER);
-//		para.setPaddingBottom(5);
-//        cell.setBold();
-		cellVal.setTextAlignment(TextAlignment.CENTER);
-//		para.setFontColor(Color.WHITE);
-//		para.setBackgroundColor(color);
-		
-	//	cell.addCell(cellLabel);
-	//	cell.addCell(cellVal);
-		cell.addCell(new Cell().add(new Paragraph(labelContent)));
-		cell.addCell(new Cell().add(new Paragraph(valContent)));
-		
-		
-		
-        return cell;
-    }
-	
-
-	
-    private static class TableBorderRenderer extends TableRenderer {
-        public TableBorderRenderer(Table modelElement) {
-            super(modelElement);
-        }
-
-        // If a renderer overflows on the next area, iText uses #getNextRenderer() method to create a new renderer for the overflow part.
-        // If #getNextRenderer() isn't overridden, the default method will be used and thus the default rather than the custom
-        // renderer will be created
-        @Override
-        public IRenderer getNextRenderer() {
-            return new TableBorderRenderer((Table) modelElement);
-        }
-
-        @Override
-        protected void drawBorders(DrawContext drawContext) {
-            Rectangle rect = getOccupiedAreaBBox();
-            drawContext.getCanvas()
-                    .saveState()
-                    .rectangle(rect.getLeft(), rect.getBottom(), rect.getWidth(), rect.getHeight())
-                    .stroke()
-                    .restoreState();
-        }
-    }
-	
-	/*
-	 * private static void addHeader(Document layoutDocument, PdfDocument
-	 * pdfDocument) { Paragraph header = new
-	 * Paragraph("Copy").setFontSize(8).setFontColor(Color.RED);
-	 * 
-	 * for (int i = 1; i <= pdfDocument.getNumberOfPages(); i++) { Rectangle
-	 * pageSize = pdfDocument.getPage(i).getPageSize(); float x =
-	 * pageSize.getWidth() / 2; float y = pageSize.getTop() - 20;
-	 * layoutDocument.showTextAligned(header, x, y, i, TextAlignment.LEFT,
-	 * VerticalAlignment.BOTTOM, 0); }
-	 * 
-	 * }
-	 * 
-	 * private static void addFooter(Document layoutDocument, PdfDocument
-	 * pdfDocument) {
-	 * 
-	 * layoutDocument.add(new Paragraph("")); layoutDocument.add(new Paragraph(""));
-	 * 
-	 * //layoutDocument.add(new
-	 * Paragraph(" Login | Edit Booking | View Charges | Contact Us").setBorder(
-	 * Border.NO_BORDER).setFontSize(8).setTextAlignment(TextAlignment.CENTER));
-	 * layoutDocument.add(new
-	 * Paragraph("Copyright 2021 © BookMyCargo.online LLP All rights reserved.").
-	 * setBorder(Border.NO_BORDER).setFontSize(8).setTextAlignment(TextAlignment.
-	 * CENTER));
-	 * 
-	 * }
-	 */
 }
