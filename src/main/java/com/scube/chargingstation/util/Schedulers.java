@@ -35,7 +35,7 @@ public class Schedulers {
 	@Scheduled(cron = "${updateStartResult.cronTime}")
 	public int updateStartResult() throws Exception {
 		    
-		log.info("updateStartResult");
+		//log.info("updateStartResult");
 		
 	 	// transactionsService.updateStartResultInitiated();
 	 	transactionsService.chargingRequestedBill();
@@ -56,7 +56,7 @@ public class Schedulers {
 	@Scheduled(cron = "${sendGunInsertNotification.cronTime}")
 	public int sendGunInsertNotification() throws Exception {
 		
-		log.info("sendGunInsertNotification");
+		//log.info("sendGunInsertNotification");
 		chargingRequestService.sendGunInsertNotification();
 		return 0;
 	}

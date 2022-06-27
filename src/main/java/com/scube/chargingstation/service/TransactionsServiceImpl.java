@@ -217,8 +217,8 @@ public class TransactionsServiceImpl implements TransactionsService {
 					double finalAmount = 0;
 					double finalKwh = 0;
 					
-					
-					double minKwh = 0.01;
+					  
+					double minKwh = 0.01;   
 					//.getConnectorId()
 					ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndKwh(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getId(),minKwh);
 					logger.info("***1111***");

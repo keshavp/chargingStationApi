@@ -2,12 +2,17 @@ package com.scube.chargingstation.dto.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scube.chargingstation.dto.AmenityDto;
+import com.scube.chargingstation.dto.ChargingHistoryDto;
+import com.scube.chargingstation.dto.ChargingHistoryRespDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.entity.ChargingPointEntity;
+import com.scube.chargingstation.util.StaticPathContUtils;
 
 public class ChargingPointMapper {
 
@@ -52,6 +57,50 @@ public class ChargingPointMapper {
 		}
 		
 		return chargingPointDtos;
+	}
+	
+	
+	public static List<ChargingPointDto> toChargingPointDtoLst(List<Map<String, String>>  list) {
+		// TODO Auto-generated method stub
+		final ObjectMapper mapper = new ObjectMapper(); 
+		List<ChargingPointDto> resp = new ArrayList<>();
+		
+		for (int i = 0; i < list.size(); i++) 
+		{
+			ChargingPointDto obj=new ChargingPointDto();
+			
+			final ChargingPointDto pojo = mapper.convertValue(list.get(i), ChargingPointDto.class);
+			
+			obj.setId(pojo.getId());
+			obj.setChargingPointId(pojo.getChargingPointId());
+			obj.setName(pojo.getName());
+			obj.setPartnerName(pojo.getPartnerName());
+			obj.setStartTime(pojo.getStartTime());
+			obj.setEndTime(pojo.getEndTime());
+			obj.setStatus(pojo.getStatus());
+			
+			
+			obj.setAddress(pojo.getAddress());
+			obj.setAddress2(pojo.getAddress2());
+			obj.setPincode(pojo.getPincode());
+			obj.setLatitude(pojo.getLatitude());
+			obj.setLongitude(pojo.getLongitude());
+			
+			obj.setDistance(pojo.getDistance())	;			
+			obj.setRating(pojo.getRating());
+			
+			obj.setManufractures(pojo.getManufractures());
+			obj.setCommunicationtype(pojo.getCommunicationtype());
+			obj.setPowerstandards(pojo.getPowerstandards());
+			obj.setStationtype(pojo.getStationtype());
+			obj.setPartner(pojo.getPartner());////////
+			obj.setAmenities(pojo.getAmenities());
+			obj.setConnectors(pojo.getConnectors());
+			obj.setFardistance(pojo.getFardistance());
+			
+			resp.add(obj);
+		}
+		return resp;
 	}
 	
 }

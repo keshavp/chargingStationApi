@@ -2,6 +2,7 @@ package com.scube.chargingstation.service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.validation.Valid;
@@ -11,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.scube.chargingstation.dto.AmenityDto;
+import com.scube.chargingstation.dto.ChargingHistoryRespDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.incoming.ChargingPointIncomingDto;
 import com.scube.chargingstation.dto.incoming.ConnectorsIncomingDto;
+import com.scube.chargingstation.dto.mapper.ChargingHistoryMapper;
 import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
 import com.scube.chargingstation.entity.AmenitiesEntity;
 import com.scube.chargingstation.entity.ChargepointForSeverEntity;
@@ -226,6 +229,9 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	public List<ChargingPointEntity> getAllChargingPointEntity() {
 		// TODO Auto-generated method stub
 		return chargingPointRepository.findAll();
+		
+	
+		
 	}
 	
 	@Override
@@ -364,6 +370,17 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	public PartnerInfoEntity findByPartnerId(String id) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public List<ChargingPointDto> getNearByChargingPoints(Double lat,Double longi) {
+		// TODO Auto-generated method stub
+		
+		
+		List<Map<String, String>> listDtl=chargingPointRepository.getNearByChargingStations(lat, longi);
+		List<ChargingPointDto> chargingPointDtoLst = ChargingPointMapper.toChargingPointDtoLst(listDtl);
+		
+		return chargingPointDtoLst;
 	}
 
 	

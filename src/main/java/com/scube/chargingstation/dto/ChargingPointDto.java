@@ -47,4 +47,6 @@ public class ChargingPointDto {
     private Set<ChargingPointConnectorDto> connectors;
     private Set<AmenityDto> amenities ;
     
+    private Double fardistance;
+    
 }
