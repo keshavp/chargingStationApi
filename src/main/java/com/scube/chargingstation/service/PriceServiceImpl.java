@@ -25,6 +25,8 @@ import com.scube.chargingstation.dto.mapper.PriceMapper;
 import com.scube.chargingstation.entity.ChargingPointConnectorRateEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
+import com.scube.chargingstation.entity.RoleEntity;
+import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.repository.ChargingPointConnectorRateRepository;
 
 @Service
@@ -71,7 +73,7 @@ public class PriceServiceImpl implements PriceService{
 		
 		
 		
-		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(chargingPointConnectorRateIncomingDto.getChargingPointId());
+		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityById(chargingPointConnectorRateIncomingDto.getChargingPointId());
 		// Cp
 		
 		
@@ -115,13 +117,13 @@ public class PriceServiceImpl implements PriceService{
 	public boolean editPriceRate(@Valid ChargingPointConnectorRateIncomingDto chargingPointConnectorRateIncomingDto) {
 		// TODO Auto-generated method stub
 		
-	List<ChargingPointConnectorRateEntity> chargingpointconnectorRateEntities=new ArrayList< ChargingPointConnectorRateEntity>();
+		List<ChargingPointConnectorRateEntity> chargingpointconnectorRateEntities=new ArrayList< ChargingPointConnectorRateEntity>();
 		
 		
-		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(chargingPointConnectorRateIncomingDto.getChargingPointId());
+//		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(chargingPointConnectorRateIncomingDto.getChargingPointId());
 		// Cp
 		
-	//	ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityById(chargingPointConnectorRateIncomingDto.getChargingPointId());
+		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityById(chargingPointConnectorRateIncomingDto.getChargingPointId());
 		
 		
 		// Cp + connTy
@@ -132,7 +134,7 @@ public class PriceServiceImpl implements PriceService{
 		List<PriceMasterDto> psd=new ArrayList<PriceMasterDto>();
 		for(PriceMasterDto priceMasterDtos : chargingPointConnectorRateIncomingDto.getAmount())
 		{
-			ChargingPointConnectorRateEntity chargingpointconnectorRateEntity =chargingPointConnectorRateRepository.findById(chargingPointConnectorRateIncomingDto.getId()).get();
+			ChargingPointConnectorRateEntity chargingpointconnectorRateEntity =chargingPointConnectorRateRepository.findById(priceMasterDtos.getId()).get();
 			
          
 			chargingpointconnectorRateEntity.setAmount(priceMasterDtos.getAmount());
@@ -182,6 +184,32 @@ public class PriceServiceImpl implements PriceService{
 		}
 		
 		return PriceMapper.toPriceMasterDto(chargingPointConnectorRateEntities);
+	}
+
+
+	@Override
+	public List<PriceDto> getPricingByChargingPointAndConnector(String chargingPoint, String connector) {
+		// TODO Auto-generated method stub
+		
+		List<ChargingPointConnectorRateEntity> chargingPointConnectorRateEntity = chargingPointConnectorRateRepository.getConnectorRateByChargingPointEntityAndConnectEntity(chargingPoint, connector);
+		
+		return PriceMapper.toPriceDtos(chargingPointConnectorRateEntity);
+	}
+
+
+	@Override
+	public boolean deletePrice(String chargingPoint, String connector) {
+		// TODO Auto-generated method stub
+		List<ChargingPointConnectorRateEntity> chargingPointConnectorRateEntity = chargingPointConnectorRateRepository.getConnectorRateByChargingPointEntityAndConnectEntity(chargingPoint, connector);
+		
+		if(chargingPointConnectorRateEntity.size() == 0 ) {
+			
+			throw BRSException.throwException(" can't be blank or null");
+		}
+		
+		chargingPointConnectorRateRepository.deleteAll(chargingPointConnectorRateEntity);
+		
+		return true;
 	}
 
 	

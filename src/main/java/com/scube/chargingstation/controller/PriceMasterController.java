@@ -61,11 +61,21 @@ public class PriceMasterController {
 		 return Response.ok().setPayload(priceService.getAllPricingDetailsForAllStations());
 	 }
 	
-	 @GetMapping( value = "/getPricingDetailsById/{pricingId}")
-	 public Response getPricingDetailsById(@PathVariable String pricingId) {
+	 @GetMapping( value = "/getPricingDetailsById/{chargingPoint}/{connector}")
+	 public Response getPricingDetailsById(@PathVariable String chargingPoint ,@PathVariable String connector) {
 		 logger.info("***PriceMasterController getPricingDetailsById***");
 		 
-		 return Response.ok().setPayload(priceService.getPricingHistoryById(pricingId));
+		// return Response.ok().setPayload(priceService.getPricingHistoryById(pricingId));
+		 
+		return Response.ok().setPayload(priceService.getPricingByChargingPointAndConnector(chargingPoint ,connector));
 	 }
+	 
+	 @GetMapping( value = "/deletePrice/{cpid}/{cid}" )
+		public Response deletePrice(@PathVariable("cpid") String cpid,@PathVariable("cid") String cid) {
+			logger.info("***PriceMasterController deletePrice***");
+		//	logger.info(NEW_ORDER_LOG, createdUser.toString());
+			return Response.ok().setPayload(priceService.deletePrice(cpid,cid));
+			
+		}
 
 }

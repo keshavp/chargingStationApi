@@ -18,6 +18,7 @@ import lombok.experimental.Accessors;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PriceDto {
 	
+	private String id;
 	private String chargingStationName;
 	private String pricingDetailsId;
 	private String connectorName;

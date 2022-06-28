@@ -66,6 +66,10 @@ public class PartnerController {
 		Logger.info("***PartnerController getAllActivePartners***");
 		return Response.ok().setPayload(partnerService.getAllActivePartners());
 	}
-	
-	
+	@GetMapping ( value = "/delete/{id}")
+	public Response deletePartnerUserById(@PathVariable String id) {
+		Logger.info("***PartnerController deletePartnerUserById***");
+		return Response.ok().setPayload(partnerService.deletePartnerUserById(id));
+		
+	}
 }

@@ -23,4 +23,6 @@ public interface PartnerService {
 	PartnerInfoEntity getPartnersById(String id);
 	
 	PartnerInfoEntity getPartnerById(String id);
+
+	boolean deletePartnerUserById(String id);
 }

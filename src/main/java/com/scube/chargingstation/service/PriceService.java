@@ -24,4 +24,8 @@ public interface PriceService {
 //	ChargingPointConnectorRateEntity getPricingDetailsById(String id);
 	
 	PriceDto getPricingHistoryById(String id);
+
+	List<PriceDto> getPricingByChargingPointAndConnector(String chargingPoint, String connector);
+
+	boolean deletePrice(String cpid, String cid);
 }

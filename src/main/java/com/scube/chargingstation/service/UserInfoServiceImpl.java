@@ -213,9 +213,12 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 	
 		
-		userInfoEntity.setIsdeleted("Y");
-		userInfoEntity.setStatus("INACTIVE");
-		userInfoRepository.save(userInfoEntity);
+		/*
+		 * userInfoEntity.setIsdeleted("Y"); userInfoEntity.setStatus("INACTIVE");
+		 * userInfoRepository.save(userInfoEntity);
+		 */
+		
+		userInfoRepository.delete(userInfoEntity);
 		
 		// TODO Auto-generated method stub   
 		return true;

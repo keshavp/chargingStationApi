@@ -201,4 +201,19 @@ public class PartnerServiceImpl implements PartnerService {
 		return partnerInfoEntity;
 	}
 
+	@Override
+	public boolean deletePartnerUserById(String id) {
+		// TODO Auto-generated method stub
+		
+		PartnerInfoEntity partnerInfoEntities = partnerRepository.findById(id).get();
+		
+		if(partnerInfoEntities == null) {
+			throw BRSException.throwException("Error : Partner ID can't be blank");
+		}
+		
+		partnerRepository.delete(partnerInfoEntities);
+		
+		return false;
+	}
+
 }

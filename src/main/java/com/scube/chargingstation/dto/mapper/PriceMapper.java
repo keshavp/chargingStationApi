@@ -11,6 +11,7 @@ public class PriceMapper {
 	public static PriceDto toPriceMasterDto(ChargingPointConnectorRateEntity chargingPointConnectorRateEntity) {
 		
 		return new PriceDto()
+				.setId(chargingPointConnectorRateEntity.getId())
 				.setChargingStationName(chargingPointConnectorRateEntity.getChargingPointEntity().getName())
 				.setConnectorName(chargingPointConnectorRateEntity.getConnectorEntity().getChargerTypeEntity().getName())
 				.setPricingDetailsId(chargingPointConnectorRateEntity.getId())
@@ -21,7 +22,7 @@ public class PriceMapper {
 				.setPricingSgst(chargingPointConnectorRateEntity.getSgst())
 				.setPricingTime(chargingPointConnectorRateEntity.getTime())
 				.setChargingPointId(chargingPointConnectorRateEntity.getChargingPointEntity().getId())
-				.setConnectorId(chargingPointConnectorRateEntity.getConnectorEntity().getChargerTypeEntity().getId());
+				.setConnectorId(chargingPointConnectorRateEntity.getConnectorEntity().getId());
 	}
 
 	public static PriceDto toPriceDto(ChargingPointConnectorRateEntity chargingPointConnectorRateEntity) {
@@ -31,7 +32,7 @@ public class PriceMapper {
 				.setChargingStationName(chargingPointConnectorRateEntity.getChargingPointEntity().getName())
 				.setConnectorName(chargingPointConnectorRateEntity.getConnectorEntity().getChargerTypeEntity().getName())
 				.setChargingPointId(chargingPointConnectorRateEntity.getChargingPointEntity().getId())
-				.setConnectorId(chargingPointConnectorRateEntity.getConnectorEntity().getChargerTypeEntity().getId());
+				.setConnectorId(chargingPointConnectorRateEntity.getConnectorEntity().getId());
 				
 	}
 
@@ -39,7 +40,7 @@ public class PriceMapper {
 		
 		List<PriceDto> priceDtos = new ArrayList<PriceDto>();
 		for(ChargingPointConnectorRateEntity chargingPointConnectorRateEntity : chargingPointConnectorRateEntities) {
-			priceDtos.add(toPriceDto(chargingPointConnectorRateEntity));
+			priceDtos.add(toPriceMasterDto(chargingPointConnectorRateEntity));
 		}
 		
 		return priceDtos;
