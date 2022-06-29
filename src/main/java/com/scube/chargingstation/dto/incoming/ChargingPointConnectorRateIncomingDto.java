@@ -19,5 +19,6 @@ public class ChargingPointConnectorRateIncomingDto {
 	private  List<PriceMasterDto> amount ;
 	private String chargingPointId;
 	private String connectorId;
+	private String status;
 	private String id;
 }
