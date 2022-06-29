@@ -332,4 +332,10 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return userInfoRepository.findByMobilenumber(mobilenumber);
 	}
 	
+	@Override
+	public UserInfoEntity getUserInfoEntityById(String userId) {
+		// TODO Auto-generated method stub
+		return userInfoRepository.findById(userId);
+	}
+	
 }

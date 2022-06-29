@@ -33,4 +33,5 @@ public interface UserInfoService {
 	UserInfoEntity getChargingStationByPartnerId(String id);
 
 	UserInfoEntity getUserByMobilenumber(String mobilenumber);
+	UserInfoEntity getUserInfoEntityById(String userId);
 }

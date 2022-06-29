@@ -4,11 +4,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.plaf.LayerUI;
 import javax.swing.text.StyleConstants.ColorConstants;
+import javax.swing.text.html.parser.DTD;
 
 import org.apache.catalina.filters.AddDefaultCharsetFilter;
 import org.apache.poi.hssf.util.HSSFColor.BLACK;
@@ -63,6 +71,8 @@ import com.itextpdf.layout.element.Table;
 
 
 import com.scube.chargingstation.entity.ChargingRequestEntity;
+
+import net.bytebuddy.agent.builder.AgentBuilder.FallbackStrategy.Simple;
 
 @Service
 public class ReceiptPdfExporter {
@@ -215,8 +225,43 @@ public class ReceiptPdfExporter {
 		layoutDocument.add(customerMsgTable);
 		
 		// Blank Space
-		layoutDocument.add(new Paragraph());		
+		layoutDocument.add(new Paragraph());	
+		
+		// Invoice Date Format
+		//Instant myInvoiceDate = chargingRequestEntity.getCreatedAt();
+		
+		
+		
+		String myInvoiceRoundOffDateAndTime = DateUtils.formattedInstantToDateTimeString(chargingRequestEntity.getCreatedAt());
+		
+		logger.info("The Date is :-  " + myInvoiceRoundOffDateAndTime);
+		
+		/*
+		 
+		SimpleDateFormat myInvoiceDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		
+		myInvoiceDateFormat = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+		
+		String dateFormatRoundOff = myInvoiceDateFormat.format(myInvoiceDate);
+		
+		logger.info(" The Invoice Date is : " + dateFormatRoundOff);
 
+		 */
+		
+		// Charging Date and Time Format
+		
+		Instant chargingStartDateAndTime = chargingRequestEntity.getStartTime();
+		Instant chargingStopDateAndTime = chargingRequestEntity.getStopTime();
+		
+		
+		String chargingStartDateAndTimeRoundOff = DateUtils.formattedInstantToDateTimeString(chargingStartDateAndTime);
+		String chargingStopDateAndTimeRoundOff = DateUtils.formattedInstantToDateTimeString(chargingStopDateAndTime);
+		
+		String roundOffChargingDateAndTime = chargingStartDateAndTimeRoundOff + " - " + chargingStopDateAndTimeRoundOff;
+		
+		logger.info("The Charging Date & Time is :-  " + roundOffChargingDateAndTime);
+		
+		
 		// Table for Invoice Data
 		Table invoiceDataTableVal = new Table(UnitValue.createPercentArray(4)).useAllAvailableWidth(); 
 		invoiceDataTableVal.setFontSize(10);
@@ -252,7 +297,7 @@ public class ReceiptPdfExporter {
 				.setBold()
 				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
 		
-		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getCreatedAt()))));
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(String.valueOf(myInvoiceRoundOffDateAndTime))));
 		
 		
 		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
@@ -370,8 +415,7 @@ public class ReceiptPdfExporter {
 				.setBold()
 				.setTextAlignment(TextAlignment.LEFT));
 		
-		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getStartTime() 
-				+ " " + chargingRequestEntity.getStopTime())))
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(roundOffChargingDateAndTime)))
 				.setBorder(Border.NO_BORDER)
 				.setTextAlignment(TextAlignment.LEFT));
 
@@ -401,11 +445,29 @@ public class ReceiptPdfExporter {
 		
 		double finalAmount = chargingRequestEntity.getFinalAmount();
 		
-		double WithoutGSTAmount = finalAmount/1.09;
+		double WithoutGSTAmount = finalAmount/1.18;
+		
+		String roundOffWithoutGSTAmount = String.format("%.2f", WithoutGSTAmount);
+		
+		logger.info("Amount is : " + roundOffWithoutGSTAmount);
 		
 		double CGSTAmount = WithoutGSTAmount*0.09;
 		
+		String roundOfCGSTAmount = String.format("%.2f", CGSTAmount);
+		
+		logger.info("Amount is : " + roundOfCGSTAmount);
+		
 		double SGSTAmount = WithoutGSTAmount*0.09;
+		
+		String roundOfSGSTAmount = String.format("%.2f", SGSTAmount);
+		
+		logger.info("Amount is : " + roundOfSGSTAmount);
+		
+		double totalAmount = finalAmount + CGSTAmount + SGSTAmount;
+
+		String totalChargeAmount = String.format("%.2f", totalAmount);
+		
+		logger.info("Amount is : " + totalChargeAmount);
 		
 		// Description Table
 		Table chargingDescriptionTable = new Table(UnitValue.createPercentArray(4)).useAllAvailableWidth();
@@ -472,7 +534,7 @@ public class ReceiptPdfExporter {
 				.setBold()
 				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
 		
-		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" Unit Consumed (KWH) "))
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" Unit Consumed (kWh) "))
 				.setTextAlignment(TextAlignment.CENTER)
 				.setBold()
 				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
@@ -486,8 +548,8 @@ public class ReceiptPdfExporter {
 				.setTextAlignment(TextAlignment.LEFT)
 				.setBold());
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
-		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalAmount()))));
-		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalAmount()))));
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalKwh()))));
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(roundOffWithoutGSTAmount))));
 		
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" CGST (9.00%)"))
 				.setTextAlignment(TextAlignment.LEFT)
@@ -495,7 +557,7 @@ public class ReceiptPdfExporter {
 		
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
-		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(CGSTAmount))));
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(roundOfCGSTAmount))));
 		
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" SGST (9.00%)"))
 				.setTextAlignment(TextAlignment.LEFT)
@@ -503,7 +565,7 @@ public class ReceiptPdfExporter {
 		
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
-		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(SGSTAmount))));
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(roundOfSGSTAmount))));
 		
 		/*
 		 * chargingDescriptionTable.addCell(new Cell(1,3).add(new Paragraph())
@@ -520,7 +582,7 @@ public class ReceiptPdfExporter {
 				.setBold()
 				.setTextAlignment(TextAlignment.RIGHT));
 		
-		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalAmount())))
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(totalChargeAmount)))
 				.setBackgroundColor(new DeviceRgb(63,169,219)));
 		
 		
@@ -537,9 +599,9 @@ public class ReceiptPdfExporter {
 		totalAmtMsgCell.setBorder(null);
 		
 		
-		double finalPaidAmount = chargingRequestEntity.getFinalAmount();
+//		double finalPaidAmount = chargingRequestEntity.getFinalAmount();
 		
-		Paragraph totalAmtPaidMsg = new Paragraph(" Total Amount Paid (INR) : " + finalPaidAmount);
+		Paragraph totalAmtPaidMsg = new Paragraph(" Total Amount Paid (INR) : " + totalChargeAmount);
 		totalAmtPaidMsg.setBold();
 		totalAmtPaidMsg.setFontColor(new DeviceRgb(34, 139, 34));
 		totalAmtPaidMsg.setTextAlignment(TextAlignment.CENTER);
