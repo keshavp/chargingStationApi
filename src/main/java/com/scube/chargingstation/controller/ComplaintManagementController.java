@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.scube.chargingstation.dto.ComplaintResponseCommentsDto;
 import com.scube.chargingstation.dto.incoming.ComplaintIncomingDto;
 import com.scube.chargingstation.dto.response.Response;
-import com.scube.chargingstation.security.ComplaintService;
+import com.scube.chargingstation.service.ComplaintService;
 
 
 @CrossOrigin (origins = "*", maxAge = 3600)

@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.scube.chargingstation.dto.AuthUserDto;
+
 import com.scube.chargingstation.dto.ComplaintRespDto;
 import com.scube.chargingstation.dto.ComplaintResponseCommentsDto;
 import com.scube.chargingstation.dto.incoming.ComplaintIncomingDto;
@@ -21,7 +21,6 @@ import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.repository.ComplaintRepository;
 import com.scube.chargingstation.repository.UserInfoRepository;
-import com.scube.chargingstation.security.ComplaintService;
 
 import ch.qos.logback.classic.Logger;
 
