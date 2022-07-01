@@ -35,10 +35,12 @@ import lombok.experimental.Accessors;
 		private Double ActualAmt;
 		
 		private String name;
-		private String mobileNo;
 		
 		private Instant startTime;
 		private Instant  stopTime;
+		
+		private String custName;
+		private String mobileNo;
 	//	private String chargingTimeForUser;
 		
 		
