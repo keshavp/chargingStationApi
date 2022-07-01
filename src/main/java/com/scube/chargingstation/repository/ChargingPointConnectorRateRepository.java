@@ -16,11 +16,9 @@ public interface ChargingPointConnectorRateRepository extends JpaRepository<Char
 
 	ChargingPointConnectorRateEntity findByChargingPointEntityAndConnectorEntity(ChargingPointEntity chargingPointEntity, ConnectorEntity connectorEntity);
 
-	ChargingPointConnectorRateEntity findByChargingPointEntityAndConnectorEntityAndAmount(
-			ChargingPointEntity chargingPointEntity, ConnectorEntity connectorEntity, double amount);
+	ChargingPointConnectorRateEntity findByChargingPointEntityAndConnectorEntityAndAmount(ChargingPointEntity chargingPointEntity, ConnectorEntity connectorEntity, double amount);
 	
-	ChargingPointConnectorRateEntity findByChargingPointEntityAndConnectorEntityAndKwh(
-			ChargingPointEntity chargingPointEntity, ConnectorEntity connectorEntity, double kwh);
+	ChargingPointConnectorRateEntity findByChargingPointEntityAndConnectorEntityAndKwh(ChargingPointEntity chargingPointEntity, ConnectorEntity connectorEntity, double kwh);
 
 	ChargingPointConnectorRateEntity findByChargingPointEntity(ChargingPointEntity chargingPointEntity);
 	
