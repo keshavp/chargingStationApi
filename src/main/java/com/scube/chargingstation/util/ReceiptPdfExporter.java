@@ -68,8 +68,7 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-
-
+import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 
 import net.bytebuddy.agent.builder.AgentBuilder.FallbackStrategy.Simple;
@@ -109,7 +108,7 @@ public class ReceiptPdfExporter {
 	 //private static Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 12,Font.BOLD);
 	 //private static Font smallNorm = new Font(Font.FontFamily.TIMES_ROMAN, 12,Font.NORMAL);
 	    
-	public ChargingRequestEntity generatePdf(ChargingRequestEntity chargingRequestEntity) throws Exception {	
+	public ChargingRequestEntity generatePdf(ChargingRequestEntity chargingRequestEntity, ChargingPointConnectorRateDto oneKwhchargingPointConnectorRateDto) throws Exception {	
 		
 //		String filename = bookScheduleResponse.getBookingreff().concat(fileExtension);
 		
@@ -547,7 +546,7 @@ public class ReceiptPdfExporter {
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" Service Charges "))
 				.setTextAlignment(TextAlignment.LEFT)
 				.setBold());
-		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(oneKwhchargingPointConnectorRateDto.getChargingAmount()))));
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(String.format("%.3f",chargingRequestEntity.getFinalKwh())))));
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(roundOffWithoutGSTAmount))));
 		

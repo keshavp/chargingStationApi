@@ -23,4 +23,7 @@ public class ChargingPointConnectorRateDto{
 	private String time;
     private String chargingPointCode;
     private String connectorCode;
+	private double chargingAmount;
+	private double cgst;
+	private double sgst;
 }

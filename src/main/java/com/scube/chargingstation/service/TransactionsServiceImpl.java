@@ -223,6 +223,11 @@ public class TransactionsServiceImpl implements TransactionsService {
 					ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndKwh(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getId(),minKwh);
 					logger.info("***1111***");
 
+					double oneKwh = 1;   
+					//.getConnectorId()
+					ChargingPointConnectorRateDto	oneKwhchargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndKwh(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getId(),oneKwh);
+					
+					
 					
 					if(chargingRequestEntity.getRequestAmount() == 0) {
 						
@@ -305,7 +310,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 					chargingRequestEntity.setFinalKwh(finalKwh);
 					chargingRequestEntity.setChargingTime(chargingTime);
 					
-					ChargingRequestEntity chargingRequestEntityfilename =  payslipPdfExporter.generatePdf(chargingRequestEntity);
+					ChargingRequestEntity chargingRequestEntityfilename =  payslipPdfExporter.generatePdf(chargingRequestEntity , oneKwhchargingPointConnectorRateDto);
 					logger.info("***6***");
 
 					chargingRequestEntity.setInvoiceFilePath(chargingRequestEntityfilename.getInvoiceFilePath());

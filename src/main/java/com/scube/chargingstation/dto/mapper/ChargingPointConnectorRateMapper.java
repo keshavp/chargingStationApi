@@ -17,6 +17,9 @@ public class ChargingPointConnectorRateMapper {
 		// TODO Auto-generated method stub
 		return new ChargingPointConnectorRateDto()
 				.setAmount(chargingpointconnectorRateEntity.getAmount())
+				.setChargingAmount(chargingpointconnectorRateEntity.getChargingAmount())
+				.setCgst(chargingpointconnectorRateEntity.getCgst())
+				.setSgst(chargingpointconnectorRateEntity.getSgst())
 			//	.setChargingPointCode(chargingPointEntity.)
 	        //	.setConnectorCode(chargingPointEntity.getChargingPointEntity())
 				.setKWh(chargingpointconnectorRateEntity.getKwh());
