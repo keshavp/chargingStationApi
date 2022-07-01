@@ -31,13 +31,13 @@ import lombok.experimental.Accessors;
 		private String chargePointAddr;
 		private String connector;
 		private String chargingTime;
-		private Double chargedKwh;
-		private Double ActualAmt;
+		private String chargedKwh;
+		private String ActualAmt;
 		
 		private String name;
 		
-		private Instant startTime;
-		private Instant  stopTime;
+		private String startTime;
+		private String  stopTime;
 		
 		private String custName;
 		private String mobileNo;

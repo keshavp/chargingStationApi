@@ -13,7 +13,9 @@ import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.ChargingRequestRespDto;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
+import com.scube.chargingstation.util.DateUtils;
 import com.scube.chargingstation.util.StaticPathContUtils;
+import com.scube.chargingstation.util.StringNullEmpty;
 
 import org.springframework.beans.factory.annotation.Value;
 
@@ -22,11 +24,19 @@ public class ChargingRequestMapper {
 	
 	public static ChargingRequestRespDto toChargingRequestRespDto(ChargingRequestEntity chargingRequestEntity) {
 		
+		double originalKwh = chargingRequestEntity.getFinalKwh();
+		
+		String roundOfKwh = String.format("%.2f", originalKwh);
+		
+		double originalFinalAmt = chargingRequestEntity.getFinalAmount();
+		
+		String roundOfFinalAmt = String.format("%.2f", originalFinalAmt);
+		
         return new ChargingRequestRespDto()
         		.setChargePoint(chargingRequestEntity.getChargingPointEntity().getChargingPointId())
         		.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getAddress())
-        		.setActualAmt(chargingRequestEntity.getFinalAmount())
-        		.setChargedKwh(chargingRequestEntity.getFinalKwh())
+        		.setActualAmt(roundOfFinalAmt)
+        		.setChargedKwh(roundOfKwh)
         		.setChargingTime(String.valueOf(chargingRequestEntity.getChargingTime()))
         		.setConnector(chargingRequestEntity.getConnectorEntity().getChargerTypeEntity().getName())
         		.setRequestedAmount(chargingRequestEntity.getRequestAmount())
@@ -46,21 +56,29 @@ public class ChargingRequestMapper {
 	
 	public static ChargingRequestRespDto toChargingRequestRespDtos(ChargingRequestEntity chargingRequestEntity) {  
 		
+		double originalKwh = chargingRequestEntity.getFinalKwh();
+		
+		String roundOfKwh = String.format("%.2f", originalKwh);
+		
+		double originalFinalAmt = chargingRequestEntity.getFinalAmount();
+		
+		String roundOfFinalAmt = String.format("%.2f", originalFinalAmt);
+		
 		return new ChargingRequestRespDto()  
 				.setChargePoint(chargingRequestEntity.getChargingPointEntity().getChargingPointId())
 				.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getAddress() + chargingRequestEntity.getChargingPointEntity().getAddress2() + chargingRequestEntity.getChargingPointEntity().getPincode())
-				.setActualAmt(chargingRequestEntity.getFinalAmount())
-				.setChargedKwh(chargingRequestEntity.getFinalKwh())
-				.setVehicleNo(chargingRequestEntity.getVehicleNO())
+				.setActualAmt(roundOfFinalAmt)
+				.setChargedKwh(roundOfKwh)
+				.setVehicleNo(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getVehicleNO()))
 				.setName(chargingRequestEntity.getChargingPointEntity().getName())
 	//			.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getAddress2())
 	//			.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getPincode())
 				.setMobileNo(chargingRequestEntity.getMobileNo())
-				.setStartTime(chargingRequestEntity.getStartTime())
-				.setChargingTime(chargingRequestEntity.getChargingTime())
-				.setStopTime(chargingRequestEntity.getStopTime())
-				.setCustName(chargingRequestEntity.getCustName())
-				.setMobileNo(chargingRequestEntity.getMobileNo());
+				.setStartTime(DateUtils.formattedInstantToDateTimeString(chargingRequestEntity.getStartTime()))
+				.setChargingTime(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getChargingTime()))
+				.setStopTime(DateUtils.formattedInstantToDateTimeString(chargingRequestEntity.getStopTime()))
+				.setCustName(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getCustName()))
+				.setMobileNo(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getMobileNo()));
 	}
 	
 }
