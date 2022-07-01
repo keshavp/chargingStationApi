@@ -548,7 +548,7 @@ public class ReceiptPdfExporter {
 				.setTextAlignment(TextAlignment.LEFT)
 				.setBold());
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
-		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalKwh()))));
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(String.format("%.3f",chargingRequestEntity.getFinalKwh())))));
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(roundOffWithoutGSTAmount))));
 		
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" CGST (9.00%)"))
@@ -582,7 +582,7 @@ public class ReceiptPdfExporter {
 				.setBold()
 				.setTextAlignment(TextAlignment.RIGHT));
 		
-		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(totalChargeAmount)))
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(finalAmount)))
 				.setBackgroundColor(new DeviceRgb(63,169,219)));
 		
 		
@@ -601,7 +601,7 @@ public class ReceiptPdfExporter {
 		
 //		double finalPaidAmount = chargingRequestEntity.getFinalAmount();
 		
-		Paragraph totalAmtPaidMsg = new Paragraph(" Total Amount Paid (INR) : " + totalChargeAmount);
+		Paragraph totalAmtPaidMsg = new Paragraph(" Total Amount Paid (INR) : " + finalAmount);
 		totalAmtPaidMsg.setBold();
 		totalAmtPaidMsg.setFontColor(new DeviceRgb(34, 139, 34));
 		totalAmtPaidMsg.setTextAlignment(TextAlignment.CENTER);
