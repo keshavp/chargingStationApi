@@ -263,8 +263,11 @@ public class AuthServiceImpl implements AuthService {
 		emp.setResetpassword("Y");
 		emp.setPassword(encoder.encode(setNewPasswordIncomingDto.getPassword()));
 		emp.setResetpasswordcount(emp.getResetpasswordcount() + 1);
+		
 		empInfoRepository.save(emp);
+		
 		logger.info("Password has been reset.");
+		
 		return true;
 	}
 	
@@ -272,6 +275,8 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public boolean signoutUser(UserLoginIncomingDto loginRequest) {
 		// TODO Auto-generated method stub
+		
+		logger.info("*****AuthServiceImpl signoutUser*****");
 		
 		UserInfoEntity userInfoEntity = empInfoRepository.findByMobilenumber(loginRequest.getUsername());
 		if(userInfoEntity==null)
@@ -288,6 +293,8 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public boolean generateNewOtp(ForgetPasswordIncomingDto forgetPasswordIncomingDto) {
+		
+		logger.info("*****AuthServiceImpl generateNewOtp*****");
 		
 		if(forgetPasswordIncomingDto.getMobileNo()=="" || forgetPasswordIncomingDto.getMobileNo().trim().isEmpty()) {
 			throw BRSException.throwException("Mobile No can't be blank.");
@@ -351,6 +358,9 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public boolean validateGeneratedOtp(ForgetPasswordIncomingDto forgetPasswordIncomingDto) {
 		// TODO Auto-generated method stub
+		
+		logger.info("*****AuthServiceImpl validateGeneratedOtp*****");
+		
 		UserInfoOtpEntity userInfoOtpEntity =  userInfoOtpRepository.findByNewGeneratedOtpCode(forgetPasswordIncomingDto.getMobileNo(),forgetPasswordIncomingDto.getOtp());
 		
 		if(userInfoOtpEntity == null) {
@@ -372,8 +382,6 @@ public class AuthServiceImpl implements AuthService {
 		
 		return true;
 	}
-	
 
-	
 	
 }
