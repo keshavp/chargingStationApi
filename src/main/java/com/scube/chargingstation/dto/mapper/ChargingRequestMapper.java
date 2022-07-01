@@ -31,7 +31,7 @@ public class ChargingRequestMapper {
         		.setConnector(chargingRequestEntity.getConnectorEntity().getChargerTypeEntity().getName())
         		.setRequestedAmount(chargingRequestEntity.getRequestAmount())
         		.setVehicleNo(chargingRequestEntity.getVehicleNO());
-	}
+	} 
 	
 	public static List<ChargingRequestRespDto> toChargingRequestRespDtos(List<ChargingRequestEntity> chargingRequestEntities) {
 		
@@ -58,7 +58,9 @@ public class ChargingRequestMapper {
 				.setMobileNo(chargingRequestEntity.getMobileNo())
 				.setStartTime(chargingRequestEntity.getStartTime())
 				.setChargingTime(chargingRequestEntity.getChargingTime())
-				.setStopTime(chargingRequestEntity.getStopTime());
+				.setStopTime(chargingRequestEntity.getStopTime())
+				.setCustName(chargingRequestEntity.getCustName())
+				.setMobileNo(chargingRequestEntity.getMobileNo());
 	}
 	
 }
