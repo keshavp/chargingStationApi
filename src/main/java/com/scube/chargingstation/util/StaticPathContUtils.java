@@ -23,7 +23,7 @@ public class StaticPathContUtils {
 
 		//internal server
 	//	public static final String CCAVENUE_CANCELURL = "http://125.99.153.126:8085/chargingStation/cancelUrl";
-//		public static final String CCAVENUE_REDIRECTURL = "http://125.99.153.126:8085/chargingStation/redirectUrl";
+	//	public static final String CCAVENUE_REDIRECTURL = "http://125.99.153.126:8085/chargingStation/redirectUrl";
 	//	public static final String CCAVENUE_REDIRECT_API_URL = "http://125.99.153.126:8085/chargingStationApi/api/v1/userpayment/goToRedirectUrl";
 		
 		//localhost

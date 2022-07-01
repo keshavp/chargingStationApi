@@ -3,10 +3,12 @@ package com.scube.chargingstation.service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,8 +26,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.scube.chargingstation.dto.AmenityDto;
 import com.scube.chargingstation.dto.ChargingHistoryDto;
 import com.scube.chargingstation.dto.ChargingHistoryRespDto;
@@ -67,6 +73,7 @@ import com.scube.chargingstation.repository.UserWalletDtlRepository;
 import com.scube.chargingstation.repository.UserWalletRepository;
 import com.scube.chargingstation.util.StaticPathContUtils;
 import com.scube.chargingstation.util.StringNullEmpty;
+
 
 @Service
 public class ChargingRequestServiceImpl implements ChargingRequestService {
@@ -116,7 +123,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	private   String imgLocation;
 	 
 	private static final Logger logger = LoggerFactory.getLogger(ChargingRequestServiceImpl.class);
-
+	private static final DecimalFormat df = new DecimalFormat("0.00");
 	 
 	
 	@Override
@@ -263,7 +270,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			chargingRequestEntity.setChargingPointEntity(chargingPointEntity);
 			chargingRequestEntity.setConnectorEntity(connectorEntity);
 			chargingRequestEntity.setUserInfoEntity(userInfoEntity);
-			chargingRequestEntity.setStatus(chargingRequestDto.getStatus());
+			chargingRequestEntity.setStatus(chargingRequestDto.getStatus());  
 			chargingRequestEntity.setRequestAmount(Double.valueOf(chargingRequestDto.getRequestAmount()));
 			chargingRequestEntity.setChargingStatus("Pending");
 			
@@ -313,13 +320,17 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	 * }
 	 */
 	 
-	  @Override public List<ChargingPointDto>  getNearByChargingStationsOld(ChargingStationDto chargingStationDto) { 
+	//new logic lat long, all charger status
+	  @Override public List<ChargingPointDto>  getNearByChargingStations(ChargingStationDto chargingStationDto) { 
 		  // TODO   Auto-generated method stub
 	  
+		  logger.info("lat--"+chargingStationDto.getLatitude()+"long--"+chargingStationDto.getLongitude());
+		  df.setRoundingMode(RoundingMode.UP);
+		  
 	  String carModelId=chargingStationDto.getCarModelId();
 	  Set<ChargerTypeEntity>  chargerTypes=null;
 	  
-	  if(carModelId!=null&&!carModelId.isEmpty()) 
+	  if(carModelId!=null&&!carModelId.isEmpty())    
 	  { 
 		  Optional<CarModelEntity> cmEntity=carModelRepository.findById(carModelId); 
 		  CarModelEntity  entity=cmEntity.get();
@@ -332,9 +343,9 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		  { 
 			  chargerTypes=entity.getChargertypes(); //selected car's charger types
 		  }
-	  
+	     
 	  }
-	  
+	     
 	//  List<ChargingPointEntity> cpEntityLst=chargingPointService.getAllChargingPointEntity();
 	  
 	  //
@@ -356,7 +367,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	  Set<ConnectorEntity> conEntitySet 	  =chargingPointEnt.getConnectorEntities();
 	  Set<AmenitiesEntity> ameEntitySet= chargingPointEnt.getAmenities();
 	  
-	  
+	  JsonNode jsonNode=callAllChargerStatusAPI(chpointdto);
 			
 			  for(ConnectorEntity conEntity : conEntitySet) 
 			  {
@@ -386,14 +397,44 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 				  }
 			  }
 			  
-			  conDto.setAvailable(conEntity.getConnectorStatusEntity().getLastStatus().equals("Available") ? "N":"Y"); 
+			 // conDto.setAvailable(conEntity.getConnectorStatusEntity().getLastStatus().equals("Available") ? "N":"Y"); 
 			  // as per lateest discussion if connector
 			 // status shows status as Charging then user can not book request
-			  
-			  
-			//  conDto.setAvailable(conEntity.getConnectorStatusEntity().getLastStatus().equals("Available") ? "N":"Y");
-				// as per lateest discussion if connector status shows status as Charging then user can not book request	  
-				  conDto.setAvailable(conEntity.getConnectorStatusEntity().getLastStatus().equals("Charging") ? "N":"Y");		  
+			//  conDto.setAvailable(conEntity.getConnectorStatusEntity().getLastStatus().equals("Charging") ? "N":"Y");	
+
+			  final ObjectMapper objectMapper = new ObjectMapper();
+			   JsonNode node = null;
+				try {
+					if(jsonNode == null || jsonNode.isNull()) {}
+					else if(jsonNode.get(conEntity.getConnectorId()) == null || jsonNode.get(conEntity.getConnectorId()).isNull()) 
+					{}else
+					{
+						
+					node = objectMapper.readTree(jsonNode.get(conEntity.getConnectorId()).toString());
+					}
+				} catch (JsonMappingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JsonProcessingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		 	    logger.info("connector status for"+conEntity.getConnectorId()+"==="+node);
+		 	    String connectorStatus="";
+		 	    
+		 	   if(jsonNode == null || jsonNode.isNull()) 
+		 	   {
+		 		   
+		 	   } if(node == null || node.isNull()) 
+		 	   {
+		 		   
+		 	   }
+		 	   else
+		 	   {
+		 	     connectorStatus =node.get("Status").toString();
+		 	   }
+		 	     conDto.setAvailable(connectorStatus.equals("1") ? "Y":"N");	
+				  
 				  conDto.setConnectorId(conEntity.getConnectorId()); //
 				  conDto.setChargingPoint(conEntity.getChargingPointEntity().getChargingPointId()); 
 				  conDto.setChargerId(conEntity.getChargerTypeEntity().getId());
@@ -414,10 +455,12 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	  
 	  CPDto.setAddress(chpointdto.getAddress());
 	  
-	//  Double dist=0.0;
+	  Double dist=0.0;
+	  dist= chpointdto.getFardistance();
+	//  df.format(chpointdto.getFardistance();  
 	  
-	//  CPDto.setDistance(StringNullEmpty.stringNullAndEmptyToBlank(chargingPointEntity.getDistance()));
-	  CPDto.setDistance(chpointdto.getFardistance());
+	 // CPDto.setDistance(chpointdto.getDistance());
+	  CPDto.setDistance(Double.parseDouble(df.format(chpointdto.getFardistance())));
 	  CPDto.setAmenities(amenities);
 	  CPDto.setLatitude(chpointdto.getLatitude());
 	  CPDto.setLongitude(chpointdto.getLongitude());
@@ -436,9 +479,12 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	  }
 	 
 	  //backup
-	  @Override public List<ChargingPointDto>  getNearByChargingStations(ChargingStationDto chargingStationDto) { 
+	  @Override public List<ChargingPointDto>  getNearByChargingStationsOld(ChargingStationDto chargingStationDto) { 
 		  // TODO   Auto-generated method stub
 	  
+		  logger.info("lat--"+chargingStationDto.getLatitude()+"long--"+chargingStationDto.getLongitude());
+
+		  
 	  String carModelId=chargingStationDto.getCarModelId();
 	  Set<ChargerTypeEntity>  chargerTypes=null;
 	  
@@ -500,7 +546,8 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			  }
 		  }
 	//  conDto.setAvailable(conEntity.getConnectorStatusEntity().getLastStatus().equals("Available") ? "N":"Y");
-	// as per lateest discussion if connector status shows status as Charging then user can not book request	  
+	// as per lateest discussion if connector status shows status as Charging then user can not book request	
+		  
 	  conDto.setAvailable(conEntity.getConnectorStatusEntity().getLastStatus().equals("Charging") ? "N":"Y");		  
 	  conDto.setConnectorId(conEntity.getConnectorId()); //
 	  conDto.setChargingPoint(conEntity.getChargingPointEntity().getChargingPointId()); 
@@ -1081,6 +1128,113 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		}		
 		
 		return activeChargingStationsDtos ; 
-	} 
+	}
+	
+	public JsonNode callAllChargerStatusAPI(ChargingPointDto chargingPointDto)
+	{
+		URL getUrl = null;
+	    String strResponse = null;
+	    JsonNode respNode=null;
+		try 
+		{
+			getUrl = new URL(StaticPathContUtils.SERVER_API_URL+"AllChargersStatus/"+chargingPointDto.getChargingPointId());
+			
+		//	getUrl = new URL("http://evdock.app:8082/API/AllChargersStatus/"+chargingPointDto.getChargingPointId());
+		//	getUrl = new URL("http://125.99.153.126:8080/API/AllChargersStatus/"+chargingPointDto.getChargingPointId());
+			
+			HttpURLConnection conection;
+			conection = (HttpURLConnection) getUrl.openConnection();
+			conection.setRequestMethod("GET");
+			
+	        logger.info("AllChargersStatus ResponseMessage="+conection.getResponseMessage());
+	        logger.info("AllChargersStatus responseCode="+conection.getResponseCode());
+	       
+	        BufferedReader br = null;
+	        br = new BufferedReader(new InputStreamReader((conection.getInputStream())));
+
+	        if (conection.getResponseCode()==200 && conection.getResponseMessage().equals("OK") ) {
+	        	
+	            br = new BufferedReader(new InputStreamReader(conection.getInputStream()));
+	        } else {
+	        	
+				throw BRSException.throwException("Error: in AllChargersStatus API call"); 
+	        }
+	        
+	        logger.info("AllChargersStatus br="+br.toString());
+	        StringBuilder response = new StringBuilder();
+	        
+	        while ((strResponse = br.readLine()) != null) 
+	            response.append(strResponse);
+	        
+	        final ObjectMapper mapper = new ObjectMapper();
+	        JsonNode actualObj = mapper.readTree(response.toString());
+	        
+	        logger.info("AllChargersStatus response111="+actualObj.get("Status").textValue());
+	        logger.info("AllChargersStatus response222="+actualObj.get("Payload").textValue());
+	      
+	        
+	        if((actualObj.get("Status").textValue()).equals("OK"))
+	        {
+				
+				final ObjectMapper mapper1 = new ObjectMapper();
+				JsonNode nodePayload=null;
+				
+				String chkJsonformat=actualObj.get("Payload").textValue();
+				
+				if(chkJsonformat.equals("No live chargers found"))
+				{
+					logger.info("No live chargers found");
+				}
+				else
+				{
+				 nodePayload = mapper1.readTree(actualObj.get("Payload").textValue());
+				}
+				
+				if(nodePayload == null || nodePayload.isNull())
+				{}
+				else
+				{
+			 	final ObjectMapper mapper3 = new ObjectMapper();
+		 	    JsonNode nodeCnter = mapper3.readTree(nodePayload.get(0).toString());
+				 	   if(nodeCnter == null || nodeCnter.isNull())
+				 	   {
+				 		   
+				 	   }
+				 	   else
+				 	   {
+				 	    logger.info("OnlineConnectors=at 3"+ nodeCnter.get("OnlineConnectors"));
+				 	    final ObjectMapper objectMapper = new ObjectMapper(); 
+				 	    respNode = objectMapper.readTree(nodeCnter.get("OnlineConnectors").toString());
+				 	   }
+				}
+		 	    	
+	        }
+	        else if((actualObj.get("Status").textValue()).equals("Error"))
+	        {
+				throw BRSException.throwException("Error: in AllChargersStatus API call "+actualObj.get("Payload")); 
+	        }
+	        else
+	        {
+				throw BRSException.throwException("Error: in AllChargersStatus API call "); 
+	        }
+	        
+	        br.close();
+	        logger.info("AllChargersStatus response node="+respNode);
+	        
+		} 
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+	        logger.info("Error: AllChargersStatus API="+e.toString());
+			throw BRSException.throwException("Error: AllChargersStatus API"+e.toString()); 
+
+		}
+
+        // Getting response code
+		return respNode; 
+		
+	}
+	
+	
 	
 }
