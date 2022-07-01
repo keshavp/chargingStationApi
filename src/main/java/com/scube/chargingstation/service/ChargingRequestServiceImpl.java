@@ -458,9 +458,9 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	  Double dist=0.0;
 	  dist= chpointdto.getFardistance();
 	//  df.format(chpointdto.getFardistance();  
-	  
+	      
 	 // CPDto.setDistance(chpointdto.getDistance());
-	  CPDto.setDistance(Double.parseDouble(df.format(chpointdto.getFardistance())));
+	  CPDto.setDistance(Double.parseDouble(df.format(chpointdto.getFardistance())));   
 	  CPDto.setAmenities(amenities);
 	  CPDto.setLatitude(chpointdto.getLatitude());
 	  CPDto.setLongitude(chpointdto.getLongitude());

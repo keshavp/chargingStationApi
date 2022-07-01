@@ -19,7 +19,7 @@ public class StaticPathContUtils {
 		
 		//AWS
 		public static final String CCAVENUE_CANCELURL = "http://evdock.app/chargingStation/cancelUrl";
-		public static final String CCAVENUE_REDIRECTURL = "http://evdock.app/chargingStation/redirectUrl";
+		public static final String CCAVENUE_REDIRECTURL = "http://evdock.app/chargingStation/redirectUrl";    
 
 		//internal server
 	//	public static final String CCAVENUE_CANCELURL = "http://125.99.153.126:8085/chargingStation/cancelUrl";
