@@ -451,7 +451,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 				  ameDto=AmenityMapper.toAmenityDto(amentyEntity);
 				  amenities.add(ameDto); 
 			  }
-			 
+			     
 	  
 	  CPDto.setAddress(chpointdto.getAddress());
 	  

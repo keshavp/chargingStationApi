@@ -16,7 +16,7 @@ public class StaticPathContUtils {
 		
 		public static final String SET_RECEIPT_FILE_URL_DIR = "images/getDoc/RC/";
 		public static final String SET_CHARGER_TYPE_FILE_URL_DIR = "images/getImage/CT/";
-		
+		   
 		//AWS
 		public static final String CCAVENUE_CANCELURL = "http://evdock.app/chargingStation/cancelUrl";
 		public static final String CCAVENUE_REDIRECTURL = "http://evdock.app/chargingStation/redirectUrl";    
