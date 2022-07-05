@@ -237,17 +237,20 @@ public class TransactionsServiceImpl implements TransactionsService {
 						finalAmount = (chargingKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh ;
 						finalKwh	= chargingKwh;
 						
-						UserWalletRequestDto	userWalletRequestDto = new UserWalletRequestDto();
-						
-						userWalletRequestDto.setChargeRequestId(chargingRequestEntity.getId());
-						userWalletRequestDto.setTransactionType(statusCrDr);
-						userWalletRequestDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
-						userWalletRequestDto.setRequestAmount(String.valueOf(differenceAmount));
-						
-						// Api amount cut in wallet 
-						userPaymentService.processWalletMoney(userWalletRequestDto);
-						
-						logger.info("***11111***");
+						/*
+						 * UserWalletRequestDto userWalletRequestDto = new UserWalletRequestDto();
+						 * 
+						 * userWalletRequestDto.setChargeRequestId(chargingRequestEntity.getId());
+						 * userWalletRequestDto.setTransactionType(statusCrDr);
+						 * userWalletRequestDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity
+						 * ().getMobilenumber());
+						 * userWalletRequestDto.setRequestAmount(String.valueOf(differenceAmount));
+						 * 
+						 * // Api amount cut in wallet
+						 * userPaymentService.processWalletMoney(userWalletRequestDto);
+						 * 
+						 * logger.info("***11111***");
+						 */
 
 					
 					}else {
@@ -288,16 +291,19 @@ public class TransactionsServiceImpl implements TransactionsService {
 
 							}
 						
-							UserWalletRequestDto	userWalletRequestDto = new UserWalletRequestDto();
-							
-							userWalletRequestDto.setChargeRequestId(chargingRequestEntity.getId());
-							userWalletRequestDto.setTransactionType(statusCrDr);
-							userWalletRequestDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
-							userWalletRequestDto.setRequestAmount(String.valueOf(differenceAmount));
-							
-							// Api amount cut in wallet 
-							userPaymentService.processWalletMoney(userWalletRequestDto);
-							logger.info("***5***");
+							/*
+							 * UserWalletRequestDto userWalletRequestDto = new UserWalletRequestDto();
+							 * 
+							 * userWalletRequestDto.setChargeRequestId(chargingRequestEntity.getId());
+							 * userWalletRequestDto.setTransactionType(statusCrDr);
+							 * userWalletRequestDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity
+							 * ().getMobilenumber());
+							 * userWalletRequestDto.setRequestAmount(String.valueOf(differenceAmount));
+							 * 
+							 * // Api amount cut in wallet
+							 * userPaymentService.processWalletMoney(userWalletRequestDto);
+							 * logger.info("***5***");
+							 */
 
 							
 						}
@@ -317,6 +323,17 @@ public class TransactionsServiceImpl implements TransactionsService {
 					chargingRequestEntity.setReceiptNo(chargingRequestEntityfilename.getReceiptNo());
 					
 					chargingRequestRepository.save(chargingRequestEntity);
+					
+					
+					
+					UserWalletRequestDto	userWalletRequestDto = new UserWalletRequestDto();
+					
+					userWalletRequestDto.setChargeRequestId(chargingRequestEntity.getId());
+					userWalletRequestDto.setTransactionType(chargingRequestEntity.getAmountCrDrStatus());
+					userWalletRequestDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
+					userWalletRequestDto.setRequestAmount(String.valueOf(chargingRequestEntity.getDifferenceAmount()));
+					
+					userPaymentService.processWalletMoney(userWalletRequestDto);
 					
 					logger.info("***7***");
 
