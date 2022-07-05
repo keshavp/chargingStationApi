@@ -231,10 +231,16 @@ public class TransactionsServiceImpl implements TransactionsService {
 					
 					if(chargingRequestEntity.getRequestAmount() == 0) {
 						
-						differenceAmount = (chargingKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh;
+						// old 0.01 kwh
+						// differenceAmount = (chargingKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh;
+						
+						differenceAmount = (chargingKwh *  oneKwhchargingPointConnectorRateDto.getAmount())/ oneKwh;
 						differenceKwh = chargingKwh;
 						statusCrDr = "Debit"; 
-						finalAmount = (chargingKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh ;
+						// old 0.01 kwh
+						// finalAmount = (chargingKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh ;
+						
+						finalAmount = (chargingKwh *  oneKwhchargingPointConnectorRateDto.getAmount())/ oneKwh ;
 						finalKwh	= chargingKwh;
 						
 						/*
@@ -268,7 +274,10 @@ public class TransactionsServiceImpl implements TransactionsService {
 								
 								differenceKwh = chargingRequestEntity.getRequestKwh() - chargingKwh;
 								
-								differenceAmount = (differenceKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh ; // 
+								// old 0.01 kwh
+								//differenceAmount = (differenceKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh ; //
+								
+								differenceAmount = (differenceKwh *  oneKwhchargingPointConnectorRateDto.getAmount())/ oneKwh ; // 
 								
 								finalAmount = chargingRequestEntity.getRequestAmount() - differenceAmount; //
 								finalKwh	= chargingKwh;
@@ -282,8 +291,10 @@ public class TransactionsServiceImpl implements TransactionsService {
 								statusCrDr = "Debit"; 
 								
 								differenceKwh = chargingKwh - chargingRequestEntity.getRequestKwh();
+								// old 0.01 kwh
+								// differenceAmount = (differenceKwh * chargingPointConnectorRateDto.getAmount()) / minKwh; //
 								
-								differenceAmount = (differenceKwh * chargingPointConnectorRateDto.getAmount()) / minKwh; // 
+								differenceAmount = (differenceKwh * oneKwhchargingPointConnectorRateDto.getAmount()) / oneKwh; // 
 								
 								finalAmount = chargingRequestEntity.getRequestAmount() + differenceAmount ; //
 								finalKwh	= chargingKwh;
