@@ -129,6 +129,8 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	@Override
 	public boolean addChargingRequest(ChargingRequestDto chargingRequestDto) {
 			
+		
+			logger.info("addChargingRequest input"+chargingRequestDto);
 			ChargingRequestEntity chargingRequestEntity  = new  ChargingRequestEntity();
 			String connectorId= Integer.toString(chargingRequestDto.getConnectorId());
 			

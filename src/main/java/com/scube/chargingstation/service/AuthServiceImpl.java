@@ -239,6 +239,11 @@ public class AuthServiceImpl implements AuthService {
 		
 		logger.info("*****AuthServiceImpl setNewPassword*****"+ setNewPasswordIncomingDto.getConfirmpassword());
 		
+		logger.info("*****AuthServiceImpl getMobileUser_Id*****"+ setNewPasswordIncomingDto.getMobileUser_Id());
+
+		logger.info("*****SetNewPasswordIncomingDto*****"+ setNewPasswordIncomingDto);  
+
+		
 		String userMobile= setNewPasswordIncomingDto.getMobileUser_Id();
 		
 		UserInfoEntity emp = empInfoRepository.findByMobilenumber(userMobile);
