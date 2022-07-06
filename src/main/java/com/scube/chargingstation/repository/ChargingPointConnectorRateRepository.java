@@ -31,4 +31,7 @@ public interface ChargingPointConnectorRateRepository extends JpaRepository<Char
 	
 	@Query(value = "SELECT * FROM  mst_charging_point_connector_calculation where fk_charging_point = (?1) and fk_connector = (?2);", nativeQuery=true )
 	List<ChargingPointConnectorRateEntity> getConnectorRateByChargingPointEntityAndConnectEntity(String chargingPoint, String connector);
+
+	@Query(value = "SELECT * FROM mst_charging_point_connector_calculation where fk_charging_point  = (?1) and fk_connector = (?2) and status =(?3) group by fk_charging_point ,fk_connector,status limit 1;", nativeQuery=true )
+	ChargingPointConnectorRateEntity findByChargingPointEntityAndConnectorEntityAndStatusGroupByWithLimit(String chargingPoint, String connector, String status);
 }

@@ -257,6 +257,24 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		if(chargingPointEntity == null) {
 			throw BRSException.throwException(EntityType.CHARGINGSTATION, ExceptionType.VALUE_NOT_FOUND , chargingPointEntity.getChargingPointId()); 
 		}
+		
+		
+		Set<ConnectorEntity> connectorEntities =  chargingPointEntity.getConnectorEntities(); 
+		
+		if(connectorEntities.size() == 0) {
+			
+			throw BRSException.throwException(EntityType.CHARGINGSTATION, ExceptionType.ENTITY_NOT_FOUND); 
+		}
+		
+		
+		for(ConnectorEntity connectorEntity : connectorEntities ) {
+			
+			ChargingPointConnectorRateEntity chargingPointConnectorRateEntity = chargingPointConnectorRateRepository.findByChargingPointEntityAndConnectorEntityAndStatusGroupByWithLimit(chargingPointEntity.getId(),connectorEntity.getId(),"ACTIVE");
+			
+		    if(chargingPointConnectorRateEntity == null) {
+				throw BRSException.throwException(EntityType.CHARGINGPOINTCONNECTORRATE, ExceptionType.VALUE_NOT_FOUND , chargingPointEntity.getChargingPointId()); 
+			}
+		}
 	    
 	    ChargepointForSeverEntity	chargepointForSeverEntity = chargepointForSeverRepository.findByChargePointId(chargingPointEntity.getChargingPointId());
 	    
@@ -271,11 +289,7 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		}
 	    
 	    
-	    ChargingPointConnectorRateEntity chargingPointConnectorRateEntity = chargingPointConnectorRateRepository.findByChargingPointEntity(chargingPointEntity);
-		
-	    if(chargingPointConnectorRateEntity == null) {
-			throw BRSException.throwException(EntityType.CHARGINGPOINTCONNECTORRATE, ExceptionType.VALUE_NOT_FOUND , chargingPointEntity.getChargingPointId()); 
-		}
+	    
 	    
 	    chargingPointEntity.setStatus("OPEN");
 	    
