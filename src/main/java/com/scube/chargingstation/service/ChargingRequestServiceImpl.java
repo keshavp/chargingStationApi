@@ -130,7 +130,11 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	public boolean addChargingRequest(ChargingRequestDto chargingRequestDto) {
 			
 		
-			logger.info("addChargingRequest input"+chargingRequestDto);
+			logger.info("addChargingRequest getMobileNo"+chargingRequestDto.getMobileNo());
+			logger.info("addChargingRequest getName"+chargingRequestDto.getName());
+			logger.info("addChargingRequest getVechicleNo"+chargingRequestDto.getVechicleNo());
+
+			logger.info("addChargingRequest getVechicleNo"+chargingRequestDto.toString());
 			ChargingRequestEntity chargingRequestEntity  = new  ChargingRequestEntity();
 			String connectorId= Integer.toString(chargingRequestDto.getConnectorId());
 			

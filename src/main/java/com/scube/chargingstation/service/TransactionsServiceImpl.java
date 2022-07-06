@@ -32,7 +32,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 	private static final Logger logger = LoggerFactory.getLogger(TransactionsServiceImpl.class);
 	
 	@Autowired
-	TransactionsRepository	transactionsRepository; 
+	TransactionsRepository	transactionsRepository;
 	
 	@Autowired
 	ChargingRequestRepository chargingRequestRepository;
@@ -353,8 +353,8 @@ public class TransactionsServiceImpl implements TransactionsService {
 					Double requestAmt=chargingRequestEntity.getRequestAmount();
 					String title="Thank you for using EV-Dock.";
 					String body="We are happy to service your request of charging for "+requestAmt+" INR." + 
-							"The actual charging consumed is "+finalKwh +" KWH, " + 
-							"Corresponding to "+finalAmount + " INR.";
+							"The actual charging consumed is "+String.format("%.3f", finalKwh) +" KWH, " + 
+							"Corresponding to "+String.format("%.2f", finalAmount) + " INR.";
 					NotificationReqDto notificationReqDto =new NotificationReqDto();
 					notificationReqDto.setMobileUser_Id(chargingRequestEntity.getUserInfoEntity().getMobilenumber());
 					notificationReqDto.setTitle(title);

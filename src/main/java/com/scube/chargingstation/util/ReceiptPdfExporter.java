@@ -68,7 +68,7 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
+import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;   
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 
 import net.bytebuddy.agent.builder.AgentBuilder.FallbackStrategy.Simple;
@@ -76,7 +76,7 @@ import net.bytebuddy.agent.builder.AgentBuilder.FallbackStrategy.Simple;
 @Service
 public class ReceiptPdfExporter {
 	
-	private static final Logger logger = LoggerFactory.getLogger(ReceiptPdfExporter.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReceiptPdfExporter.class);  
 
 	private Path fileStorageLocation;
 	
@@ -581,7 +581,7 @@ public class ReceiptPdfExporter {
 				.setBold()
 				.setTextAlignment(TextAlignment.RIGHT));
 		
-		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(finalAmount)))
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(String.format("%.2f",finalAmount))))
 				.setBackgroundColor(new DeviceRgb(63,169,219)));
 		
 		
@@ -600,7 +600,7 @@ public class ReceiptPdfExporter {
 		
 //		double finalPaidAmount = chargingRequestEntity.getFinalAmount();
 		
-		Paragraph totalAmtPaidMsg = new Paragraph(" Total Amount Paid (INR) : " + finalAmount);
+		Paragraph totalAmtPaidMsg = new Paragraph(" Total Amount Paid (INR) : " + String.format("%.2f",finalAmount));
 		totalAmtPaidMsg.setBold();
 		totalAmtPaidMsg.setFontColor(new DeviceRgb(34, 139, 34));
 		totalAmtPaidMsg.setTextAlignment(TextAlignment.CENTER);
