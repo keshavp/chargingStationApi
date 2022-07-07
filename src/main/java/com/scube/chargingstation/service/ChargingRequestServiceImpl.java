@@ -71,6 +71,7 @@ import com.scube.chargingstation.repository.TransactionsRepository;
 import com.scube.chargingstation.repository.UserInfoRepository;
 import com.scube.chargingstation.repository.UserWalletDtlRepository;
 import com.scube.chargingstation.repository.UserWalletRepository;
+import com.scube.chargingstation.util.CheckChargerStatus;
 import com.scube.chargingstation.util.StaticPathContUtils;
 import com.scube.chargingstation.util.StringNullEmpty;
 
@@ -98,6 +99,8 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	
 	@Autowired
 	ConnectorService	connectorService;
+	
+	
 	
 	@Autowired
 	NotificationService notificationService;
@@ -333,8 +336,9 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		  logger.info("lat--"+chargingStationDto.getLatitude()+"long--"+chargingStationDto.getLongitude());
 		  df.setRoundingMode(RoundingMode.UP);
 		  
-	  String carModelId=chargingStationDto.getCarModelId();
-	  Set<ChargerTypeEntity>  chargerTypes=null;
+		  
+		  String carModelId=chargingStationDto.getCarModelId();
+		  Set<ChargerTypeEntity>  chargerTypes=null;
 	  
 	  if(carModelId!=null&&!carModelId.isEmpty())    
 	  { 
@@ -912,6 +916,8 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		return strResponse;
 		
 	}
+	
+	
 	
 	public String callHardResetConnectorAPI(ChargingRequestDto chargingRequestDto)
 	{

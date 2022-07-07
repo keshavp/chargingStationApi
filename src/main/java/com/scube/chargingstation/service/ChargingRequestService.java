@@ -68,5 +68,7 @@ public interface ChargingRequestService {
 	public Double weekTotalChargingRequestCountSessionsByPartnerId(UserInfoEntity userInfoEntity);
 
 	public List<MostActiveChargingStationsDto> getMostActiveChargingStationsByPartnerId(UserInfoEntity userInfoEntity);
+
+	//public String callResetConnectorApi(String chargingPointId, String connectorId);
 	
 }

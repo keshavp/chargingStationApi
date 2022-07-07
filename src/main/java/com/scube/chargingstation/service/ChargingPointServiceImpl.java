@@ -35,6 +35,7 @@ import com.scube.chargingstation.repository.ChargingPointConnectorRateRepository
 import com.scube.chargingstation.repository.ChargingPointRepository;
 import com.scube.chargingstation.repository.ConnectorStatusRepository;
 import com.scube.chargingstation.repository.RoleRepository;
+import com.scube.chargingstation.util.CheckChargerStatus;
 
 @Service
 public class ChargingPointServiceImpl implements ChargingPointService {
@@ -50,6 +51,7 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	
 	@Autowired
 	ConnectorService connectorService;
+	
 	
 	@Autowired
 	ChargepointForSeverRepository chargepointForSeverRepository; 
@@ -269,11 +271,22 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		
 		for(ConnectorEntity connectorEntity : connectorEntities ) {
 			
+			
+					
+			String response=CheckChargerStatus.callResetConnectorApi(chargingPointEntity.getChargingPointId(),connectorEntity.getConnectorId());
+			
+			if(!response.equals("OK"))
+	  		{
+				throw BRSException.throwException(EntityType.CHARGINGPOINTCONNECTOR, ExceptionType.VALUE_NOT_LIVE , connectorEntity.getConnectorId()); 
+
+	  		}
 			ChargingPointConnectorRateEntity chargingPointConnectorRateEntity = chargingPointConnectorRateRepository.findByChargingPointEntityAndConnectorEntityAndStatusGroupByWithLimit(chargingPointEntity.getId(),connectorEntity.getId(),"ACTIVE");
 			
 		    if(chargingPointConnectorRateEntity == null) {
-				throw BRSException.throwException(EntityType.CHARGINGPOINTCONNECTORRATE, ExceptionType.VALUE_NOT_FOUND , chargingPointEntity.getChargingPointId()); 
+				throw BRSException.throwException(EntityType.CHARGINGPOINTCONNECTORRATE, ExceptionType.VALUE_NOT_FOUND ,  connectorEntity.getConnectorId()); 
 			}
+		    
+		    
 		}
 	    
 	    ChargepointForSeverEntity	chargepointForSeverEntity = chargepointForSeverRepository.findByChargePointId(chargingPointEntity.getChargingPointId());

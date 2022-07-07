@@ -10,6 +10,7 @@ public enum ExceptionType {
     ENTITY_EXCEPTION("exception"),
     FILE_SIZE_EXCEPTION("size.exceed"),
     VALUE_NOT_FOUND("value.not.found"),
+    VALUE_NOT_LIVE("value.not.live"),
 	CONTACT_ADMINISTRATOR("contact.to.Administrator");
 
     String value;
