@@ -271,4 +271,14 @@ public class ChargingStationController {
 		return Response.ok().setPayload(chargingPointService.getChargingStationsgoLiveCheckById(id));
 		
 	}
+	
+	
+	@PostMapping( value = "/chargeNow" , consumes = APPLICATION_JSON_VALUE)
+	public Response chargeNow(@Valid @RequestBody ChargingRequestDto chargingRequestDto) {
+		logger.info("***chargeNow***");
+		
+				return Response.ok().setPayload(chargingRequestService.chargeNow(chargingRequestDto));
+		
+	}
+	
 }

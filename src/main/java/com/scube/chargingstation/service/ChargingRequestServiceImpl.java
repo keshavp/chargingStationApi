@@ -1246,6 +1246,12 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		return respNode; 
 		
 	}
+
+	@Override
+	public boolean chargeNow(ChargingRequestDto chargingRequestDto) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 	
 	

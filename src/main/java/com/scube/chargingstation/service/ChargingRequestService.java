@@ -70,5 +70,6 @@ public interface ChargingRequestService {
 	public List<MostActiveChargingStationsDto> getMostActiveChargingStationsByPartnerId(UserInfoEntity userInfoEntity);
 
 	//public String callResetConnectorApi(String chargingPointId, String connectorId);
+	public boolean chargeNow(ChargingRequestDto chargingRequestDto) ;
 	
 }

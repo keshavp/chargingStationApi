@@ -34,6 +34,7 @@ import com.scube.chargingstation.repository.UserInfoOtpRepository;
 import com.scube.chargingstation.repository.UserInfoRepository;
 import com.scube.chargingstation.security.JwtUtils;
 import com.scube.chargingstation.service.api.SmsService;
+import com.scube.chargingstation.util.EmailService;
 import com.scube.chargingstation.util.RandomNumber;
 
 
@@ -73,6 +74,8 @@ public class AuthServiceImpl implements AuthService {
 	@Autowired
 	UserInfoOtpRepository userInfoOtpRepository;
 	  
+	@Autowired
+	EmailService emailService;	
 	
 	@Override
 	public AuthUserDto authenticateUser(UserLoginIncomingDto loginRequest) {
@@ -386,6 +389,28 @@ public class AuthServiceImpl implements AuthService {
 		logger.info("OTP Verified Succesfully");
 		
 		return true;
+	}
+
+
+
+	@Override
+	public boolean deleteUserAccount(@Valid SetNewPasswordIncomingDto setNewPasswordIncomingDto) {
+		// TODO Auto-generated method stub
+		
+		String userMobile= setNewPasswordIncomingDto.getMobileUser_Id();
+		
+		UserInfoEntity emp = empInfoRepository.findByMobilenumber(userMobile);
+		
+		if(emp == null) {
+			logger.info("Error: The mobile number provided is not registered.");
+			throw BRSException.throwException("Error: The mobile number provided is not registered!");
+		}
+		
+		emailService.accountDeleteEmail(userMobile);
+		
+		return true;
+		
+		
 	}
 
 	

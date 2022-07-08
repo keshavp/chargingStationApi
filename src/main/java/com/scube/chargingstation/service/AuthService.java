@@ -1,5 +1,7 @@
 package com.scube.chargingstation.service;
 
+import javax.validation.Valid;
+
 import com.scube.chargingstation.dto.AuthUserDto;
 import com.scube.chargingstation.dto.incoming.ForgetPasswordIncomingDto;
 import com.scube.chargingstation.dto.incoming.SetNewPasswordIncomingDto;
@@ -24,5 +26,7 @@ public interface AuthService {
 	boolean validateGeneratedOtp(ForgetPasswordIncomingDto forgetPasswordIncomingDto);
 	
 	void removeOtpNotVerified();
+
+	boolean deleteUserAccount(@Valid SetNewPasswordIncomingDto setNewPasswordIncomingDto);
 
 }

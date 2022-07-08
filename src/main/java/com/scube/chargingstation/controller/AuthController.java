@@ -112,4 +112,13 @@ import com.scube.chargingstation.service.AuthService;
 		return Response.ok().setPayload(authService.validateGeneratedOtp(forgetPasswordIncomingDto));
 	}
 
+	
+	@PostMapping( value = "/deleteUserAccount" , consumes = APPLICATION_JSON_VALUE)
+  	public Response deleteUserAccount(@Valid @RequestBody SetNewPasswordIncomingDto setNewPasswordIncomingDto) {
+  		logger.info("***AuthController deleteUserAccount***");
+  	//	logger.info(NEW_ORDER_LOG, createdUser.toString());
+  		return Response.ok().setPayload(authService.deleteUserAccount(setNewPasswordIncomingDto));
+  		
+  	}
+	
 }
