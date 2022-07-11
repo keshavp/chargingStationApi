@@ -65,7 +65,7 @@ package com.scube.chargingstation.service.api;
   
   String senderId="EVDOCK";
   String mobileNo=mobilenumber; 
-  String SMSText="Use the OTP "+verifymobiletokenString+" to complete the registration with EV Dock.-EVDOCK";
+  String SMSText="Use the OTP  "+verifymobiletokenString+" to complete the registration with EV Dock.-EVDOCK";
   
   String resp =SendSMS(senderId ,SMSText,mobileNo);
   
