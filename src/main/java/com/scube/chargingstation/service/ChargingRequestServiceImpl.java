@@ -620,7 +620,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	@Override
 	public void timeoutPendingChargingRequests() {
 		// TODO Auto-generated method stub
-		List<ChargingRequestEntity> chargingRequestEntityList =  chargingRequestRepository.findByChargingStatusAndCreatedMinutes("Pending","5");
+		List<ChargingRequestEntity> chargingRequestEntityList =  chargingRequestRepository.findByChargingStatusAndCreatedMinutes("Pending","3");
 		for(ChargingRequestEntity chargingRequestEntity : chargingRequestEntityList) 
 		{
 			chargingRequestEntity.setChargingStatus("Rejected");
