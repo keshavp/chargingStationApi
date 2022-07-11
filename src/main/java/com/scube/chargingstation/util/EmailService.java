@@ -89,7 +89,7 @@
   
   logger.info("*****EmailService accountDeleteEmail*****");
   
-  String to = delEmailTo; String from = "support@educred.co.in";
+  String to = delEmailTo; String from = "pallavi.dhamal@scubetechserv.com";
   
   Properties properties = System.getProperties();
   properties.put("mail.smtp.host", emailhost); properties.put("mail.smtp.port", emailport); 
@@ -101,7 +101,7 @@
   
   protected PasswordAuthentication getPasswordAuthentication() {
   
-  return new PasswordAuthentication("support@educred.co.in", "EduCred$2021$");
+  return new PasswordAuthentication("pallavi.dhamal@scubetechserv.com", "Dullhousi");
   
   }
   
@@ -137,7 +137,10 @@
   
   } catch (MessagingException e) 
   { 
-	  throw new RuntimeException(e); 
+	 // throw new RuntimeException(e);
+	  logger.info("*****MessagingException*****"+e.toString());
+
+	  return false;
   
   }
  

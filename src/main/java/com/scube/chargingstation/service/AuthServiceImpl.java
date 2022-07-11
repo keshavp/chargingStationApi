@@ -386,7 +386,7 @@ public class AuthServiceImpl implements AuthService {
 		
 		userInfoOtpRepository.save(userInfoOtpEntity);
 		
-		logger.info("OTP Verified Succesfully");
+		logger.info("OTP Verified Succesfully");  
 		
 		return true;
 	}
@@ -406,9 +406,9 @@ public class AuthServiceImpl implements AuthService {
 			throw BRSException.throwException("Error: The mobile number provided is not registered!");
 		}
 		
-		emailService.accountDeleteEmail(userMobile);
+		boolean flag=emailService.accountDeleteEmail(userMobile);
 		
-		return true;
+		return flag;
 		
 		
 	}
