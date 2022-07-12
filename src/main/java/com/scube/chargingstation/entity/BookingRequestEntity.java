@@ -21,6 +21,9 @@ public class BookingRequestEntity extends BaseEntity{
 	@Column (name = "booking_amount", columnDefinition = "double default 0")
 	private double bookingAmount;
 	
+	@Column(name = "request_amount", columnDefinition = "double default 0")
+	private double  requestAmount;
+	
 	@Column (name = "booking_status")
 	private String bookingStatus;
 	
