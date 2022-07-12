@@ -79,14 +79,26 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		UserInfoEntity userInfoEntity = userInfoService.getUserByMobilenumber(bookingRequestIncomingDto.getUserContactNo());
 		
+		if(userInfoEntity ==  null) {
+			
+			throw BRSException.throwException("Error: User does not exist"); 
+			
+		}
+		
 		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointName(bookingRequestIncomingDto.getChargingPointName());
 		
-	//	ConnectorEntity connectorEntity = connectorService.getConnectorEntityByConnectorId(bookingRequestIncomingDto.getConnectorId());
+		if(chargingPointEntity ==  null) {
+			
+			throw BRSException.throwException("Error: Charging Point does not exist"); 
+			
+		}
 		
 		ConnectorEntity	connectorEntity = connectorService.getConnectorEntityByConnectorIdAndChargingPointEntity(bookingRequestIncomingDto.getConnectorId(),chargingPointEntity) ;
-		if(connectorEntity==null)
-		{
+		
+		if(connectorEntity == null) {
+			
 			throw BRSException.throwException("Error: Connector does not exist"); 
+			
 		}
 		
 		BookingRequestEntity bookingRequestEntity = new BookingRequestEntity();
