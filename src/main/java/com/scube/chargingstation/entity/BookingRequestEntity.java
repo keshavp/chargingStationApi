@@ -46,4 +46,14 @@ public class BookingRequestEntity extends BaseEntity{
 	@Column (name = "booking_time")
 	private Instant bookingTime;
 	
+	@Column(name = "cust_name")
+	private String  custName;
+	
+	@Column(name = "mobile_no")
+	private String  mobileNo;
+	
+	@Column(name = "vehicle_no")
+	private String  vehicleNO;
+	
+	
 }

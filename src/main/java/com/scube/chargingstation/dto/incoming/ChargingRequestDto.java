@@ -16,5 +16,6 @@ public class ChargingRequestDto{
 	private String  name;
 	private String  mobileNo;
 	private String  vechicleNo;
-	
+	private String  bookingReqId;
+	private String  bookingAmount;
 }

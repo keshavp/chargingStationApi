@@ -52,6 +52,7 @@ import com.scube.chargingstation.dto.mapper.ChargingRequestMapper;
 import com.scube.chargingstation.dto.mapper.ChargingStatusMapper;
 import com.scube.chargingstation.dto.mapper.ConnectorMapper;
 import com.scube.chargingstation.entity.AmenitiesEntity;
+import com.scube.chargingstation.entity.BookingRequestEntity;
 import com.scube.chargingstation.entity.CarModelEntity;
 import com.scube.chargingstation.entity.ChargerTypeEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
@@ -62,6 +63,7 @@ import com.scube.chargingstation.entity.TransactionsEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.entity.UserWalletEntity;
 import com.scube.chargingstation.exception.BRSException;
+import com.scube.chargingstation.repository.BookingRequestRepository;
 import com.scube.chargingstation.repository.CarModelRepository;
 import com.scube.chargingstation.repository.ChargerTypeRepository;
 import com.scube.chargingstation.repository.ChargingPointRepository;
@@ -100,7 +102,8 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	@Autowired
 	ConnectorService	connectorService;
 	
-	
+	@Autowired
+	BookingRequestRepository bookingRequestRepository;
 	
 	@Autowired
 	NotificationService notificationService;
@@ -1248,7 +1251,40 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	}
 
 	@Override
-	public boolean chargeNow(ChargingRequestDto chargingRequestDto) {
+	public boolean chargeNow(ChargingRequestDto inputchargingRequestDto) {
+		
+		// 
+		ChargingRequestDto respChargingRequestDto=new ChargingRequestDto();
+		//check for requ amout-booking amout
+		
+		String bookingReqId=inputchargingRequestDto.getBookingReqId();
+		
+		if((bookingReqId=="") || (bookingReqId.trim().isEmpty())) {
+			throw BRSException.throwException("Error : Booking request Id can't be blank");
+		}
+		Optional<BookingRequestEntity> optionalEntity=bookingRequestRepository.findById(bookingReqId);
+		BookingRequestEntity bookingRequestEntity=optionalEntity.get();
+		
+		if(bookingRequestEntity==null) {
+			throw BRSException.throwException("Error : Booking request is invalid");
+		}
+		String mobileNo=bookingRequestEntity.getUserInfoEntity().getMobilenumber();
+		
+		respChargingRequestDto.setRequestAmount(Double.toString(bookingRequestEntity.getRequestAmount()));
+		respChargingRequestDto.setChargePointId(bookingRequestEntity.getChargingPointEntity().getChargingPointId());
+		respChargingRequestDto.setConnectorId(Integer.parseInt(bookingRequestEntity.getChargerTypeEntity().getConnectorId()));
+		respChargingRequestDto.setBookingReqId(bookingReqId);
+		respChargingRequestDto.setMobileUser_Id(mobileNo);
+		respChargingRequestDto.setStatus("Pending");
+		
+		respChargingRequestDto.setVechicleNo(bookingRequestEntity.getVehicleNO());
+		respChargingRequestDto.setName(bookingRequestEntity.getCustName());
+		respChargingRequestDto.setMobileNo(bookingRequestEntity.getMobileNo());
+		respChargingRequestDto.setBookingAmount(Double.toString(bookingRequestEntity.getBookingAmount()));
+		
+		addChargingRequest(respChargingRequestDto);
+		
+		
 		// TODO Auto-generated method stub
 		return false;
 	}

@@ -94,4 +94,7 @@ public class ChargingRequestEntity extends BaseEntity {
 	@Column(name = "charging_time", columnDefinition = "00:00:00")
 	private String  chargingTime;
 	
+	@Column (name = "booking_amount", columnDefinition = "double default 0")
+	private double bookingAmount;
+	
 }
