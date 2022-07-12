@@ -14,4 +14,5 @@ public class ConnectorTypeIncomingDto {
 	private String status;
     private String id;
     
+    private String slotInterval;
 }

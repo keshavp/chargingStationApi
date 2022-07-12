@@ -51,4 +51,26 @@ public class DateUtils {
         return date != null ? myInvoiceDateTimeFormatter.format(date) : todayStr();
     }
     
+    
+    // To Check if a String is a valid date format or not
+    public static boolean isValidDate(String date) {
+    	
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        
+        dateFormat.setLenient(false);
+        
+        try {
+        	
+          dateFormat.parse(date.trim());
+          
+        } 
+        catch (Exception pe) {
+        	
+          return false;
+          
+        }
+        
+        return true;
+      }
+
 }

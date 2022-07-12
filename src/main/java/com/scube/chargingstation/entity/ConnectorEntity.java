@@ -3,6 +3,7 @@ import java.time.Instant;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -23,8 +24,7 @@ public class ConnectorEntity extends BaseEntity {
 	@ManyToOne
     @JoinColumn(name="chargingPointEntity_id", nullable=false)
     private ChargingPointEntity chargingPointEntity;
-	
-	
+		
 	@OneToOne
     @JoinColumn(name = "fk_chargertype")
     private ChargerTypeEntity chargerTypeEntity;
@@ -32,4 +32,7 @@ public class ConnectorEntity extends BaseEntity {
 	@OneToOne
     @JoinColumn(name = "fk_connectorstatus")
     private ConnectorStatusEntity connectorStatusEntity;
+	
+	@Column (name = "slot_intervals")
+	private String slotInterval;
 }

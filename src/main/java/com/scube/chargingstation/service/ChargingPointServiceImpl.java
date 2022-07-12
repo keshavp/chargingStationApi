@@ -410,8 +410,11 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		return chargingPointDtoLst;
 	}
 
-	
+	@Override
+	public ChargingPointEntity getChargingPointEntityByChargingPointName(String name) {
+		// TODO Auto-generated method stub
+		return chargingPointRepository.findChargingPointEntityByName(name);
+	}
 
-	
 
 }
