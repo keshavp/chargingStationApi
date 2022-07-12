@@ -20,5 +20,11 @@ public class BookingRequestIncomingDto {
 	private String bookingStatus;
 	
 	private String requestedBookingDate;
+	
+	private String custName;
+	
+	private String custMobileNo;
+	
+	private String custVehicleNo;
 		
 }

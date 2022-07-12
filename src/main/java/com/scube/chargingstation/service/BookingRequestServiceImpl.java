@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import com.scube.chargingstation.dto.BookingSlotsRespDto;
 import com.scube.chargingstation.dto.incoming.BookingRequestIncomingDto;
 import com.scube.chargingstation.entity.BookingRequestEntity;
-import com.scube.chargingstation.entity.ChargerTypeEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
@@ -77,6 +76,27 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 		}
 		
+		/*
+		if(bookingRequestIncomingDto.getCustName() ==  null || bookingRequestIncomingDto.getCustName().trim().isEmpty()) {
+			
+			throw BRSException.throwException("Error : Customer Name cannot be empty");
+			
+		}
+		
+		
+		if(bookingRequestIncomingDto.getCustMobileNo() ==  null || bookingRequestIncomingDto.getCustMobileNo().trim().isEmpty()) {
+			
+			throw BRSException.throwException("Error : Customer Mobile No cannot be empty");
+			
+		}
+		
+		
+		if(bookingRequestIncomingDto.getCustVehicleNo() ==  null || bookingRequestIncomingDto.getCustVehicleNo().trim().isEmpty()) {
+			
+			throw BRSException.throwException("Error : Customer Vehicle No cannot be empty");
+			
+		}
+		*/
 		UserInfoEntity userInfoEntity = userInfoService.getUserByMobilenumber(bookingRequestIncomingDto.getUserContactNo());
 		
 		if(userInfoEntity ==  null) {
@@ -109,6 +129,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		bookingRequestEntity.setBookingStatus("SCHEDULED");
 		bookingRequestEntity.setChargerTypeEntity(connectorEntity);
 		bookingRequestEntity.setBookingTime(null);
+		
 		
 		bookingRequestRepository.save(bookingRequestEntity);
 		
@@ -197,7 +218,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		List<BookingSlotsRespDto> bookingSlotsRespDto = new ArrayList<BookingSlotsRespDto>();
 
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss aa");
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		String startDate = bookingRequestIncomingDto.getRequestedBookingDate();
 		
@@ -207,13 +228,61 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		Date currentTimeAndDate = new Date();
 		
+		logger.info("-----" + "The current Date and Time is : " + currentTimeAndDate + "-----");
+		
 		String startTime = chargingPointEntity.getStartTime();  // --> Start Time
 		
 		logger.info("-----" + "The station start time is : " + startTime + "-----");
 		
+		Date convertStartTime = new Date();
+		
+		String getAmPmOfStartTime = "";
+		
+		String startTimeOfStation = "";
+		
+		try {
+			
+			convertStartTime = new SimpleDateFormat("HH:mm").parse(startTime);
+			
+			logger.info("-----" + "The Start Time (Date Format) is : " + convertStartTime);
+				
+			getAmPmOfStartTime = convertStartTime.getHours()>=12 ? "PM" : "AM";
+				logger.info("-----" + "Time marker is :" + getAmPmOfStartTime + "------");
+				startTimeOfStation = chargingPointEntity.getStartTime() + ":" + "00" + " " + getAmPmOfStartTime;				
+				logger.info("-----" + "Converted Start Time of Station :" + startTimeOfStation + "------");
+					
+		} 
+		catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		String endTime = chargingPointEntity.getEndTime();  // --> End Time
 		
-		logger.info("-----" + "The station end time is : " + startTime + "-----");
+		logger.info("-----" + "The station end time is : " + endTime + "-----");
+		
+		Date convertEndTime = new Date();
+		
+		String getAmPmOfEndTime = "";
+		
+		String endTimeOfStation = "";
+		
+		try {
+	
+			convertEndTime = new SimpleDateFormat("HH:mm").parse(endTime);
+			
+			logger.info("-----" + "The End Time (Date Format) is : " + convertEndTime);
+				
+				getAmPmOfEndTime = convertStartTime.getHours()>=12 ? "AM" : "PM";
+				logger.info("-----" + "Time marker is :" + getAmPmOfEndTime + "------");
+				endTimeOfStation = chargingPointEntity.getEndTime() + ":" + "00" + " " + getAmPmOfEndTime;				
+				logger.info("-----" + "Converted End Time of Station :" + endTimeOfStation + "------");
+					
+		} 
+		catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	
 		String currentDateInString = simpleDateFormat.format(currentTimeAndDate);
 		
@@ -251,13 +320,13 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 				logger.info("-----" + "Tdtforslot : " + dtforslot);
 				
 				dateObj1 = simpleDateFormat.parse(dtforslot);
-				dateObj2 = simpleDateFormat.parse(startDate + " " + endTime);
+				dateObj2 = simpleDateFormat.parse(startDate + " " + endTimeOfStation);
 				
 			}
 			else { //future date
 				
-				dateObj1=simpleDateFormat.parse(startDate + " " + startTime);
-				dateObj2 = simpleDateFormat.parse(startDate + " " + endTime);
+				dateObj1=simpleDateFormat.parse(startDate + " " + startTimeOfStation);
+				dateObj2 = simpleDateFormat.parse(startDate + " " + endTimeOfStation);
 		
 			}
 			
