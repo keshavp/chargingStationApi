@@ -56,7 +56,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		// TODO Auto-generated method stub
 		logger.info("***BookingRequestServiceImpl bookNewChargeSlot***");
 		
-		if(bookingRequestIncomingDto.getChargingPointName() == null || bookingRequestIncomingDto.getChargingPointName().trim().isEmpty()) {
+		if(bookingRequestIncomingDto.getChargingPointId() == null || bookingRequestIncomingDto.getChargingPointId().trim().isEmpty()) {
 			
 			throw BRSException.throwException("Error : Charging Point Name cannot be empty");
 			
@@ -105,7 +105,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 		}
 		
-		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointName(bookingRequestIncomingDto.getChargingPointName());
+		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(bookingRequestIncomingDto.getChargingPointId());
 		
 		if(chargingPointEntity ==  null) {
 			
@@ -128,7 +128,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		bookingRequestEntity.setChargingPointEntity(chargingPointEntity);
 		bookingRequestEntity.setBookingStatus("SCHEDULED");
 		bookingRequestEntity.setChargerTypeEntity(connectorEntity);
-		bookingRequestEntity.setRequestAmount(bookingRequestIncomingDto.getRequestedBookingAmount());
+		bookingRequestEntity.setRequestAmount(bookingRequestIncomingDto.getRequestedAmount());
 		bookingRequestEntity.setBookingTime(null);
 		bookingRequestEntity.setCustName(bookingRequestIncomingDto.getCustName());
 		bookingRequestEntity.setMobileNo(bookingRequestIncomingDto.getCustMobileNo());
@@ -143,13 +143,13 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	public List<BookingSlotsRespDto> getAvailableChargingSlotsForChargingPointAndConnector(BookingRequestIncomingDto bookingRequestIncomingDto) {
 		// TODO Auto-generated method stub
 		
-		if(bookingRequestIncomingDto.getChargingPointName()==null || bookingRequestIncomingDto.getChargingPointName().trim().isEmpty()) {
+		if(bookingRequestIncomingDto.getChargingPointId()==null || bookingRequestIncomingDto.getChargingPointId().trim().isEmpty()) {
 			
-			throw BRSException.throwException("Error : Charge Point Name cannot be blank");
+			throw BRSException.throwException("Error : Charge Point ID cannot be blank");
 			
 		}
 		
-		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointName(bookingRequestIncomingDto.getChargingPointName());
+		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargePointId(bookingRequestIncomingDto.getChargingPointId());
 		
 		logger.info("-----" + "Charging Point Info" + chargingPointEntity + "------");
 		

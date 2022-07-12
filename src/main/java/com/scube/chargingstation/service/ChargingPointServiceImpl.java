@@ -411,9 +411,9 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	}
 
 	@Override
-	public ChargingPointEntity getChargingPointEntityByChargingPointName(String name) {
+	public ChargingPointEntity getChargingPointEntityByChargePointId(String chargingPointId) {
 		// TODO Auto-generated method stub
-		return chargingPointRepository.findChargingPointEntityByName(name);
+		return chargingPointRepository.findChargingPointEntityByChargingPointId(chargingPointId);
 	}
 
 

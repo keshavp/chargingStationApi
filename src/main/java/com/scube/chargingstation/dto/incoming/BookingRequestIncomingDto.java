@@ -15,7 +15,7 @@ public class BookingRequestIncomingDto {
 	
 	private String userContactNo;
 	
-	private double requestedBookingAmount;
+	private double requestedAmount;
 	
 	private String bookingStatus;
 	

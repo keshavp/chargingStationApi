@@ -37,5 +37,5 @@ public interface ChargingPointService {
 	
 	List<ChargingPointDto> getNearByChargingPoints(Double lat,Double longi);
 	
-	ChargingPointEntity getChargingPointEntityByChargingPointName(String name);
+	ChargingPointEntity getChargingPointEntityByChargePointId(String chargingPointId);
 }
