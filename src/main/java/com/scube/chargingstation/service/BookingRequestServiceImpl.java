@@ -76,7 +76,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 		}
 		
-		/*
+		
 		if(bookingRequestIncomingDto.getCustName() ==  null || bookingRequestIncomingDto.getCustName().trim().isEmpty()) {
 			
 			throw BRSException.throwException("Error : Customer Name cannot be empty");
@@ -96,7 +96,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			throw BRSException.throwException("Error : Customer Vehicle No cannot be empty");
 			
 		}
-		*/
+		
 		UserInfoEntity userInfoEntity = userInfoService.getUserByMobilenumber(bookingRequestIncomingDto.getUserContactNo());
 		
 		if(userInfoEntity ==  null) {
@@ -128,8 +128,11 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		bookingRequestEntity.setChargingPointEntity(chargingPointEntity);
 		bookingRequestEntity.setBookingStatus("SCHEDULED");
 		bookingRequestEntity.setChargerTypeEntity(connectorEntity);
+		bookingRequestEntity.setRequestAmount(bookingRequestIncomingDto.getRequestedBookingAmount());
 		bookingRequestEntity.setBookingTime(null);
-		
+		bookingRequestEntity.setCustName(bookingRequestIncomingDto.getCustName());
+		bookingRequestEntity.setMobileNo(bookingRequestIncomingDto.getCustMobileNo());
+		bookingRequestEntity.setVehicleNO(bookingRequestIncomingDto.getCustVehicleNo());
 		
 		bookingRequestRepository.save(bookingRequestEntity);
 		
