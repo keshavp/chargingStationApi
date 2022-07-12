@@ -105,7 +105,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 		}
 		
-		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(bookingRequestIncomingDto.getChargingPointId());
+		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargePointId(bookingRequestIncomingDto.getChargingPointId());
 		
 		if(chargingPointEntity ==  null) {
 			
@@ -227,7 +227,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		logger.info("-----" + "The Start Input Date is : " + startDate + "-----");  
 		
-		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityById(bookingRequestIncomingDto.getChargingPointId());
+		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargePointId(bookingRequestIncomingDto.getChargingPointId());
 		
 		Date currentTimeAndDate = new Date();
 		

@@ -55,4 +55,6 @@ public class BookingRequestController {
 		return Response.ok().setPayload(bookingRequestService.getBookingDatesForChargingPointAndConnector(bookingRequestIncomingDto));
 	}
 	
+	
+	
 }
