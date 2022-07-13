@@ -21,6 +21,7 @@ public class ChargingPointConnectorRateEntity extends BaseEntity {
 	private double kwh;
 	private String time;
 	private String status;
+	private double cancelBookingAmount;
 	
 	@OneToOne
     @JoinColumn(name = "fk_charging_point")

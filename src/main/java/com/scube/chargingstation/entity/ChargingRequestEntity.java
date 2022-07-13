@@ -48,6 +48,15 @@ public class ChargingRequestEntity extends BaseEntity {
 	@Column(name = "difference_amount", columnDefinition = "double default 0")
 	private double  differenceAmount;
 	
+	@Column(name = "final_amountWithOutGst", columnDefinition = "double default 0")
+	private double  finalAmountWithOutGst;
+	
+	@Column(name = "final_amount_cgst", columnDefinition = "double default 0")
+	private double  finalAmountCGST;
+	
+	@Column(name = "final_amount_sgst", columnDefinition = "double default 0")
+	private double  finalAmountSGST;
+	
 	@Column(name = "final_amount", columnDefinition = "double default 0")
 	private double  finalAmount;
 	

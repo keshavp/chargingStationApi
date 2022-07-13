@@ -22,9 +22,11 @@ public class ConnectorMapper {
         return new ChargingPointConnectorDto()
         		.setId(connectorEntity.getId())
         		.setConnectorId(connectorEntity.getConnectorId())
+        		.setSlotIntervalTime(connectorEntity.getConnectorSlotIntervalTime())
         		//.setChargingPoint(connectorEntity.getChargingPointEntity().getChargingPointId())
         		.setChargerId(connectorEntity.getChargerTypeEntity().getId())
         		.setChargerType(connectorEntity.getChargerTypeEntity().getName())
+        		
         
         		.setImage(StaticPathContUtils.APP_URL_DIR+StaticPathContUtils.SET_CHARGER_TYPE_FILE_URL_DIR+connectorEntity.getChargerTypeEntity().getId());
 	}

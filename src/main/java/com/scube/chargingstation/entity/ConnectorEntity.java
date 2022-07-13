@@ -21,6 +21,8 @@ public class ConnectorEntity extends BaseEntity {
 
 	private String connectorId;
 	
+	private String connectorSlotIntervalTime;
+	
 	@ManyToOne
     @JoinColumn(name="chargingPointEntity_id", nullable=false)
     private ChargingPointEntity chargingPointEntity;

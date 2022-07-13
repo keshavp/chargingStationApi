@@ -27,5 +27,6 @@ public class PriceMasterDto {
 	private double kwh;
 	private String time;
 	private String id;
+	private double cancelBookingAmount;
 
 }

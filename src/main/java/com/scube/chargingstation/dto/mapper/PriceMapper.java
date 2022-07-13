@@ -21,6 +21,7 @@ public class PriceMapper {
 				.setPricingKwh(chargingPointConnectorRateEntity.getKwh())
 				.setPricingSgst(chargingPointConnectorRateEntity.getSgst())
 				.setPricingTime(chargingPointConnectorRateEntity.getTime())
+				.setCancelBookingAmount(chargingPointConnectorRateEntity.getCancelBookingAmount())
 				.setChargingPointId(chargingPointConnectorRateEntity.getChargingPointEntity().getId())
 				.setConnectorId(chargingPointConnectorRateEntity.getConnectorEntity().getId());
 	}

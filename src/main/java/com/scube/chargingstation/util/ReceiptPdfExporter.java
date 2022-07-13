@@ -442,32 +442,6 @@ public class ReceiptPdfExporter {
 		layoutDocument.add(new Paragraph());
 		
 		
-		double finalAmount = chargingRequestEntity.getFinalAmount();
-		
-		double WithoutGSTAmount = finalAmount/1.18;
-		
-		String roundOffWithoutGSTAmount = String.format("%.2f", WithoutGSTAmount);
-		
-		logger.info("Amount is : " + roundOffWithoutGSTAmount);
-		
-		double CGSTAmount = WithoutGSTAmount*0.09;
-		
-		String roundOfCGSTAmount = String.format("%.2f", CGSTAmount);
-		
-		logger.info("Amount is : " + roundOfCGSTAmount);
-		
-		double SGSTAmount = WithoutGSTAmount*0.09;
-		
-		String roundOfSGSTAmount = String.format("%.2f", SGSTAmount);
-		
-		logger.info("Amount is : " + roundOfSGSTAmount);
-		
-		double totalAmount = finalAmount + CGSTAmount + SGSTAmount;
-
-		String totalChargeAmount = String.format("%.2f", totalAmount);
-		
-		logger.info("Amount is : " + totalChargeAmount);
-		
 		// Description Table
 		Table chargingDescriptionTable = new Table(UnitValue.createPercentArray(4)).useAllAvailableWidth();
 		chargingDescriptionTable.setFontSize(10);
@@ -548,7 +522,7 @@ public class ReceiptPdfExporter {
 				.setBold());
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(oneKwhchargingPointConnectorRateDto.getChargingAmount()))));
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(String.format("%.3f",chargingRequestEntity.getFinalKwh())))));
-		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(roundOffWithoutGSTAmount))));
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalAmountWithOutGst()))));
 		
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" CGST (9.00%)"))
 				.setTextAlignment(TextAlignment.LEFT)
@@ -556,7 +530,7 @@ public class ReceiptPdfExporter {
 		
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
-		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(roundOfCGSTAmount))));
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalAmountCGST()))));
 		
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" SGST (9.00%)"))
 				.setTextAlignment(TextAlignment.LEFT)
@@ -564,7 +538,7 @@ public class ReceiptPdfExporter {
 		
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
-		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(roundOfSGSTAmount))));
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalAmountSGST()))));
 		
 		/*
 		 * chargingDescriptionTable.addCell(new Cell(1,3).add(new Paragraph())
@@ -581,7 +555,7 @@ public class ReceiptPdfExporter {
 				.setBold()
 				.setTextAlignment(TextAlignment.RIGHT));
 		
-		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(String.format("%.2f",finalAmount))))
+		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalAmount())))
 				.setBackgroundColor(new DeviceRgb(63,169,219)));
 		
 		
@@ -600,7 +574,7 @@ public class ReceiptPdfExporter {
 		
 //		double finalPaidAmount = chargingRequestEntity.getFinalAmount();
 		
-		Paragraph totalAmtPaidMsg = new Paragraph(" Total Amount Paid (INR) : " + String.format("%.2f",finalAmount));
+		Paragraph totalAmtPaidMsg = new Paragraph(" Total Amount Paid (INR) : " + chargingRequestEntity.getFinalAmount());
 		totalAmtPaidMsg.setBold();
 		totalAmtPaidMsg.setFontColor(new DeviceRgb(34, 139, 34));
 		totalAmtPaidMsg.setTextAlignment(TextAlignment.CENTER);

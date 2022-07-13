@@ -160,6 +160,7 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	    	
 	    	connectorEntity.setConnectorId(connectorDto.getConnectorId());
 	    	connectorEntity.setChargerTypeEntity(connectorTypeService.getChargerTypeEntityByName(connectorDto.getName()));
+	    	connectorEntity.setConnectorSlotIntervalTime(connectorDto.getSlotIntervalTime());
 	    	connectorEntity.setIsdeleted("N");
 			
 			  connectorStatusEntity.setConnectorId(Integer.parseInt(connectorDto.getConnectorId()));
@@ -364,7 +365,7 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	    	
 	    	connectorEntity.setConnectorId(connectorDto.getConnectorId());
 	    	connectorEntity.setChargerTypeEntity(connectorTypeService.getChargerTypeEntityByName(connectorDto.getName()));
-	    	
+	    	connectorEntity.setConnectorSlotIntervalTime(connectorDto.getSlotIntervalTime());
 			/*
 			 * connectorStatusEntity.setConnectorId(Integer.parseInt(connectorDto.
 			 * getConnectorId()));

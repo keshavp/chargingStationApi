@@ -24,6 +24,7 @@ public class ConnectorsIncomingDto {
 	private String id;
 	private String name;
     private String connectorId;
+    private String slotIntervalTime;
     private String status;
     private String imagepath;
 }

@@ -87,7 +87,7 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	 @Query(value = "SELECT IFNULL(sum(cr.final_kwh),0) as  totalRecharge , IFNULL(sum(cr.final_amount),0) as totalAmountSpent , cr.fk_user , IFNULL(ew.current_balance,0) as walletBalance  FROM charging_request cr left join emp_wallet ew on cr.fk_user = ew.fk_user  where cr.fk_user = (?1);", nativeQuery = true)
 	 Map<String, String> getUserChargingRequestDetails(String id);
 	 
-	 @Query(value = "SELECT *  FROM charging_request where fk_user = (?1) order by created_at desc limit 1;", nativeQuery = true)
+	 @Query(value = "SELECT *  FROM charging_request where fk_user = (?1) and charging_status = 'Done' order by created_at desc limit 1;", nativeQuery = true)
 	 ChargingRequestEntity getRecentReharge(String id);
 
 // ========================================for partner ================

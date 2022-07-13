@@ -23,6 +23,7 @@ import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.repository.ChargingRequestRepository;
 import com.scube.chargingstation.repository.TransactionsRepository;
 import com.scube.chargingstation.util.ReceiptPdfExporter;
+import com.scube.chargingstation.util.RoundUtil;
 import com.scube.chargingstation.util.Snippet;
 
 @Service
@@ -208,9 +209,15 @@ public class TransactionsServiceImpl implements TransactionsService {
 
 					}
 					
-					
+					chargingKwh = RoundUtil.doubleRound(chargingKwh ,3);
 				
 					String statusCrDr = "";
+					
+					double chargingAmountWithOutGST = 0;
+					double chargingAmountWithGST = 0;
+					double SGST = 0;
+					double CGST = 0;
+					
 					double differenceAmount = 0;
 					double differenceKwh = 0;
 					
@@ -227,6 +234,9 @@ public class TransactionsServiceImpl implements TransactionsService {
 					//.getConnectorId()
 					ChargingPointConnectorRateDto	oneKwhchargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndKwh(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getId(),oneKwh);
 					
+					double oneKwhAmount = RoundUtil.doubleRound(oneKwhchargingPointConnectorRateDto.getAmount(),2) ;
+					double oneKwhChargingAmount = RoundUtil.doubleRound(oneKwhchargingPointConnectorRateDto.getChargingAmount(),2) ;
+					
 					
 					
 					if(chargingRequestEntity.getRequestAmount() == 0) {
@@ -234,14 +244,14 @@ public class TransactionsServiceImpl implements TransactionsService {
 						// old 0.01 kwh
 						// differenceAmount = (chargingKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh;
 						
-						differenceAmount = (chargingKwh *  oneKwhchargingPointConnectorRateDto.getAmount())/ oneKwh;
-						differenceKwh = chargingKwh;
-						statusCrDr = "Debit"; 
+						// differenceAmount = RoundUtil.doubleRound((chargingKwh * oneKwhAmount )/ oneKwh,2);
+						// differenceKwh = chargingKwh;
+						// statusCrDr = "Debit"; 
 						// old 0.01 kwh
 						// finalAmount = (chargingKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh ;
 						
-						finalAmount = (chargingKwh *  oneKwhchargingPointConnectorRateDto.getAmount())/ oneKwh ;
-						finalKwh	= chargingKwh;
+						// finalAmount = RoundUtil.doubleRound((chargingKwh *  oneKwhAmount)/ oneKwh,2) ;
+						// finalKwh	= chargingKwh;
 						
 						/*
 						 * UserWalletRequestDto userWalletRequestDto = new UserWalletRequestDto();
@@ -257,48 +267,95 @@ public class TransactionsServiceImpl implements TransactionsService {
 						 * 
 						 * logger.info("***11111***");
 						 */
-
+						
+						chargingAmountWithOutGST = RoundUtil.doubleRound((chargingKwh * oneKwhChargingAmount) ,2);
+						
+						SGST = RoundUtil.doubleRound(chargingAmountWithOutGST*0.09  ,2);
+						CGST = RoundUtil.doubleRound(chargingAmountWithOutGST*0.09  ,2);
+						chargingAmountWithGST = chargingAmountWithOutGST + SGST + CGST ;
+						
+						differenceAmount = RoundUtil.doubleRound(chargingAmountWithGST,2);
+						differenceKwh = chargingKwh;
+						statusCrDr = "Debit"; 
+						finalAmount = RoundUtil.doubleRound(chargingAmountWithGST,2) ;
+						finalKwh	= chargingKwh;
+						
 					
 					}else {
 						logger.info("***111111***");
-						if(chargingRequestEntity.getRequestKwh() == chargingKwh) {
+						
+						if( RoundUtil.doubleRound(chargingRequestEntity.getRequestKwh(),3) == chargingKwh) {
+							
+							chargingAmountWithOutGST = RoundUtil.doubleRound((chargingKwh * oneKwhChargingAmount) ,2);
+							
+							SGST = RoundUtil.doubleRound(chargingAmountWithOutGST*0.09  ,2);
+							CGST = RoundUtil.doubleRound(chargingAmountWithOutGST*0.09  ,2);
+							
+							chargingAmountWithGST = chargingAmountWithOutGST + SGST + CGST ;
+							
 							differenceAmount = 0;
 							differenceKwh = 0;
-							finalAmount = chargingRequestEntity.getRequestAmount();
+							finalAmount =  RoundUtil.doubleRound(chargingAmountWithGST,2);
 							finalKwh	= chargingKwh;
 						}else {
 						
 							logger.info("***1111111***");
-							if(chargingRequestEntity.getRequestKwh() > chargingKwh) {
+							if(RoundUtil.doubleRound(chargingRequestEntity.getRequestKwh(),3) > chargingKwh) {
 								statusCrDr = "Credit";
 								
-								differenceKwh = chargingRequestEntity.getRequestKwh() - chargingKwh;
+								differenceKwh = RoundUtil.doubleRound(RoundUtil.doubleRound(chargingRequestEntity.getRequestKwh(),3) - chargingKwh,3);
 								
 								// old 0.01 kwh
 								//differenceAmount = (differenceKwh *  chargingPointConnectorRateDto.getAmount())/ minKwh ; //
 								
-								differenceAmount = (differenceKwh *  oneKwhchargingPointConnectorRateDto.getAmount())/ oneKwh ; // 
+								// differenceAmount = RoundUtil.doubleRound(RoundUtil.doubleRound((differenceKwh *  oneKwhAmount)/ oneKwh,2),2) ; // 
 								
-								finalAmount = chargingRequestEntity.getRequestAmount() - differenceAmount; //
-								finalKwh	= chargingKwh;
+								/*
+								 * finalAmount =  RoundUtil.doubleRound(chargingRequestEntity.getRequestAmount(),2) - differenceAmount; // finalKwh = chargingKwh;
+								 */
 								logger.info("***2***");
+								
+								
+								chargingAmountWithOutGST = RoundUtil.doubleRound((chargingKwh * oneKwhChargingAmount) ,2);
+								
+								SGST = RoundUtil.doubleRound(chargingAmountWithOutGST*0.09  ,2);
+								CGST = RoundUtil.doubleRound(chargingAmountWithOutGST*0.09  ,2);
+								chargingAmountWithGST = chargingAmountWithOutGST + SGST + CGST ;
 
+								
+								differenceAmount = RoundUtil.doubleRound((chargingRequestEntity.getRequestAmount() - chargingAmountWithGST ),2); 
+								finalAmount = RoundUtil.doubleRound(chargingAmountWithGST,2); //
+								finalKwh	= chargingKwh;
+								
 							}
 		
-							if(chargingRequestEntity.getRequestKwh() < chargingKwh) {
+							if(RoundUtil.doubleRound(chargingRequestEntity.getRequestKwh(),3) < chargingKwh) {
 								logger.info("***3***");
 
 								statusCrDr = "Debit"; 
 								
-								differenceKwh = chargingKwh - chargingRequestEntity.getRequestKwh();
+								differenceKwh = RoundUtil.doubleRound(chargingKwh - RoundUtil.doubleRound(chargingRequestEntity.getRequestKwh(),3),3);
 								// old 0.01 kwh
 								// differenceAmount = (differenceKwh * chargingPointConnectorRateDto.getAmount()) / minKwh; //
 								
-								differenceAmount = (differenceKwh * oneKwhchargingPointConnectorRateDto.getAmount()) / oneKwh; // 
+							//	differenceAmount = RoundUtil.doubleRound(RoundUtil.doubleRound((differenceKwh * oneKwhAmount) / oneKwh ,2),2); // 
 								
-								finalAmount = chargingRequestEntity.getRequestAmount() + differenceAmount ; //
-								finalKwh	= chargingKwh;
+							//	finalAmount = RoundUtil.doubleRound(chargingRequestEntity.getRequestAmount() + differenceAmount ,2); //
+							//	finalKwh	= chargingKwh;
 								logger.info("***4***");
+								
+								
+								chargingAmountWithOutGST = RoundUtil.doubleRound((chargingKwh * oneKwhChargingAmount) ,2);
+								
+								SGST = RoundUtil.doubleRound(chargingAmountWithOutGST*0.09  ,2);
+								CGST = RoundUtil.doubleRound(chargingAmountWithOutGST*0.09  ,2);
+								chargingAmountWithGST = chargingAmountWithOutGST + SGST + CGST ;
+
+								
+								differenceAmount = RoundUtil.doubleRound(( chargingAmountWithGST - chargingRequestEntity.getRequestAmount()),2); 
+								
+								finalAmount = RoundUtil.doubleRound(chargingAmountWithGST,2); //
+								finalKwh	= chargingKwh;
 
 							}
 						
@@ -320,11 +377,14 @@ public class TransactionsServiceImpl implements TransactionsService {
 						}
 					}
 					
-					chargingRequestEntity.setDifferenceAmount(differenceAmount);
-					chargingRequestEntity.setDifferenceKwh(differenceKwh);
+					chargingRequestEntity.setDifferenceAmount(RoundUtil.doubleRound(differenceAmount, 2));
+					chargingRequestEntity.setDifferenceKwh(RoundUtil.doubleRound(differenceKwh, 3));
 					chargingRequestEntity.setAmountCrDrStatus(statusCrDr);
-					chargingRequestEntity.setFinalAmount(finalAmount);
-					chargingRequestEntity.setFinalKwh(finalKwh);
+					chargingRequestEntity.setFinalAmountWithOutGst(RoundUtil.doubleRound(chargingAmountWithOutGST, 2));
+					chargingRequestEntity.setFinalAmountCGST(RoundUtil.doubleRound(SGST, 2));
+					chargingRequestEntity.setFinalAmountSGST(RoundUtil.doubleRound(CGST, 2));
+					chargingRequestEntity.setFinalAmount(RoundUtil.doubleRound(finalAmount, 2));
+					chargingRequestEntity.setFinalKwh(RoundUtil.doubleRound(finalKwh, 3));
 					chargingRequestEntity.setChargingTime(chargingTime);
 					
 					ChargingRequestEntity chargingRequestEntityfilename =  payslipPdfExporter.generatePdf(chargingRequestEntity , oneKwhchargingPointConnectorRateDto);

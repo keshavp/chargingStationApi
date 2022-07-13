@@ -29,6 +29,7 @@ public class PriceDto {
 	private double pricingSgst;
 	private double pricingKwh;
 	private String pricingTime;
+	private double cancelBookingAmount;
 	
 	private String chargingPointId;
 	private String connectorId;

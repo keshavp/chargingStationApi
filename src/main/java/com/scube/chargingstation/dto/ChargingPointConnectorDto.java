@@ -20,7 +20,7 @@ public class ChargingPointConnectorDto {
 
 	private String id;
     private String chargingPoint;
-    
+    private String slotIntervalTime;
 	private String chargerId;
 	private String chargerType;
 	private String connectorId;

@@ -96,6 +96,7 @@ public class PriceServiceImpl implements PriceService{
 			chargingpointconnectorRateEntity.setKwh(priceMasterDtos.getKwh());
 			chargingpointconnectorRateEntity.setSgst(priceMasterDtos.getSgst());
 			chargingpointconnectorRateEntity.setStatus(chargingPointConnectorRateIncomingDto.getStatus());
+			chargingpointconnectorRateEntity.setCancelBookingAmount(priceMasterDtos.getCancelBookingAmount());
 			
 			chargingpointconnectorRateEntity.setConnectorEntity(connectorEntity);
 			chargingpointconnectorRateEntity.setChargingPointEntity(chargingPointEntity);
@@ -143,6 +144,7 @@ public class PriceServiceImpl implements PriceService{
 			chargingpointconnectorRateEntity.setKwh(priceMasterDtos.getKwh());
 			chargingpointconnectorRateEntity.setSgst(priceMasterDtos.getSgst());
 			chargingpointconnectorRateEntity.setStatus(chargingPointConnectorRateIncomingDto.getStatus());
+			chargingpointconnectorRateEntity.setCancelBookingAmount(priceMasterDtos.getCancelBookingAmount());
 			
 			chargingpointconnectorRateEntity.setConnectorEntity(connectorEntity);
 			chargingpointconnectorRateEntity.setChargingPointEntity(chargingPointEntity);
