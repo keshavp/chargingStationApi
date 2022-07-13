@@ -25,8 +25,8 @@ public interface UserWalletDtlRepository extends JpaRepository<UserWalletDtlEnti
 	
 	UserWalletDtlEntity findByOrderId(String OrderId);
 
-	
-	@Query(value="select trhistory.amount as amount,DATE_FORMAT(trhistory.created_at, '%d %M %Y %r') as transactionDate, trhistory.transaction_type as transactionType,trhistory.remark,trhistory.fk_chargingreq as chargingRequestId "
+	//DATE_FORMAT(trhistory.created_at, '%d %m %Y %r')
+	@Query(value="select trhistory.amount as amount,DATE_FORMAT(trhistory.created_at, '%Y-%m-%d %r') as transactionDate, trhistory.transaction_type as transactionType,trhistory.remark,trhistory.fk_chargingreq as chargingRequestId "
 			+ " from (SELECT * ,'Added Money'as remark FROM  emp_wallet_dtl ewd where ewd.fk_user =?1 and transaction_type='Credit' and ewd.transaction_id is not null"+
 			" union " +
 			"SELECT *,  CASE WHEN ewd.transaction_type='Debit' THEN 'For Charging' WHEN ewd.transaction_type='Credit' THEN 'Refund' ELSE ''  END AS remark" + 

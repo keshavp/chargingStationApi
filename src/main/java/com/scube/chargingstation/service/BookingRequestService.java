@@ -15,7 +15,7 @@ public interface BookingRequestService {
 	
 	List<BookingSlotsRespDto> getAvailableChargingSlotsForChargingPointAndConnector(@Valid BookingRequestIncomingDto bookingRequestIncomingDto);
 	
-	List<BookingSlotsRespDto> getBookingDatesForChargingPointAndConnector(@Valid BookingRequestIncomingDto bookingRequestIncomingDto);
+	List<BookingSlotsRespDto> getBookingDatesForChargingPointAndConnector();
 	
 	List<BookingResponseDto> getBookingHistoryForUserByUserId(String userId);
 	

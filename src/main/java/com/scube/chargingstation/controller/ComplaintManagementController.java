@@ -42,11 +42,11 @@ public class ComplaintManagementController {
 	}
 	
 	// User Complaint Info - For User
-	@GetMapping (value = "/getUserComplaintDetailsByUserId/{id}")
-	public Response getComplaintDetailsByUserId(@PathVariable ("id") String id) {
+	@GetMapping (value = "/getUserComplaintDetailsByUserId/{userMobileNo}")
+	public Response getComplaintDetailsByUserId(@PathVariable ("userMobileNo") String userMobileNo) {
 		
 		logger.info("***ComplaintManagementController getUserComplaintDetailsByUserId***");
-		return Response.ok().setPayload(complaintService.getComplaintDetailsByUserId(id));
+		return Response.ok().setPayload(complaintService.getComplaintDetailsByUserId(userMobileNo));
 	}
 	
 	

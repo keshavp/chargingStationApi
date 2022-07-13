@@ -48,11 +48,11 @@ public class BookingRequestController {
 	}
 	
 	
-	@PostMapping (value = "/getBookingDatesForChargingPointAndConnector", consumes = APPLICATION_JSON_VALUE)
-	public Response getBookingDatesForChargingPointAndConnector(@RequestBody BookingRequestIncomingDto bookingRequestIncomingDto) throws Exception {
+	@GetMapping (value = "/getBookingDatesForChargingPointAndConnector")
+	public Response getBookingDatesForChargingPointAndConnector() throws Exception {
 		
 		logger.info("***BookingRequestController getBookingDatesForChargingPointAndConnector***");
-		return Response.ok().setPayload(bookingRequestService.getBookingDatesForChargingPointAndConnector(bookingRequestIncomingDto));
+		return Response.ok().setPayload(bookingRequestService.getBookingDatesForChargingPointAndConnector());
 	}
 	
 	// Get Previous Booking History

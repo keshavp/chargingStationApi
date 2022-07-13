@@ -20,6 +20,6 @@ public interface ComplaintService {
 	
 	boolean closeComplaint(String id, String userid);
 	
-	List<ComplaintRespDto> getComplaintDetailsByUserId(String userId);
+	List<ComplaintRespDto> getComplaintDetailsByUserId(String userMobileNo);
 	
 }
