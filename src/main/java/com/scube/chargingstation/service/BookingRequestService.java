@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.scube.chargingstation.dto.BookingResponseDto;
 import com.scube.chargingstation.dto.BookingSlotsRespDto;
 import com.scube.chargingstation.dto.incoming.BookingRequestIncomingDto;
 
@@ -15,4 +16,8 @@ public interface BookingRequestService {
 	List<BookingSlotsRespDto> getAvailableChargingSlotsForChargingPointAndConnector(@Valid BookingRequestIncomingDto bookingRequestIncomingDto);
 	
 	List<BookingSlotsRespDto> getBookingDatesForChargingPointAndConnector(@Valid BookingRequestIncomingDto bookingRequestIncomingDto);
+	
+	List<BookingResponseDto> getBookingHistoryForUserByUserId(String userId);
+	
+	List<BookingResponseDto> getUpcomingBookingDetailsForUserByUserId(String userId);
 }	

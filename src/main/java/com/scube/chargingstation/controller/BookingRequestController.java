@@ -55,6 +55,21 @@ public class BookingRequestController {
 		return Response.ok().setPayload(bookingRequestService.getBookingDatesForChargingPointAndConnector(bookingRequestIncomingDto));
 	}
 	
+	// Get Previous Booking History
+	@GetMapping (value = "/getBookingHistoryForUserByUserId/{userMobileNo}")
+	public Response getBookingHistoryForUserByUserId(@PathVariable ("userMobileNo") String userMobileNo) {
+		
+		logger.info("***BookingRequestController getBookingHistoryForUserByUserId***");
+		return Response.ok().setPayload(bookingRequestService.getBookingHistoryForUserByUserId(userMobileNo));	
+	}
 	
+	// Get Upcoming Booking Info
+	@GetMapping (value = "/getUpcomingBookingInfoForUserByUserId/{userMobileNo}")
+	public Response getUpcomingBookingDetailsForUserByUserId(@PathVariable ("userMobileNo") String userMobileNo) {
+		
+		logger.info("***BookingRequestController getUpcomingBookingDetailsForUserByUserId***");
+		return Response.ok().setPayload(bookingRequestService.getUpcomingBookingDetailsForUserByUserId(userMobileNo));
+		
+	}
 	
 }

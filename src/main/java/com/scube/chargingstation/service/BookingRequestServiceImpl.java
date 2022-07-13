@@ -17,8 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.scube.chargingstation.dto.BookingResponseDto;
 import com.scube.chargingstation.dto.BookingSlotsRespDto;
 import com.scube.chargingstation.dto.incoming.BookingRequestIncomingDto;
+import com.scube.chargingstation.dto.mapper.BookingMapper;
 import com.scube.chargingstation.entity.BookingRequestEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
@@ -45,9 +47,6 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	
 	@Autowired
 	BookingRequestRepository bookingRequestRepository;
-	
-	@Autowired
-	ConnectorRepository connectorRepository;
 		
 	@Value("${booking.dates.cronTime}") private int endBookDate;
 	
@@ -127,7 +126,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		bookingRequestEntity.setIsdeleted("N");
 		bookingRequestEntity.setChargingPointEntity(chargingPointEntity);
 		bookingRequestEntity.setBookingStatus("SCHEDULED");
-		bookingRequestEntity.setChargerTypeEntity(connectorEntity);
+		bookingRequestEntity.setConnectorEntity(connectorEntity);
 		bookingRequestEntity.setRequestAmount(bookingRequestIncomingDto.getRequestedAmount());
 		bookingRequestEntity.setBookingTime(null);
 		bookingRequestEntity.setCustName(bookingRequestIncomingDto.getCustName());
@@ -465,6 +464,28 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		}
 		
 		return bookingSlotsRespDto;
+	}
+
+	@Override
+	public List<BookingResponseDto> getBookingHistoryForUserByUserId(String userMobileNo) {
+		// TODO Auto-generated method stub
+		
+		UserInfoEntity userInfoEntity = userInfoService.getUserByMobilenumber(userMobileNo);
+		
+		List<BookingRequestEntity> bookingRequestEntities = bookingRequestRepository.findByUserInfoEntity(userInfoEntity);
+		
+		return BookingMapper.toBookingResponseDtos(bookingRequestEntities);
+	}
+
+	@Override
+	public List<BookingResponseDto> getUpcomingBookingDetailsForUserByUserId(String userMobileNo) {
+		// TODO Auto-generated method stub
+		
+		UserInfoEntity userInfoEntity = userInfoService.getUserByMobilenumber(userMobileNo);
+		
+		List<BookingRequestEntity> bookingRequestEntities = bookingRequestRepository.getUpcomingBookingTimeByUserInfoEntity(userInfoEntity);
+		
+		return BookingMapper.toBookingResponseDtos(bookingRequestEntities);
 	}
 	 
 }

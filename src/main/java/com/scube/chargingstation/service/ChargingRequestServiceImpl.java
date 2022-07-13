@@ -1272,7 +1272,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		
 		respChargingRequestDto.setRequestAmount(Double.toString(bookingRequestEntity.getRequestAmount()));
 		respChargingRequestDto.setChargePointId(bookingRequestEntity.getChargingPointEntity().getChargingPointId());
-		respChargingRequestDto.setConnectorId(Integer.parseInt(bookingRequestEntity.getChargerTypeEntity().getConnectorId()));
+		respChargingRequestDto.setConnectorId(Integer.parseInt(bookingRequestEntity.getConnectorEntity().getConnectorId()));
 		respChargingRequestDto.setBookingReqId(bookingReqId);
 		respChargingRequestDto.setMobileUser_Id(mobileNo);
 		respChargingRequestDto.setStatus("Pending");

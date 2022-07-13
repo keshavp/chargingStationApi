@@ -37,7 +37,7 @@ public class BookingRequestEntity extends BaseEntity{
 	
 	@OneToOne
     @JoinColumn(name = "fk_connector")
-	private ConnectorEntity chargerTypeEntity;
+	private ConnectorEntity connectorEntity;
 	
 	@OneToOne
     @JoinColumn(name = "fk_charge_request")
