@@ -151,7 +151,15 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		long convertSlotInfoIntoSeconds = convertedSlotInfo*60000;
 		
 		logger.info("-----" + "Slot Time in Long is : " + convertSlotInfoIntoSeconds + "-----");
+		
+//		Instant endDateTimeInstant = Instant.ofEpochMilli(convertSlotInfoIntoSeconds);
+		
+//		logger.info("-----" + "Slot Instant is : " + endDateTimeInstant + "-----");
 
+		Instant endTime = inputBookDateInInstant.plusMillis(convertSlotInfoIntoSeconds);
+		
+		logger.info("-----" + "Slot End Time in Instant is : " + endTime + "-----");
+		
 		BookingRequestEntity bookingRequestEntity = new BookingRequestEntity();
 		
 		bookingRequestEntity.setUserInfoEntity(userInfoEntity);
@@ -164,7 +172,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		bookingRequestEntity.setCustName(bookingRequestIncomingDto.getCustName());
 		bookingRequestEntity.setMobileNo(bookingRequestIncomingDto.getCustMobileNo());
 		bookingRequestEntity.setVehicleNO(bookingRequestIncomingDto.getCustVehicleNo());
-		bookingRequestEntity.setBookingEndtime(null);
+		bookingRequestEntity.setBookingEndtime(endTime);
 		
 		bookingRequestRepository.save(bookingRequestEntity);
 		
