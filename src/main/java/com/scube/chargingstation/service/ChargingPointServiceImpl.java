@@ -281,6 +281,15 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 				throw BRSException.throwException(EntityType.CHARGINGPOINTCONNECTOR, ExceptionType.VALUE_NOT_LIVE , connectorEntity.getConnectorId()); 
 
 	  		}
+			
+			String res=CheckChargerStatus.callChangeConfiguration(chargingPointEntity.getChargingPointId());
+			
+			if(!res.equals("OK"))
+	  		{
+				throw BRSException.throwException(EntityType.CHARGINGPOINTCONNECTOR, ExceptionType.FREQUENCY_NOT_FOUND , chargingPointEntity.getChargingPointId()); 
+
+	  		}
+			
 			ChargingPointConnectorRateEntity chargingPointConnectorRateEntity = chargingPointConnectorRateRepository.findByChargingPointEntityAndConnectorEntityAndStatusGroupByWithLimit(chargingPointEntity.getId(),connectorEntity.getId(),"ACTIVE");
 			
 		    if(chargingPointConnectorRateEntity == null) {

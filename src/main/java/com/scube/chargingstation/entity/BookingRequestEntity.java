@@ -55,5 +55,6 @@ public class BookingRequestEntity extends BaseEntity{
 	@Column(name = "vehicle_no")
 	private String  vehicleNO;
 	
-	
+	@Column (name = "booking_endtime")
+	private Instant bookingEndtime;
 }

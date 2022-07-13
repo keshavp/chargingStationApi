@@ -177,9 +177,18 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 
 			Double reqAmt=Double.parseDouble(chargingRequestDto.getRequestAmount()); //requested charging amount
 			
+			String bookingAmount=chargingRequestDto.getBookingAmount();
+			Double bookingAmt=0.0;
+			
+			if(bookingAmount != null&&!bookingAmount.isEmpty())
+			{
+			 bookingAmt=Double.parseDouble(bookingAmount); //requested charging amount
+			 reqAmt=reqAmt-bookingAmt;
+			}
+			
 			if((reqAmt==0)||(reqAmt==0.0))//full charge sceanario
 			{
-				if(dCurBal<1000)
+				if(dCurBal<(1000-bookingAmt))
 				{
 					  throw BRSException.throwException("Error: FullCharge needs 1000 INR as Wallet Balance");
 				}
@@ -289,7 +298,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			chargingRequestEntity.setCustName(chargingRequestDto.getName());
 			chargingRequestEntity.setMobileNo(chargingRequestDto.getMobileNo());
 			chargingRequestEntity.setVehicleNO(chargingRequestDto.getVechicleNo());
-			
+			chargingRequestEntity.setBookingAmount(bookingAmt);
 			
 			chargingRequestEntity.setIsdeleted("N");
 			
@@ -739,6 +748,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			getUrl = new URL(StaticPathContUtils.SERVER_API_URL+"RemoteStart/"+chargingRequestDto.getChargePointId()+"/"+chargingRequestDto.getConnectorId()+"/"+allowdChrg);
 		//	getUrl = new URL("http://125.99.153.126:8080/API/RemoteStart/1347212300231/1/.05");
 		//	getUrl = new URL("http://125.99.153.126:8080/API/RemoteStart/TACW2242321G0285/1/.05");
+			logger.info("callRemoteStartAPI"+getUrl);
 			
 			HttpURLConnection conection;
 			conection = (HttpURLConnection) getUrl.openConnection();
@@ -1282,13 +1292,40 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		respChargingRequestDto.setMobileNo(bookingRequestEntity.getMobileNo());
 		respChargingRequestDto.setBookingAmount(Double.toString(bookingRequestEntity.getBookingAmount()));
 		
-		addChargingRequest(respChargingRequestDto);
+		boolean respFlag=addChargingRequest(respChargingRequestDto);
+		
+		//update booking request status as Pending
+		if(respFlag==true)
+		{
+			bookingRequestEntity.setBookingStatus("Pending");
+			bookingRequestRepository.save(bookingRequestEntity);
+		}
 		
 		
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 	
-	
+	@Override
+	public boolean stopChargingOnTime(String connectorId, String chargingPointId) {
+		// TODO Auto-generated method stub
+		
+		
+		/*
+		 * List<ChargingRequestEntity> chargingRequestEntities =
+		 * chargingRequestService.findChargingRequestEntityByChargingStatus("Starting");
+		 * 
+		 * 
+		 * for(ChargingRequestEntity chargingRequestEntity : chargingRequestEntities) {
+		 * 
+		 * if(chargingRequestEntity != null) {
+		 * 
+		 * 
+		 * }
+		 * 
+		 * }
+		 */
+		return false;
+	}
 	
 }

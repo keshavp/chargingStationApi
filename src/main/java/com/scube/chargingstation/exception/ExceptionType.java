@@ -11,7 +11,8 @@ public enum ExceptionType {
     FILE_SIZE_EXCEPTION("size.exceed"),
     VALUE_NOT_FOUND("value.not.found"),
     VALUE_NOT_LIVE("value.not.live"),
-	CONTACT_ADMINISTRATOR("contact.to.Administrator");
+	CONTACT_ADMINISTRATOR("contact.to.Administrator"),
+	FREQUENCY_NOT_FOUND("frequency.not.found"); 
 
     String value;
 
