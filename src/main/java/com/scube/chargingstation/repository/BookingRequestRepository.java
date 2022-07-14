@@ -31,6 +31,7 @@ public interface BookingRequestRepository extends JpaRepository<BookingRequestEn
 	
 	@Query(value = "SELECT * from booking_request where DATE_FORMAT(booking_time, \"%Y-%m-%d %H:%i:%s\") >= CURDATE() order by booking_time asc;", nativeQuery = true)
 	List<BookingRequestEntity> getAllUpcomingBookingDetailsFromBookingRequestEntities();
+<<<<<<< Updated upstream
 
 	@Query (value = "SELECT * FROM booking_request  where booking_status = 'Starting' and booking_endtime between date_add(NOW(),interval 3 minute) and date_add(NOW(),interval 5 minute)" , nativeQuery = true)
 	List<BookingRequestEntity> findBookingRequestsToStop();
@@ -40,6 +41,8 @@ public interface BookingRequestRepository extends JpaRepository<BookingRequestEn
 
 	@Query (value = "SELECT * from booking_request where fk_charge_request=(?1);", nativeQuery = true)
 	BookingRequestEntity getBookingRequestByChargingRequest(String chargingRequestId);
+=======
+>>>>>>> Stashed changes
 
 }
 

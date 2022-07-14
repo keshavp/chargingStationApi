@@ -22,16 +22,22 @@ public interface BookingRequestService {
 	
 	List<BookingResponseDto> getUpcomingBookingDetailsForUserByUserId(String userId);
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
 	void updateBookingRequestEntityCompletedByChargingRequest(String chargingRequestId);
 	
 	void bookingAutoCancellationSchedulers();
 	
 =======
+=======
+>>>>>>> Stashed changes
 	
 	List<BookingResponseDto> getAllUserPreviousBookingHistoryDetails();
 	
 	List<BookingResponseDto> getAllUpcomingBookingDetailsInfo();
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 	
 }	
