@@ -3,6 +3,7 @@ package com.scube.chargingstation.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,7 +29,6 @@ import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.repository.BookingRequestRepository;
 import com.scube.chargingstation.util.DateUtils;
-import com.scube.chargingstation.repository.ConnectorRepository;
 
 
 @Service
@@ -57,7 +57,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		if(bookingRequestIncomingDto.getChargingPointId() == null || bookingRequestIncomingDto.getChargingPointId().trim().isEmpty()) {
 			
-			throw BRSException.throwException("Error : Charging Point Name cannot be empty");
+			throw BRSException.throwException("Error : Charging Point ID cannot be empty");
 			
 		}
 		
@@ -96,6 +96,28 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 		}
 		
+		
+		if(bookingRequestIncomingDto.getRequestedBookingDate() ==  null || bookingRequestIncomingDto.getRequestedBookingDate().trim().isEmpty()) {
+			
+			throw BRSException.throwException("Error : Booking Date cannot be empty");
+			
+		}
+		
+		
+		String inputBookTime = bookingRequestIncomingDto.getRequestedBookingDate();
+		
+		Date convertInputBookDate = new Date();
+		try {
+			
+			convertInputBookDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(inputBookTime);
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Instant inputBookDateInInstant = convertInputBookDate.toInstant();
+		
 		UserInfoEntity userInfoEntity = userInfoService.getUserByMobilenumber(bookingRequestIncomingDto.getUserContactNo());
 		
 		if(userInfoEntity ==  null) {
@@ -120,6 +142,24 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 		}
 		
+		String slotIntervalVal = connectorEntity.getSlotInterval();
+		
+		logger.info("-----" + "Slot Interval is : " + slotIntervalVal + "-----");
+		
+		long convertedSlotInfo = Long.parseLong(slotIntervalVal);
+		
+		long convertSlotInfoIntoSeconds = convertedSlotInfo*60000;
+		
+		logger.info("-----" + "Slot Time in Long is : " + convertSlotInfoIntoSeconds + "-----");
+		
+//		Instant endDateTimeInstant = Instant.ofEpochMilli(convertSlotInfoIntoSeconds);
+		
+//		logger.info("-----" + "Slot Instant is : " + endDateTimeInstant + "-----");
+
+		Instant endTime = inputBookDateInInstant.plusMillis(convertSlotInfoIntoSeconds);
+		
+		logger.info("-----" + "Slot End Time in Instant is : " + endTime + "-----");
+		
 		BookingRequestEntity bookingRequestEntity = new BookingRequestEntity();
 		
 		bookingRequestEntity.setUserInfoEntity(userInfoEntity);
@@ -128,10 +168,11 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		bookingRequestEntity.setBookingStatus("SCHEDULED");
 		bookingRequestEntity.setConnectorEntity(connectorEntity);
 		bookingRequestEntity.setRequestAmount(bookingRequestIncomingDto.getRequestedAmount());
-		bookingRequestEntity.setBookingTime(null);
+		bookingRequestEntity.setBookingTime(inputBookDateInInstant);
 		bookingRequestEntity.setCustName(bookingRequestIncomingDto.getCustName());
 		bookingRequestEntity.setMobileNo(bookingRequestIncomingDto.getCustMobileNo());
 		bookingRequestEntity.setVehicleNO(bookingRequestIncomingDto.getCustVehicleNo());
+		bookingRequestEntity.setBookingEndtime(endTime);
 		
 		bookingRequestRepository.save(bookingRequestEntity);
 		
@@ -385,7 +426,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	}
 
 	@Override
-	public List<BookingSlotsRespDto> getBookingDatesForChargingPointAndConnector(@Valid BookingRequestIncomingDto bookingRequestIncomingDto) {
+	public List<BookingSlotsRespDto> getBookingDatesForChargingPointAndConnector() {
 		// TODO Auto-generated method stub
 		
 		List<BookingSlotsRespDto> bookingSlotsRespDto = new ArrayList<BookingSlotsRespDto>();
@@ -488,4 +529,34 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		return BookingMapper.toBookingResponseDtos(bookingRequestEntities);
 	}
 	 
+	@Override
+	public void bookingAutoCancellationSchedulers() {
+		// TODO Auto-generated method stub
+		
+		List<BookingRequestEntity> bookingRequestScheduledEntities = bookingRequestRepository.getBookingRequestAfterPassBufferTime();
+		
+		List<BookingRequestEntity> bookingRequestEntities = new ArrayList<BookingRequestEntity>();
+		
+		for( BookingRequestEntity bookingRequestEntity : bookingRequestScheduledEntities) {
+			
+			bookingRequestEntity.setBookingStatus("CANCELLED");
+			
+			bookingRequestEntities.add(bookingRequestEntity);
+		}
+		
+		bookingRequestRepository.saveAll(bookingRequestEntities);
+	}
+
+	@Override
+	public void updateBookingRequestEntityCompletedByChargingRequest(String chargingRequestId) {
+		// TODO Auto-generated method stub
+		
+		BookingRequestEntity bookingRequestEntity = bookingRequestRepository.getBookingRequestByChargingRequest(chargingRequestId);
+		
+		if(bookingRequestEntity != null) {
+			
+			bookingRequestEntity.setBookingStatus("COMPLETED");
+			bookingRequestRepository.save(bookingRequestEntity);
+		}
+	}
 }

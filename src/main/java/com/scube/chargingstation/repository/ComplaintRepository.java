@@ -15,7 +15,7 @@ public interface ComplaintRepository extends JpaRepository<ComplaintEntity, Stri
 	
 	Optional<ComplaintEntity> findById(String id);
 	
-	@Query (value = "SELECT * FROM emp_complaints order by created_at desc", nativeQuery = true)
+	@Query (value = "SELECT * FROM emp_complaints where fk_user=(?1) order by created_at desc", nativeQuery = true)
 	List<ComplaintEntity> findByUserInfoEntity(UserInfoEntity id);
 
 }

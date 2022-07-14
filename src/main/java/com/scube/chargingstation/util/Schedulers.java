@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
+import com.scube.chargingstation.service.BookingRequestService;
 import com.scube.chargingstation.service.ChargingRequestService;
 import com.scube.chargingstation.service.TransactionsService;
 import com.scube.chargingstation.service.UserInfoOtpService;
@@ -30,19 +31,28 @@ public class Schedulers {
 	@Autowired
 	UserInfoOtpService	infoOtpService; 
 	
+	@Autowired
+	BookingRequestService bookingRequestService;
 	
 	// 5
 	@Scheduled(cron = "${updateStartResult.cronTime}")
 	public int updateStartResult() throws Exception {
 		    
-		//log.info("updateStartResult");
-		
+		log.info("updateStartResult ======================== "+ new Date().getTime());
 	 	// transactionsService.updateStartResultInitiated();
 	 	transactionsService.chargingRequestedBill();
 	 	
 	 	infoOtpService.removeUnVerificationUser();
 	 	
 		return 0;
+	}
+	
+	@Scheduled(cron = "${bookingAuto.cronTime}")
+	public void bookingAutoCancellation() throws Exception {
+
+		log.info("bookingAutoCancellation ======================== "+ new Date().getTime());
+		
+		bookingRequestService.bookingAutoCancellationSchedulers();
 	}
 	
 	/*

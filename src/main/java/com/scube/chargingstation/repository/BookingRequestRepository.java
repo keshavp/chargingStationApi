@@ -28,5 +28,11 @@ public interface BookingRequestRepository extends JpaRepository<BookingRequestEn
 	@Query (value = "SELECT * FROM booking_request  where booking_status = 'Starting' and booking_endtime between date_add(NOW(),interval 3 minute) and date_add(NOW(),interval 5 minute)" , nativeQuery = true)
 	List<BookingRequestEntity> findBookingRequestsToStop();
 	
+	@Query (value = "SELECT * FROM booking_request where booking_status = 'SCHEDULED' and DATE_FORMAT(date_add(booking_time,interval 10 minute), '%Y%m%d%H%i%s') < DATE_FORMAT(now(), '%Y%m%d%H%i%s');", nativeQuery = true)
+	List<BookingRequestEntity> getBookingRequestAfterPassBufferTime();
+
+	@Query (value = "SELECT * from booking_request where fk_charge_request=(?1);", nativeQuery = true)
+	BookingRequestEntity getBookingRequestByChargingRequest(String chargingRequestId);
+
 }
 
