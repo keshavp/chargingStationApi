@@ -529,4 +529,34 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		return BookingMapper.toBookingResponseDtos(bookingRequestEntities);
 	}
 	 
+	@Override
+	public void bookingAutoCancellationSchedulers() {
+		// TODO Auto-generated method stub
+		
+		List<BookingRequestEntity> bookingRequestScheduledEntities = bookingRequestRepository.getBookingRequestAfterPassBufferTime();
+		
+		List<BookingRequestEntity> bookingRequestEntities = new ArrayList<BookingRequestEntity>();
+		
+		for( BookingRequestEntity bookingRequestEntity : bookingRequestScheduledEntities) {
+			
+			bookingRequestEntity.setBookingStatus("CANCELLED");
+			
+			bookingRequestEntities.add(bookingRequestEntity);
+		}
+		
+		bookingRequestRepository.saveAll(bookingRequestEntities);
+	}
+
+	@Override
+	public void updateBookingRequestEntityCompletedByChargingRequest(String chargingRequestId) {
+		// TODO Auto-generated method stub
+		
+		BookingRequestEntity bookingRequestEntity = bookingRequestRepository.getBookingRequestByChargingRequest(chargingRequestId);
+		
+		if(bookingRequestEntity != null) {
+			
+			bookingRequestEntity.setBookingStatus("COMPLETED");
+			bookingRequestRepository.save(bookingRequestEntity);
+		}
+	}
 }

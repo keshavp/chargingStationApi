@@ -59,6 +59,8 @@ public class TransactionsServiceImpl implements TransactionsService {
 	@Autowired
 	NotificationService notificationService;
 	
+	@Autowired
+	BookingRequestService bookingRequestService;
 	
 	// update status using file 
 	/*
@@ -405,6 +407,11 @@ public class TransactionsServiceImpl implements TransactionsService {
 					userWalletRequestDto.setRequestAmount(String.valueOf(chargingRequestEntity.getDifferenceAmount()));
 					
 					userPaymentService.processWalletMoney(userWalletRequestDto);
+					
+					
+					//Completed
+					
+					bookingRequestService.updateBookingRequestEntityCompletedByChargingRequest(chargingRequestEntity.getId());
 					
 					logger.info("***7***");
 

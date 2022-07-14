@@ -106,4 +106,7 @@ public class ChargingRequestEntity extends BaseEntity {
 	@Column (name = "booking_amount", columnDefinition = "double default 0")
 	private double bookingAmount;
 	
+	@Column(name = "request_type")
+	private String  requestType;
+	
 }
