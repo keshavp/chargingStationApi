@@ -72,4 +72,25 @@ public class BookingRequestController {
 		
 	}
 	
+	
+	// Get All Previous Booking History
+	@GetMapping (value = "/getAllUserPreviousBookingHistoryDetails")
+	public Response getAllBookingHistoryDetails() {
+		
+		logger.info("***BookingRequestController getAllUserPreviousBookingHistoryDetails***");
+		return Response.ok().setPayload(bookingRequestService.getAllUserPreviousBookingHistoryDetails());
+		
+	}
+	
+	
+	// Get All Upcoming Booking History
+	@GetMapping (value = "/getAllUpcomingBookingDetailsInfo")
+	public Response getAllUpcomingBookingDetailsInfo() {
+		
+		logger.info("***BookingRequestController getAllUpcomingBookingDetailsInfo***");
+		return Response.ok().setPayload(bookingRequestService.getAllUpcomingBookingDetailsInfo());
+		
+	}
+
+	
 }

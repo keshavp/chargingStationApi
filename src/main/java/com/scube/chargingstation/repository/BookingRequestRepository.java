@@ -22,8 +22,15 @@ public interface BookingRequestRepository extends JpaRepository<BookingRequestEn
 	@Query (value = "SELECT * from booking_request where fk_user=(?1) and booking_time <= CURDATE();", nativeQuery = true)
 	List<BookingRequestEntity> findByUserInfoEntity(UserInfoEntity id);
 	
-	@Query (value = "SELECT * from booking_request where fk_user=(?1) and booking_time >= CURDATE();", nativeQuery = true)
+	@Query (value = "SELECT * from booking_request where fk_user=(?1) and booking_time >= CURDATE() order by booking_time asc;", nativeQuery = true)
 	List<BookingRequestEntity> getUpcomingBookingTimeByUserInfoEntity(UserInfoEntity id);
+	
+	
+	@Query(value = "SELECT * from booking_request where DATE_FORMAT(booking_time, \"%Y-%m-%d %H:%i:%s\") <= CURDATE() order by booking_time desc;", nativeQuery = true)
+	List<BookingRequestEntity> getAllPreviousBookingDetailsFromBookingRequestEntities();
+	
+	@Query(value = "SELECT * from booking_request where DATE_FORMAT(booking_time, \"%Y-%m-%d %H:%i:%s\") >= CURDATE() order by booking_time asc;", nativeQuery = true)
+	List<BookingRequestEntity> getAllUpcomingBookingDetailsFromBookingRequestEntities();
 
 	@Query (value = "SELECT * FROM booking_request  where booking_status = 'Starting' and booking_endtime between date_add(NOW(),interval 3 minute) and date_add(NOW(),interval 5 minute)" , nativeQuery = true)
 	List<BookingRequestEntity> findBookingRequestsToStop();

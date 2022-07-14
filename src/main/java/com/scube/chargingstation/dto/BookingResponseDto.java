@@ -1,5 +1,7 @@
 package com.scube.chargingstation.dto;
 
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -36,5 +38,9 @@ public class BookingResponseDto {
 	private double requestedAmount;
 	
 	private String bookingStatus;
+	
+	private String chargeNow;
+	
+	private String cancelNow;
 	
 }

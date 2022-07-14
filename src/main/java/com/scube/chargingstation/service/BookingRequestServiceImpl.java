@@ -50,6 +50,10 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 	@Value("${booking.dates.cronTime}") private int endBookDate;
 	
+	@Value("${cancel.booking.slot.cronTime}") private long cancelSlot;
+	
+	@Value("${chargenow.button.booking.cronTime}") private long chargeNow;
+	
 	@Override
 	public boolean bookNewChargeSlot(@Valid BookingRequestIncomingDto bookingRequestIncomingDto) {
 		// TODO Auto-generated method stub
@@ -151,10 +155,6 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		long convertSlotInfoIntoSeconds = convertedSlotInfo*60000;
 		
 		logger.info("-----" + "Slot Time in Long is : " + convertSlotInfoIntoSeconds + "-----");
-		
-//		Instant endDateTimeInstant = Instant.ofEpochMilli(convertSlotInfoIntoSeconds);
-		
-//		logger.info("-----" + "Slot Instant is : " + endDateTimeInstant + "-----");
 
 		Instant endTime = inputBookDateInInstant.plusMillis(convertSlotInfoIntoSeconds);
 		
@@ -386,6 +386,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 				BookingSlotsRespDto dto=new BookingSlotsRespDto();
 				
 				Date slot = new Date(diffBetweenStartTimeAndEndTime);
+				logger.info("-----" + "Slot Start Date and End Date in (Date format) :" + slot + "------");
 				formatSlotDateAndTime = simpleDateFormat.format(slot);	
 				diffBetweenStartTimeAndEndTime += convertSlotInfoIntoSeconds;
 				
@@ -399,7 +400,6 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 					
 						logger.info("-----" + "Slot is already Booked " + "-----");
 						dto.setSlotAvailability("BOOKED");
-				
 				}			
 				else {
 					
@@ -511,6 +511,8 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	public List<BookingResponseDto> getBookingHistoryForUserByUserId(String userMobileNo) {
 		// TODO Auto-generated method stub
 		
+		logger.info("***BookingRequestServiceImpl getBookingHistoryForUserByUserId***");
+		
 		UserInfoEntity userInfoEntity = userInfoService.getUserByMobilenumber(userMobileNo);
 		
 		List<BookingRequestEntity> bookingRequestEntities = bookingRequestRepository.findByUserInfoEntity(userInfoEntity);
@@ -522,11 +524,127 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	public List<BookingResponseDto> getUpcomingBookingDetailsForUserByUserId(String userMobileNo) {
 		// TODO Auto-generated method stub
 		
+		logger.info("***BookingRequestServiceImpl getUpcomingBookingDetailsForUserByUserId***");
+			
+		List<BookingResponseDto> bookingResponseDtos = new ArrayList<BookingResponseDto>();
+		
 		UserInfoEntity userInfoEntity = userInfoService.getUserByMobilenumber(userMobileNo);
 		
 		List<BookingRequestEntity> bookingRequestEntities = bookingRequestRepository.getUpcomingBookingTimeByUserInfoEntity(userInfoEntity);
 		
-		return BookingMapper.toBookingResponseDtos(bookingRequestEntities);
+		if(bookingRequestEntities == null) {
+			
+			throw BRSException.throwException("Error : No Booking Request Present");
+			
+		}
+		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		Date currentDate = new Date();
+		
+		logger.info("-----" + "The current date in (Date Format) is :" + currentDate + "-----");
+		
+		Date startBookTimeDate = new Date();
+		
+		long currentDateFormatInLong = currentDate.getTime();
+		
+		String formattedBookStartTime = "";
+		
+		for(BookingRequestEntity bookingRequestEntity : bookingRequestEntities) {
+			
+			logger.info("-----" + "Time is :" + bookingRequestEntity.getBookingTime() + "-----");
+			
+			Instant startBookInstant = bookingRequestEntity.getBookingTime();
+			
+			startBookTimeDate = Date.from(startBookInstant);
+				
+			formattedBookStartTime = simpleDateFormat.format(startBookTimeDate);
+			
+			logger.info("-----" + "The formatted Booking Start Time is :" + formattedBookStartTime + "------");
+			
+			try {
+				
+				startBookTimeDate = simpleDateFormat.parse(formattedBookStartTime);
+				logger.info("-----" + "The formatted Booking Start Time is (Date Format):" + startBookTimeDate + "------");
+			
+				
+			} 
+			catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			BookingResponseDto responseDto = new BookingResponseDto();
+			
+			if(currentDateFormatInLong<startBookTimeDate.getTime()-cancelSlot) {
+		
+				logger.info("-----" + "CANCEL SLOT" + "-----");
+				responseDto.setCancelNow("CANCEL NOW");
+				
+			}
+			else {
+				
+				logger.info("-----" + "NOT ALLOWED TO CANCEL" + "-----");
+				responseDto.setCancelNow("NOT ALLOWED");
+				
+			}
+			
+			long reduceBookTime = startBookTimeDate.getTime() - chargeNow;
+			long addBookTime = startBookTimeDate.getTime() + chargeNow;
+			
+			Date convertReducedDate = new Date(reduceBookTime);
+			Date convertAddTimeDate = new Date(addBookTime);
+			
+			logger.info("---" + "Converted Sub Time" + convertReducedDate + "---");
+			
+			logger.info("---" + "Converted Add Time" + convertAddTimeDate + "---");
+					
+			if(currentDate.after(convertReducedDate) && currentDate.before(convertAddTimeDate))	{	
+			
+				logger.info("---" + "Current Time Now" + currentDateFormatInLong + "---");
+				responseDto.setChargeNow("CHARGE NOW");
+			}
+			
+			responseDto.setBookingAmount(bookingRequestEntity.getBookingAmount());
+			responseDto.setBookingDateAndTime(DateUtils.formattedInstantToDateTimeString(bookingRequestEntity.getBookingTime()));
+			responseDto.setBookingId(bookingRequestEntity.getId());
+			responseDto.setBookingStatus(bookingRequestEntity.getBookingStatus());
+			responseDto.setCustName(bookingRequestEntity.getCustName());
+			responseDto.setCustMobileNo(bookingRequestEntity.getMobileNo());
+			responseDto.setCustVehicleNo(bookingRequestEntity.getVehicleNO());
+			responseDto.setStationId(bookingRequestEntity.getChargingPointEntity().getChargingPointId());
+			responseDto.setStationName(bookingRequestEntity.getChargingPointEntity().getName());
+			responseDto.setConnectorId(bookingRequestEntity.getConnectorEntity().getConnectorId());
+			responseDto.setConnectorName(bookingRequestEntity.getConnectorEntity().getChargerTypeEntity().getName());
+			responseDto.setRequestedAmount(bookingRequestEntity.getRequestAmount());
+			
+			bookingResponseDtos.add(responseDto);
+			
+		}
+		
+		return bookingResponseDtos;
+	}
+
+	@Override
+	public List<BookingResponseDto> getAllUserPreviousBookingHistoryDetails() {
+		// TODO Auto-generated method stub
+		
+		logger.info("***BookingRequestServiceImpl getAllUserPreviousBookingHistoryDetails***");
+		
+		List<BookingRequestEntity> bookingRequestEntity = bookingRequestRepository.getAllPreviousBookingDetailsFromBookingRequestEntities();
+		
+		return BookingMapper.toBookingResponseDtos(bookingRequestEntity);
+	}
+
+	@Override
+	public List<BookingResponseDto> getAllUpcomingBookingDetailsInfo() {
+		// TODO Auto-generated method stub
+		
+		logger.info("***BookingRequestServiceImpl getAllUpcomingBookingDetailsInfo***");
+		
+		List<BookingRequestEntity> bookingRequestEntity = bookingRequestRepository.getAllUpcomingBookingDetailsFromBookingRequestEntities();
+		
+		return BookingMapper.toBookingResponseDtos(bookingRequestEntity);
 	}
 	 
 	@Override
