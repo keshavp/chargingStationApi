@@ -195,7 +195,7 @@ public class CheckChargerStatus {
 		
 	}
 	
-	public String callRemoteStopAPI(String ChargePointId,String ConnectorId) 
+	public static boolean callRemoteStopAPI(String ChargePointId,String ConnectorId) 
 	{
 		URL getUrl = null;
 		//Double allowdChrg=0.0;
@@ -236,8 +236,8 @@ public class CheckChargerStatus {
 			if(chkJsonformat.contains("Chargepoint"))
 			{
 				logger.info("Chargepoint is not connected. Check chargepoint");
-				strResponse="Not ok";
-				return strResponse;
+				//strResponse="Not ok";
+				return false;
 			}
 	        
 	        br.close();
@@ -252,35 +252,34 @@ public class CheckChargerStatus {
 	        
 	        if((actualObj.get("Status").textValue()).equals("OK"))
 	        {
-	        	strResponse="OK";
+	        	return true;
 	        }
 	        else if((actualObj.get("Status").textValue()).equals("Error"))
 	        {
 				
-	        	 strResponse=actualObj.get("Payload").textValue();
-	        	
-	        	
-	        	if(strResponse.contains("running"))
-	        	{
-	        		strResponse = "Running";
-	        	}
-	        	else if(strResponse.contains("offline"))
-	        	{
-	        		strResponse = "Offline";
-	        	}
-	        	else
-	        	{
-		        	throw BRSException.throwException("Error: in callRemoteStopAPI API call "+actualObj.get("Payload")); 
-
-	        	}
+				/*
+				 * strResponse=actualObj.get("Payload").textValue();
+				 * 
+				 * 
+				 * if(strResponse.contains("running")) { strResponse = "Running"; } else
+				 * if(strResponse.contains("offline")) { strResponse = "Offline"; } else { throw
+				 * BRSException.throwException("Error: in callRemoteStopAPI API call "+actualObj
+				 * .get("Payload"));
+				 * 
+				 * }
+				 */
 	        	//if already running transaction
 	        	
 	        	//if offline
+	        	
+	        	return false;
 				
 	        }
 	        else
 	        {
-				throw BRSException.throwException("Error: in callRemoteStopAPI API call "); 
+	        	
+	        	return false;
+				//throw BRSException.throwException("Error: in callRemoteStopAPI API call "); 
 	        }
 	        
 		} 
@@ -292,7 +291,7 @@ public class CheckChargerStatus {
 	 
 
         // Getting response code
-		return strResponse;
+	//	return true;
 		
 	}
 	

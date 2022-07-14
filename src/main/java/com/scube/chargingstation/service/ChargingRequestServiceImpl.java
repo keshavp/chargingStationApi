@@ -1307,24 +1307,29 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	}
 	
 	@Override
-	public boolean stopChargingOnTime(String connectorId, String chargingPointId) {
+	public boolean stopChargingOnTime() {
 		// TODO Auto-generated method stub
 		
-		
-		/*
-		 * List<ChargingRequestEntity> chargingRequestEntities =
-		 * chargingRequestService.findChargingRequestEntityByChargingStatus("Starting");
-		 * 
-		 * 
-		 * for(ChargingRequestEntity chargingRequestEntity : chargingRequestEntities) {
-		 * 
-		 * if(chargingRequestEntity != null) {
-		 * 
-		 * 
-		 * }
-		 * 
-		 * }
-		 */
+		  List<BookingRequestEntity> bookingRequests = bookingRequestRepository.findBookingRequestsToStop();
+		  for(BookingRequestEntity entity : bookingRequests)
+		  {
+			  if(entity != null) 
+			  {
+			  String chargePointid=entity.getChargingPointEntity().getChargingPointId();
+			  String connectorId=entity.getConnectorEntity().getConnectorId();
+			  try {
+				  boolean response=CheckChargerStatus.callRemoteStopAPI(chargePointid,connectorId);
+
+			  }
+			  catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+			        logger.info("Error: stopChargingOnTime API="+e.toString());
+
+				}
+			  }
+		  }
+		 
 		return false;
 	}
 	

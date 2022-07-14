@@ -72,7 +72,6 @@ public interface ChargingRequestService {
 	//public String callResetConnectorApi(String chargingPointId, String connectorId);
 	public boolean chargeNow(ChargingRequestDto chargingRequestDto) ;
 	
-	public boolean stopChargingOnTime(String connectorId,
-			String chargingPointId);
+	public boolean stopChargingOnTime();
 	
 }

@@ -61,4 +61,12 @@ public class Schedulers {
 		return 0;
 	}
 	
+	
+	@Scheduled(cron = "${stopChargingOnTime.cronTime}")
+	public int stopChargingOnTime() throws Exception {
+		
+		//log.info("sendGunInsertNotification");
+		chargingRequestService.stopChargingOnTime();
+		return 0;
+	}
 }
