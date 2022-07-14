@@ -48,11 +48,11 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	@Autowired
 	BookingRequestRepository bookingRequestRepository;
 		
-	@Value("${booking.dates.cronTime}") private int endBookDate;
+	@Value("${booking.dates}") private int endBookDate;
 	
-	@Value("${cancel.booking.slot.cronTime}") private long cancelSlot;
+	@Value("${cancel.booking.slot}") private long cancelSlot;
 	
-	@Value("${chargenow.button.booking.cronTime}") private long chargeNow;
+	@Value("${chargenow.button.booking}") private long chargeNow;
 	
 	@Override
 	public boolean bookNewChargeSlot(@Valid BookingRequestIncomingDto bookingRequestIncomingDto) {
@@ -159,6 +159,8 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		Instant endTime = inputBookDateInInstant.plusMillis(convertSlotInfoIntoSeconds);
 		
 		logger.info("-----" + "Slot End Time in Instant is : " + endTime + "-----");
+		
+		
 		
 		BookingRequestEntity bookingRequestEntity = new BookingRequestEntity();
 		
