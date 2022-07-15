@@ -6,6 +6,7 @@ public enum ExceptionType {
     ENTITY_NOT_FOUND("not.found"),
     DUPLICATE_ENTITY("duplicate"),
     ALREADY_EXIST("duplicate"),
+    ALREADY_EXIST_ENTITY("already"),
     UNAUTHORIZED("unauthorized"),
     ENTITY_EXCEPTION("exception"),
     FILE_SIZE_EXCEPTION("size.exceed"),
@@ -13,7 +14,8 @@ public enum ExceptionType {
     VALUE_NOT_LIVE("value.not.live"),
 	CONTACT_ADMINISTRATOR("contact.to.Administrator"),
 	FREQUENCY_NOT_FOUND("frequency.not.found"); 
-
+	
+	
     String value;
 
     ExceptionType(String value) {

@@ -57,4 +57,10 @@ public class BookingRequestEntity extends BaseEntity{
 	
 	@Column (name = "booking_endtime")
 	private Instant bookingEndtime;
+	
+	@Column (name = "invoice_file_path")
+	private String invoiceFilePath;
+	
+	@Column (name = "receipt_no")
+	private String receiptNo;
 }

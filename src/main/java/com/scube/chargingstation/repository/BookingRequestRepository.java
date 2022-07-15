@@ -41,5 +41,12 @@ public interface BookingRequestRepository extends JpaRepository<BookingRequestEn
 	@Query (value = "SELECT * from booking_request where fk_charge_request=(?1);", nativeQuery = true)
 	BookingRequestEntity getBookingRequestByChargingRequest(String chargingRequestId);
 
+	BookingRequestEntity findByIdAndBookingStatus(String bookingId, String bookingStatus);
+
+	@Query(value = "SELECT DATEDIFF(booking_time, now()) AS date_difference FROM booking_request where id =(?1);", nativeQuery = true)  // by date DateDIFF
+	int getDateDiff(String bookingId);
+	
+	@Query (value = "SELECT TIMESTAMPDIFF(minute,now(),booking_time) AS date_difference FROM booking_request where id =(?1);", nativeQuery = true) // by time TIMEDIFF 
+	int getTimeInMinuteDiff(String bookingId);
 }
 

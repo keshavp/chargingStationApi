@@ -1,6 +1,7 @@
 package com.scube.chargingstation.service;
 
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -25,6 +26,8 @@ public interface BookingRequestService {
 	void updateBookingRequestEntityCompletedByChargingRequest(String chargingRequestId);
 	
 	void bookingAutoCancellationSchedulers();
+
+	public String getUpcomingBookingCancelById(String bookingId) throws Exception;
 	
 	List<BookingResponseDto> getAllUserPreviousBookingHistoryDetails();
 	

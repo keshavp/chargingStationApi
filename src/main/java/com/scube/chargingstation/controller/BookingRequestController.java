@@ -92,5 +92,12 @@ public class BookingRequestController {
 		
 	}
 
-	
+	// Get Upcoming Booking Info
+	@GetMapping (value = "/upcomingBookingCancelById/{bookingId}")
+	public Response upcomingBookingCancelByUserMobileNo(@PathVariable ("bookingId") String bookingId) throws Exception {
+		
+		logger.info("***BookingRequestController getUpcomingBookingDetailsForUserByUserId***");
+		return Response.ok().setPayload(bookingRequestService.getUpcomingBookingCancelById(bookingId));
+		
+	}
 }

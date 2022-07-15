@@ -1,6 +1,7 @@
 package com.scube.chargingstation.service;
 
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -21,14 +22,19 @@ import org.springframework.stereotype.Service;
 import com.scube.chargingstation.dto.BookingResponseDto;
 import com.scube.chargingstation.dto.BookingSlotsRespDto;
 import com.scube.chargingstation.dto.incoming.BookingRequestIncomingDto;
+import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
 import com.scube.chargingstation.dto.mapper.BookingMapper;
 import com.scube.chargingstation.entity.BookingRequestEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.exception.BRSException;
+import com.scube.chargingstation.exception.EntityType;
+import com.scube.chargingstation.exception.ExceptionType;
 import com.scube.chargingstation.repository.BookingRequestRepository;
+import com.scube.chargingstation.util.CancellationReceiptPdf;
 import com.scube.chargingstation.util.DateUtils;
+import com.scube.chargingstation.util.ReceiptPdfExporter;
 
 
 @Service
@@ -53,6 +59,18 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	@Value("${cancel.booking.slot}") private long cancelSlot;
 	
 	@Value("${chargenow.button.booking}") private long chargeNow;
+	
+	@Autowired
+	UserPaymentService	userPaymentService;
+	
+	@Autowired
+	CancellationReceiptPdf	cancellationReceiptPdf;
+	
+	@Value("${cancellation.refund.days}")
+	private int cancellationRefundDays;
+	
+	@Value("${cancellation.refund.minutes}")
+	private int cancellationRefundMinutes;
 	
 	@Override
 	public boolean bookNewChargeSlot(@Valid BookingRequestIncomingDto bookingRequestIncomingDto) {
@@ -678,5 +696,47 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			bookingRequestEntity.setBookingStatus("COMPLETED");
 			bookingRequestRepository.save(bookingRequestEntity);
 		}
+	}
+
+	@Override
+	public String getUpcomingBookingCancelById(String bookingId) throws Exception {
+		// TODO Auto-generated method stub
+		
+		BookingRequestEntity bookingRequestEntity = bookingRequestRepository.findById(bookingId).get();
+		
+			if(bookingRequestEntity == null) {
+				throw BRSException.throwException(EntityType.BOOKING, ExceptionType.ENTITY_NOT_FOUND);
+			}
+			
+			if(bookingRequestEntity.getBookingStatus().equals("CANCELLED")) {
+				 throw BRSException.throwException(EntityType.BOOKING, ExceptionType.ALREADY_EXIST_ENTITY); 
+			}
+			
+			int bookingTimeDiff = bookingRequestRepository.getTimeInMinuteDiff(bookingId);
+			
+			if(bookingTimeDiff < cancellationRefundMinutes) {
+			
+					bookingRequestEntity.setBookingStatus("CANCELLED");
+					bookingRequestRepository.save(bookingRequestEntity);
+				
+					UserWalletRequestDto	userWalletRequestDto = new UserWalletRequestDto();
+					
+					userWalletRequestDto.setTransactionType("Credit");
+					userWalletRequestDto.setMobileUser_Id(bookingRequestEntity.getUserInfoEntity().getMobilenumber());
+					userWalletRequestDto.setRequestAmount(String.valueOf(bookingRequestEntity.getBookingAmount()));
+					
+					userPaymentService.processWalletMoney(userWalletRequestDto);
+				
+				return "Booking successful cancellation. Refund Amount "+userWalletRequestDto.getRequestAmount()+" is added in your wallet.";
+			}
+		
+			BookingRequestEntity bookingRequestPdfEntity =   cancellationReceiptPdf.generatePdf(bookingRequestEntity);
+			
+			bookingRequestEntity.setBookingStatus("CANCELLED");
+			bookingRequestEntity.setInvoiceFilePath(bookingRequestPdfEntity.getInvoiceFilePath());
+			bookingRequestEntity.setReceiptNo(bookingRequestPdfEntity.getReceiptNo());
+			bookingRequestRepository.save(bookingRequestEntity);
+			
+		return "Booking successful cancellation. no refund";
 	}
 }
