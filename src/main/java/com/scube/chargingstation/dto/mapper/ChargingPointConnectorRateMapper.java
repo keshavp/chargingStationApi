@@ -22,7 +22,9 @@ public class ChargingPointConnectorRateMapper {
 				.setSgst(chargingpointconnectorRateEntity.getSgst())
 			//	.setChargingPointCode(chargingPointEntity.)
 	        //	.setConnectorCode(chargingPointEntity.getChargingPointEntity())
-				.setKWh(chargingpointconnectorRateEntity.getKwh());
+				.setKWh(chargingpointconnectorRateEntity.getKwh())
+				.setCancelBookingAmount(chargingpointconnectorRateEntity.getCancelBookingAmount());
+		
 	}
 
 	
