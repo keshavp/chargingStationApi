@@ -409,7 +409,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 					userPaymentService.processWalletMoney(userWalletRequestDto);
 					
 					
-					//Completed
+					//Completed 
 					
 					bookingRequestService.updateBookingRequestEntityCompletedByChargingRequest(chargingRequestEntity.getId());
 					

@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.itextpdf.styledxmlparser.jsoup.select.Evaluator.IsEmpty;
 import com.scube.chargingstation.dto.AmenityDto;
 import com.scube.chargingstation.dto.ChargingHistoryDto;
 import com.scube.chargingstation.dto.ChargingHistoryRespDto;
@@ -136,11 +137,19 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	public boolean addChargingRequest(ChargingRequestDto chargingRequestDto) {
 			
 		
+			String reqType=chargingRequestDto.getReqType();
+			if(reqType==null||reqType.isEmpty())
+				reqType="Charging";
+			else
+				reqType="Booking";
+			
 			logger.info("addChargingRequest getMobileNo"+chargingRequestDto.getMobileNo());
 			logger.info("addChargingRequest getName"+chargingRequestDto.getName());
 			logger.info("addChargingRequest getVechicleNo"+chargingRequestDto.getVechicleNo());
 
 			logger.info("addChargingRequest getVechicleNo"+chargingRequestDto.toString());
+			
+			
 			ChargingRequestEntity chargingRequestEntity  = new  ChargingRequestEntity();
 			String connectorId= Integer.toString(chargingRequestDto.getConnectorId());
 			
@@ -298,9 +307,11 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			chargingRequestEntity.setCustName(chargingRequestDto.getName());
 			chargingRequestEntity.setMobileNo(chargingRequestDto.getMobileNo());
 			chargingRequestEntity.setVehicleNO(chargingRequestDto.getVechicleNo());
+			
 			chargingRequestEntity.setBookingAmount(bookingAmt);
 			
 			chargingRequestEntity.setIsdeleted("N");
+			chargingRequestEntity.setRequestType(reqType);
 			
 			chargingRequestRepository.save(chargingRequestEntity);
 			
@@ -1291,6 +1302,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		respChargingRequestDto.setName(bookingRequestEntity.getCustName());
 		respChargingRequestDto.setMobileNo(bookingRequestEntity.getMobileNo());
 		respChargingRequestDto.setBookingAmount(Double.toString(bookingRequestEntity.getBookingAmount()));
+		respChargingRequestDto.setReqType("Booking");
 		
 		boolean respFlag=addChargingRequest(respChargingRequestDto);
 		

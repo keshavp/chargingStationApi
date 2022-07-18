@@ -18,4 +18,6 @@ public class ChargingRequestDto{
 	private String  vechicleNo;
 	private String  bookingReqId;
 	private String  bookingAmount;
+	private String  reqType;
+
 }
