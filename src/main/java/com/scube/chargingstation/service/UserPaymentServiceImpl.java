@@ -630,6 +630,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 				if (userInfoEntity == null) {
 					throw BRSException.throwException("Error: User does not exist");
 				}
+				logger.info("initiateAvenueTransaction for--" + userWalletRequestDto.getMobileUser_Id());
 
 				if (userWalletRequestDto.getRequestAmount() == null)
 					throw BRSException.throwException("Error: Amount can not be blank");
@@ -655,9 +656,18 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 						
 				EncValData="merchant_id="+ccAvenueMerchantId+"&order_id="+OrderId+
 						"&redirect_url="+RedirectUrl+"&cancel_url="+CancelUrl+"&amount="+userWalletRequestDto.getRequestAmount()+"&currency=INR&language=EN";
+				
+				logger.info("input for encryption--" + EncValData);
 					
 				String genEncVal=generateEncVal(EncValData);
+				
+				logger.info("output of encryption--" + genEncVal);
+
+				
 				ccavenueInitDto.setEncVal(genEncVal);
+				
+				logger.info("ccavenueInitDto--" + ccavenueInitDto.toString());
+
 				
 				return ccavenueInitDto;
 	}
@@ -668,6 +678,10 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		
 		String orderId="",orderstatus="",bank_ref_no="",paymentMode="",transactionId="";
 		Double amount=0.0;
+		
+		logger.info("postCCavenueResponse userWalletRequestDto"+userWalletRequestDto.toString());
+
+		logger.info("postCCavenueResponse encResp"+userWalletRequestDto.getEncResp());
 		
 		String encResp= userWalletRequestDto.getEncResp();
 		
