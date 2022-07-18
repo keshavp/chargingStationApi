@@ -38,7 +38,7 @@ public class Schedulers {
 	@Scheduled(cron = "${updateStartResult.cronTime}")
 	public int updateStartResult() throws Exception {
 		    
-		log.info("updateStartResult ======================== "+ new Date().getTime());
+		//log.info("updateStartResult ======================== "+ new Date().getTime());
 	 	// transactionsService.updateStartResultInitiated();
 	 	transactionsService.chargingRequestedBill();
 	 	
@@ -50,7 +50,7 @@ public class Schedulers {
 	@Scheduled(cron = "${bookingAuto.cronTime}")
 	public void bookingAutoCancellation() throws Exception {
 
-		log.info("bookingAutoCancellation ======================== "+ new Date().getTime());
+		//log.info("bookingAutoCancellation ======================== "+ new Date().getTime());
 		
 		bookingRequestService.bookingAutoCancellationSchedulers();
 	}

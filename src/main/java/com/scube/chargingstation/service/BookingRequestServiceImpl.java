@@ -748,8 +748,8 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			}
 			
 			int bookingTimeDiff = bookingRequestRepository.getTimeInMinuteDiff(bookingId);
-			
-			if(bookingTimeDiff < cancellationRefundMinutes) {
+
+			if(bookingTimeDiff > cancellationRefundMinutes) {
 			
 					bookingRequestEntity.setBookingStatus("CANCELLED");
 					bookingRequestRepository.save(bookingRequestEntity);
