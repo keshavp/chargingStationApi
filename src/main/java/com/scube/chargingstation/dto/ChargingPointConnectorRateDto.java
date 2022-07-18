@@ -26,4 +26,6 @@ public class ChargingPointConnectorRateDto{
 	private double chargingAmount;
 	private double cgst;
 	private double sgst;
+	
+	private double cancelBookingAmount;
 }

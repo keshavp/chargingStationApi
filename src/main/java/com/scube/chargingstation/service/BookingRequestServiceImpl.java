@@ -21,7 +21,9 @@ import org.springframework.stereotype.Service;
 
 import com.scube.chargingstation.dto.BookingResponseDto;
 import com.scube.chargingstation.dto.BookingSlotsRespDto;
+import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
 import com.scube.chargingstation.dto.incoming.BookingRequestIncomingDto;
+import com.scube.chargingstation.dto.incoming.BookingUserWalletDto;
 import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
 import com.scube.chargingstation.dto.mapper.BookingMapper;
 import com.scube.chargingstation.entity.BookingRequestEntity;
@@ -53,6 +55,12 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	
 	@Autowired
 	BookingRequestRepository bookingRequestRepository;
+	
+	@Autowired
+	UserPaymentService userPaymentService;
+	
+	@Autowired
+	ChargingPointConnectorRateService chargingPointConnectorRateService;
 		
 	@Value("${booking.dates}") private int endBookDate;
 	
@@ -178,7 +186,26 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		logger.info("-----" + "Slot End Time in Instant is : " + endTime + "-----");
 		
+		UserWalletRequestDto userWalletRequestDto = new UserWalletRequestDto();
 		
+		ChargingPointConnectorRateDto chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(bookingRequestIncomingDto.getChargingPointId(), 
+				bookingRequestIncomingDto.getConnectorId(), bookingRequestIncomingDto.getRequestedAmount());
+		
+		logger.info("-----" + "Rates are : " + chargingPointConnectorRateDto + "-----");
+		
+		if(chargingPointConnectorRateDto == null) {
+			
+			throw BRSException.throwException("Error : No Rate Present for selected Charging Point and Connector");
+			
+		}
+		
+		Double cancelAmt = chargingPointConnectorRateDto.getAmount();
+		
+		userWalletRequestDto.setMobileUser_Id(userInfoEntity.getMobilenumber());
+		userWalletRequestDto.setTransactionType("Debit");
+		userWalletRequestDto.setRequestAmount(String.valueOf(cancelAmt));
+		
+		userPaymentService.processWalletMoney(userWalletRequestDto);
 		
 		BookingRequestEntity bookingRequestEntity = new BookingRequestEntity();
 		
