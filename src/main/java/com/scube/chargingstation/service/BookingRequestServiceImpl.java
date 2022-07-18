@@ -23,7 +23,6 @@ import com.scube.chargingstation.dto.BookingResponseDto;
 import com.scube.chargingstation.dto.BookingSlotsRespDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
 import com.scube.chargingstation.dto.incoming.BookingRequestIncomingDto;
-import com.scube.chargingstation.dto.incoming.BookingUserWalletDto;
 import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
 import com.scube.chargingstation.dto.mapper.BookingMapper;
 import com.scube.chargingstation.entity.BookingRequestEntity;
@@ -55,9 +54,6 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	
 	@Autowired
 	BookingRequestRepository bookingRequestRepository;
-	
-	@Autowired
-	UserPaymentService userPaymentService;
 	
 	@Autowired
 	ChargingPointConnectorRateService chargingPointConnectorRateService;
@@ -136,6 +132,8 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		String inputBookTime = bookingRequestIncomingDto.getRequestedBookingDate();
 		
+		
+		logger.info("------------------- " + inputBookTime);		
 		Date convertInputBookDate = new Date();
 		try {
 			
@@ -146,7 +144,11 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			e.printStackTrace();
 		}
 		
+		logger.info("--->>>" +convertInputBookDate );
+		
 		Instant inputBookDateInInstant = convertInputBookDate.toInstant();
+		
+		logger.info("Hiiii" + inputBookDateInInstant);
 		
 		UserInfoEntity userInfoEntity = userInfoService.getUserByMobilenumber(bookingRequestIncomingDto.getUserContactNo());
 		
@@ -192,14 +194,18 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 				bookingRequestIncomingDto.getConnectorId(), bookingRequestIncomingDto.getRequestedAmount());
 		
 		logger.info("-----" + "Rates are : " + chargingPointConnectorRateDto + "-----");
-		
+			
 		if(chargingPointConnectorRateDto == null) {
 			
 			throw BRSException.throwException("Error : No Rate Present for selected Charging Point and Connector");
 			
 		}
 		
-		Double cancelAmt = chargingPointConnectorRateDto.getAmount();
+		logger.info("-----" + "Rates are : " + chargingPointConnectorRateDto.getCancelBookingAmount() + "-----");
+		
+		Double cancelAmt = bookingRequestIncomingDto.getRequestedAmount() -  chargingPointConnectorRateDto.getCancelBookingAmount();
+		
+		logger.info("---" + "Amt is " + cancelAmt + "---");
 		
 		userWalletRequestDto.setMobileUser_Id(userInfoEntity.getMobilenumber());
 		userWalletRequestDto.setTransactionType("Debit");
@@ -220,6 +226,8 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		bookingRequestEntity.setMobileNo(bookingRequestIncomingDto.getCustMobileNo());
 		bookingRequestEntity.setVehicleNO(bookingRequestIncomingDto.getCustVehicleNo());
 		bookingRequestEntity.setBookingEndtime(endTime);
+		bookingRequestEntity.setBookingAmount(cancelAmt);
+//		bookingRequestEntity.setRequestType("BOOKING");
 		
 		bookingRequestRepository.save(bookingRequestEntity);
 		
