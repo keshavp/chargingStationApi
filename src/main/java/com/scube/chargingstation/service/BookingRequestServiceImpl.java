@@ -203,13 +203,9 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		logger.info("-----" + "Rates are : " + chargingPointConnectorRateDto.getCancelBookingAmount() + "-----");
 		
-		Double cancelAmt = bookingRequestIncomingDto.getRequestedAmount() -  chargingPointConnectorRateDto.getCancelBookingAmount();
-		
-		logger.info("---" + "Amt is " + cancelAmt + "---");
-		
 		userWalletRequestDto.setMobileUser_Id(userInfoEntity.getMobilenumber());
 		userWalletRequestDto.setTransactionType("Debit");
-		userWalletRequestDto.setRequestAmount(String.valueOf(cancelAmt));
+		userWalletRequestDto.setRequestAmount(String.valueOf(chargingPointConnectorRateDto.getCancelBookingAmount()));
 		
 		userPaymentService.processWalletMoney(userWalletRequestDto);
 		
@@ -226,8 +222,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		bookingRequestEntity.setMobileNo(bookingRequestIncomingDto.getCustMobileNo());
 		bookingRequestEntity.setVehicleNO(bookingRequestIncomingDto.getCustVehicleNo());
 		bookingRequestEntity.setBookingEndtime(endTime);
-		bookingRequestEntity.setBookingAmount(cancelAmt);
-//		bookingRequestEntity.setRequestType("BOOKING");
+		bookingRequestEntity.setBookingAmount(chargingPointConnectorRateDto.getCancelBookingAmount());
 		
 		bookingRequestRepository.save(bookingRequestEntity);
 		
