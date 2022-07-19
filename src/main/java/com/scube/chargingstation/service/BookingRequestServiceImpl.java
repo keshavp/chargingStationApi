@@ -217,6 +217,8 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		bookingRequestEntity.setUserInfoEntity(userInfoEntity);
 		bookingRequestEntity.setIsdeleted("N");
+		bookingRequestEntity.setHourReminderStatus("N");
+		bookingRequestEntity.setOneDayReminderStatus("N");
 		bookingRequestEntity.setChargingPointEntity(chargingPointEntity);
 		bookingRequestEntity.setBookingStatus("SCHEDULED");
 		bookingRequestEntity.setConnectorEntity(connectorEntity);
@@ -717,6 +719,19 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		}
 		
 		bookingRequestRepository.saveAll(bookingRequestEntities);
+		
+		for( BookingRequestEntity bookingRequestEntity : bookingRequestScheduledEntities) {
+		
+			String title="Booking cancelled for EV-Dock.";
+			String body=" Hi "+bookingRequestEntity.getUserInfoEntity().getUsername()+", your Ev car charging booking on ( "+ bookingRequestEntity.getBookingTime() +") at "+bookingRequestEntity.getChargingPointEntity().getName()+" with Evdock has been cancelled due to no show.";
+
+			NotificationReqDto notificationReqDto =new NotificationReqDto();
+			notificationReqDto.setMobileUser_Id(bookingRequestEntity.getUserInfoEntity().getMobilenumber());
+			notificationReqDto.setTitle(title);
+			notificationReqDto.setBody(body);
+			notificationService.sendNotification(notificationReqDto);
+		
+		}
 	}
 
 	@Override
@@ -783,7 +798,14 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		for(BookingRequestEntity  bookingRequestEntity : bookingRequestEntities) {
 			
-			notificationService.sendBookingReminderNotification(bookingRequestEntity);
+			String title="Booking reminder for EV-Dock.";
+			String body=" Hi "+bookingRequestEntity.getUserInfoEntity().getUsername()+", you have an EV car charging booking on ( "+ bookingRequestEntity.getBookingTime() +") at "+bookingRequestEntity.getChargingPointEntity().getName()+" with Evdock .";
+			
+			NotificationReqDto notificationReqDto =new NotificationReqDto();
+			notificationReqDto.setMobileUser_Id(bookingRequestEntity.getUserInfoEntity().getMobilenumber());
+			notificationReqDto.setTitle(title);
+			notificationReqDto.setBody(body);
+			notificationService.sendNotification(notificationReqDto);
 			
 		}
 	}
@@ -796,7 +818,14 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		for(BookingRequestEntity  bookingRequestEntity : bookingRequestEntities) {
 			
-			notificationService.sendBookingReminderNotification(bookingRequestEntity);
+			String title="Booking reminder for EV-Dock.";
+			String body=" Hi "+bookingRequestEntity.getUserInfoEntity().getUsername()+", you have an EV car charging booking on ( "+ bookingRequestEntity.getBookingTime() +") at "+bookingRequestEntity.getChargingPointEntity().getName()+" with Evdock .";
+			
+			NotificationReqDto notificationReqDto =new NotificationReqDto();
+			notificationReqDto.setMobileUser_Id(bookingRequestEntity.getUserInfoEntity().getMobilenumber());
+			notificationReqDto.setTitle(title);
+			notificationReqDto.setBody(body);
+			notificationService.sendNotification(notificationReqDto);
 			
 		}
 	}
