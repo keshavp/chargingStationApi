@@ -30,10 +30,13 @@ import com.scube.chargingstation.entity.BookingRequestEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
+import com.scube.chargingstation.entity.UserWalletEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.exception.EntityType;
 import com.scube.chargingstation.exception.ExceptionType;
 import com.scube.chargingstation.repository.BookingRequestRepository;
+import com.scube.chargingstation.repository.UserInfoRepository;
+import com.scube.chargingstation.repository.UserWalletRepository;
 import com.scube.chargingstation.util.CancellationReceiptPdf;
 import com.scube.chargingstation.util.DateUtils;
 import com.scube.chargingstation.util.ReceiptPdfExporter;
@@ -55,6 +58,12 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	
 	@Autowired
 	BookingRequestRepository bookingRequestRepository;
+	
+	@Autowired
+	UserInfoRepository userInfoRepository;
+	
+	@Autowired
+	UserWalletRepository userWalletRepository;
 	
 	@Autowired
 	ChargingPointConnectorRateService chargingPointConnectorRateService;
@@ -132,6 +141,18 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			throw BRSException.throwException("Error : Booking Date cannot be empty");
 			
 		}
+		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(bookingRequestIncomingDto.getUserContactNo());
+		if(userInfoEntity==null)
+		{
+			throw BRSException.throwException("Error: User does not exist"); 
+		}
+		
+		
+		UserWalletEntity userWalletEntity=userWalletRepository.findByUserInfoEntity(userInfoEntity);
+		if(userWalletEntity==null)
+		{
+			  throw BRSException.throwException("Error: Insufficient Wallet Balance");
+		}
 		
 		
 		String inputBookTime = bookingRequestIncomingDto.getRequestedBookingDate();
@@ -154,13 +175,17 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		logger.info("Hiiii" + inputBookDateInInstant);
 		
-		UserInfoEntity userInfoEntity = userInfoService.getUserByMobilenumber(bookingRequestIncomingDto.getUserContactNo());
-		
-		if(userInfoEntity ==  null) {
-			
-			throw BRSException.throwException("Error: User does not exist"); 
-			
-		}
+		/*
+		 * UserInfoEntity userInfoEntity =
+		 * userInfoService.getUserByMobilenumber(bookingRequestIncomingDto.
+		 * getUserContactNo());
+		 * 
+		 * if(userInfoEntity == null) {
+		 * 
+		 * throw BRSException.throwException("Error: User does not exist");
+		 * 
+		 * }
+		 */
 		
 		ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargePointId(bookingRequestIncomingDto.getChargingPointId());
 		
@@ -206,6 +231,19 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		}
 		
 		logger.info("-----" + "Rates are : " + chargingPointConnectorRateDto.getCancelBookingAmount() + "-----");
+		
+		
+		Double balance=0.0;
+		Double dCurBal=userWalletEntity.getCurrentBalance();
+		Double bookAmt=chargingPointConnectorRateDto.getCancelBookingAmount(); // book amount
+			
+		
+		if(dCurBal<bookAmt)
+		{
+			  throw BRSException.throwException("Error: Insufficient Wallet Balance");
+		}
+		
+		
 		
 		userWalletRequestDto.setMobileUser_Id(userInfoEntity.getMobilenumber());
 		userWalletRequestDto.setTransactionType("Debit");
