@@ -9,7 +9,11 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1042,8 +1046,34 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		
 		System.out.println("CpId======"+chargingPointEntity.getId()+"SDate=="+chargingStationWiseReportIncomingDto.getStartDate()+"EDate==="+chargingStationWiseReportIncomingDto.getEndDate());
 		
+		if (chargingStationWiseReportIncomingDto.getStartDate() == null && chargingStationWiseReportIncomingDto.getEndDate() ==  null) {
+			
+			throw BRSException.throwException("Error : Please select your Date Range");
+			
+		}
 		
-		List<ChargingRequestEntity> chargingRequestEntities = chargingRequestRepository.findByChargingPointEntity(chargingPointEntity.getId(), chargingStationWiseReportIncomingDto.getStartDate(), chargingStationWiseReportIncomingDto.getEndDate());
+		String endInputDate = chargingStationWiseReportIncomingDto.getEndDate();
+		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Calendar calendar = new GregorianCalendar();
+		
+			try {
+				
+				calendar.setTime(simpleDateFormat.parse(endInputDate));
+				
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		calendar.add(Calendar.DATE, 1);
+		
+		String convertEndInputDate = simpleDateFormat.format(calendar.getTime());
+		
+		System.out.println("End input Date :---->>> " + convertEndInputDate);
+		
+		List<ChargingRequestEntity> chargingRequestEntities = chargingRequestRepository.getChargingRequestEntityByChargingPointEntity(chargingPointEntity.getId(), chargingStationWiseReportIncomingDto.getStartDate(), convertEndInputDate);
 		
 	//	ChargingRequestMapper.toChargingRequestRespDtos(chargingRequestEntities);
 		

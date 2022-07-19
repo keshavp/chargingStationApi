@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.boot.context.metrics.buffering.StartupTimeline;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -56,7 +57,9 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	List<ChargingRequestEntity> findByChargingStatusAndCreatedMinutes(String chargingStatus,String Miniutes);
 	
 	
-	
+	@Query(value = "SELECT * FROM charging_request where fk_charging_point=(?1) and  StartTime >= (?2) and StartTime <= (?3) order by StartTime desc", nativeQuery = true)
+	//@Query(value = "SELECT * FROM charging_request where fk_charging_point=(1) and ( StartTime > '2022-06-01' and StartTime <= '2022-07-20')", nativeQuery = true)
+	List<ChargingRequestEntity> getChargingRequestEntityByChargingPointEntity(String chargingPoint, String startDate, String endDate);
 	
 
 	 @Query(value = "SELECT * FROM charging_request where fk_charging_point = (?1) and DATE_FORMAT(StartTime, '%d%m%Y') "
