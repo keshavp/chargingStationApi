@@ -25,13 +25,17 @@ public interface BookingRequestService {
 
 	void updateBookingRequestEntityCompletedByChargingRequest(String chargingRequestId);
 	
-	void bookingAutoCancellationSchedulers();
+	public void bookingAutoCancellationSchedulers();
 
 	public String getUpcomingBookingCancelById(String bookingId) throws Exception;
 	
 	List<BookingResponseDto> getAllUserPreviousBookingHistoryDetails();
 	
 	List<BookingResponseDto> getAllUpcomingBookingDetailsInfo();
+
+	public void oneDayBeforeBookingReminderSchedulers();
+
+	public void oneHourBeforeBookingReminderSchedulers();
 
 	
 }	

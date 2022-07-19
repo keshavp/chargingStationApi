@@ -21,7 +21,6 @@ public class Schedulers {
 
 	private static final Logger log = LoggerFactory.getLogger(Schedulers.class);
 	
-	
 	@Autowired
 	TransactionsService	transactionsService;	
 	
@@ -53,6 +52,24 @@ public class Schedulers {
 		//log.info("bookingAutoCancellation ======================== "+ new Date().getTime());
 		
 		bookingRequestService.bookingAutoCancellationSchedulers();
+	}
+	
+	@Scheduled(cron = "${bookingReminder.oneDayBefore}")
+	public int oneDayBeforeBookingReminder() throws Exception {
+		    
+		log.info("oneDayBeforeBookingReminderSchedulers ======================== "+ new Date().getTime());
+		bookingRequestService.oneDayBeforeBookingReminderSchedulers();
+	 	
+		return 0;
+	}
+	
+	@Scheduled(cron = "${bookingReminder.oneHour}")
+	public int oneHourBeforeBookingReminder() throws Exception {
+		    
+		log.info("oneHourBeforeBookingReminderSchedulers ======================== "+ new Date().getTime());
+		bookingRequestService.oneHourBeforeBookingReminderSchedulers();
+	 	
+		return 0;
 	}
 	
 	/*

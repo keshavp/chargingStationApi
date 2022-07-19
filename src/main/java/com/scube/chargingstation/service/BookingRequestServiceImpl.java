@@ -23,6 +23,7 @@ import com.scube.chargingstation.dto.BookingResponseDto;
 import com.scube.chargingstation.dto.BookingSlotsRespDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
 import com.scube.chargingstation.dto.incoming.BookingRequestIncomingDto;
+import com.scube.chargingstation.dto.incoming.NotificationReqDto;
 import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
 import com.scube.chargingstation.dto.mapper.BookingMapper;
 import com.scube.chargingstation.entity.BookingRequestEntity;
@@ -66,6 +67,9 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	
 	@Autowired
 	UserPaymentService	userPaymentService;
+	
+	@Autowired
+	NotificationService	notificationService;
 	
 	@Autowired
 	CancellationReceiptPdf	cancellationReceiptPdf;
@@ -744,6 +748,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 			int bookingTimeDiff = bookingRequestRepository.getTimeInMinuteDiff(bookingId);
 
+		
 			if(bookingTimeDiff > cancellationRefundMinutes) {
 			
 					bookingRequestEntity.setBookingStatus("CANCELLED");
@@ -768,5 +773,31 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			bookingRequestRepository.save(bookingRequestEntity);
 			
 		return "Booking successful cancellation. no refund";
+	}
+
+	@Override
+	public void oneDayBeforeBookingReminderSchedulers() {
+		// TODO Auto-generated method stub
+		
+		List<BookingRequestEntity>  bookingRequestEntities = bookingRequestRepository.oneDayBookingReminderSchedulersByScheduled();
+		
+		for(BookingRequestEntity  bookingRequestEntity : bookingRequestEntities) {
+			
+			notificationService.sendBookingReminderNotification(bookingRequestEntity);
+			
+		}
+	}
+
+	@Override
+	public void oneHourBeforeBookingReminderSchedulers() {
+		// TODO Auto-generated method stub
+		
+		List<BookingRequestEntity>  bookingRequestEntities = bookingRequestRepository.oneHourBeforeBookingReminderSchedulersByScheduled();
+		
+		for(BookingRequestEntity  bookingRequestEntity : bookingRequestEntities) {
+			
+			notificationService.sendBookingReminderNotification(bookingRequestEntity);
+			
+		}
 	}
 }

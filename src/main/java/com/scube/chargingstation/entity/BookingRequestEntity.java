@@ -63,4 +63,16 @@ public class BookingRequestEntity extends BaseEntity{
 	
 	@Column (name = "receipt_no")
 	private String receiptNo;
+	
+	@Column (name = "day_reminder_status")
+	private String oneDayReminderStatus;
+	
+	@Column (name = "day_reminder_time")
+	private String oneDayReminderTime;
+	
+	@Column (name = "hour_reminder_status")
+	private String hourReminderStatus;
+	
+	@Column (name = "hour_reminder_time")
+	private String hourReminderTime;
 }

@@ -48,5 +48,11 @@ public interface BookingRequestRepository extends JpaRepository<BookingRequestEn
 	
 	@Query (value = "SELECT TIMESTAMPDIFF(minute,now(),booking_time) AS date_difference FROM booking_request where id =(?1);", nativeQuery = true) // by time TIMEDIFF 
 	int getTimeInMinuteDiff(String bookingId);
+	
+	@Query(value = "SELECT * FROM booking_request where DATEDIFF(booking_time, now()) <= 1 and booking_status = 'SCHEDULED'  and day_reminder_status = 'N'", nativeQuery = true)  // by date DateDIFF
+	List<BookingRequestEntity> oneDayBookingReminderSchedulersByScheduled();
+	
+	@Query(value = "SELECT * FROM booking_request where TIMESTAMPDIFF(minute,now(),booking_time) <= 1 and booking_status = 'SCHEDULED'  and hour_reminder_status = 'N'", nativeQuery = true)  // by date DateDIFF
+	List<BookingRequestEntity> oneHourBeforeBookingReminderSchedulersByScheduled();
 }
 

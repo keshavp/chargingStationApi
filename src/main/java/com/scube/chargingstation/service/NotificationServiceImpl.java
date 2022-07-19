@@ -44,6 +44,7 @@ import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
 import com.scube.chargingstation.dto.mapper.ConnectorMapper;
 import com.scube.chargingstation.dto.response.Response;
 import com.scube.chargingstation.entity.AmenitiesEntity;
+import com.scube.chargingstation.entity.BookingRequestEntity;
 import com.scube.chargingstation.entity.ChargerTypeEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
@@ -148,10 +149,60 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	
-	
-	
-	
-	
+	@Override
+	public boolean sendBookingReminderNotification(BookingRequestEntity  bookingRequestEntity) 
+	{
+		// String SERVER_KEY = "AAAAgHRHE7M:APA91bFC5F9IZ5_8KZhNROpIeKwVMrdjA_SM7ugvYjgeFwn81G-DRG9syVxHWbVg_198OVhEcBmHpZv_PLIuc4Xw3etQm8_0L-MBoQiVGRpIP0s0R1f5zr2ESZI0wbhPLFjo487zN-Po";
+		
+			UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(bookingRequestEntity.getUserInfoEntity().getMobilenumber());
+			
+			if(userInfoEntity==null) { 
+				throw BRSException.throwException("Error: User does not exist"); 
+			}
+			
+			
+			String DEVICE_TOKEN =userInfoEntity.getFcmToken();
+			
+			//String DEVICE_TOKEN="dEpGWA5UROmaIvcq8OJtma:APA91bEdk7MRhaajWlub-3Ow4VUIE_upMvEX6W88Rc0AMJ4k9pAL-u8PwBeHudk67LlkW8wqos7yEQf1V33kqesgWbWzzD-vah0ez-H8_JNcayIKew5SFdzH2WRz92KdYC_BLHlTR_RR";
+		            
+			logger.info("DEVICE_TOKEN "+DEVICE_TOKEN +" for mobile no "+bookingRequestEntity.getUserInfoEntity().getMobilenumber());
+			
+			if((DEVICE_TOKEN==null)||(DEVICE_TOKEN.isEmpty()))
+			{
+			  throw BRSException.throwException("Error: NO Device Token");
+			}
+			
+			
+			String title="",body="";
+			
+	//		title=notificationReqDto.getTitle();
+	//		body=notificationReqDto.getBody();
+			
+           // This registration token comes from the client FCM SDKs.
+          //  String DEVICE_TOKEN = "f4aREZY8QGqbDNO2vTSq0X:APA91bEBhMdze1OVs26milHTNqs6hy-cMgrDD0O5IyqLci1q3ALTgyW4ODuuxBj-N0zg6l_bCaKup0hitvrB9MfFB8u5YsoLHMXsfUf__5x3--Qev4d5mr1Ro0KxN8gY7hMWKlGA3BZF";
+
+            Message message = Message.builder()
+            	    .setNotification(new Notification(title,body))
+            	    .setToken(DEVICE_TOKEN)
+            	    .build();
+
+            // Send a message to the device corresponding to the provided
+            // registration token.
+            String response = null;
+			try {
+				response = FirebaseMessaging.getInstance().send(message);
+			} catch (FirebaseMessagingException e) {
+				// TODO Auto-generated catch block
+				
+				e.printStackTrace();
+				  throw BRSException.throwException("Error: Notification not sent");
+
+			}
+            // Response is a message ID string.
+            System.out.println("Successfully sent message: " + response);
+          //  System.out.println("Successfully sent message: "+response.get
+			 return true;
+	}
 }
 
 

@@ -397,8 +397,6 @@ public class TransactionsServiceImpl implements TransactionsService {
 					
 					chargingRequestRepository.save(chargingRequestEntity);
 					
-					
-					
 					UserWalletRequestDto	userWalletRequestDto = new UserWalletRequestDto();
 					
 					userWalletRequestDto.setChargeRequestId(chargingRequestEntity.getId());
@@ -407,11 +405,12 @@ public class TransactionsServiceImpl implements TransactionsService {
 					userWalletRequestDto.setRequestAmount(String.valueOf(chargingRequestEntity.getDifferenceAmount()));
 					
 					userPaymentService.processWalletMoney(userWalletRequestDto);
-					
-					
+
 					//Completed 
+					if(chargingRequestEntity.getRequestType().equals("Booking")) {
 					
-					bookingRequestService.updateBookingRequestEntityCompletedByChargingRequest(chargingRequestEntity.getId());
+						bookingRequestService.updateBookingRequestEntityCompletedByChargingRequest(chargingRequestEntity.getId());
+					}
 					
 					logger.info("***7***");
 
