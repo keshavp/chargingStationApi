@@ -209,7 +209,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		userWalletRequestDto.setMobileUser_Id(userInfoEntity.getMobilenumber());
 		userWalletRequestDto.setTransactionType("Debit");
-		userWalletRequestDto.setRequestAmount(String.valueOf(bookingRequestIncomingDto.getRequestedAmount()));
+		userWalletRequestDto.setRequestAmount(String.valueOf(chargingPointConnectorRateDto.getCancelBookingAmount()));
 		
 		userPaymentService.processWalletMoney(userWalletRequestDto);
 		
