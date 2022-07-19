@@ -95,52 +95,28 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		logger.info("***BookingRequestServiceImpl bookNewChargeSlot***");
 		
 		if(bookingRequestIncomingDto.getChargingPointId() == null || bookingRequestIncomingDto.getChargingPointId().trim().isEmpty()) {
-			
 			throw BRSException.throwException("Error : Charging Point ID cannot be empty");
-			
 		}
-		
-		
 		if(bookingRequestIncomingDto.getConnectorId() == null || bookingRequestIncomingDto.getConnectorId().trim().isEmpty()) {
-			
 			throw BRSException.throwException("Error : Connector Name cannot be empty");
-			
 		}
-
-		
 		if(bookingRequestIncomingDto.getUserContactNo() == null || bookingRequestIncomingDto.getUserContactNo().trim().isEmpty()) {
-			
 			throw BRSException.throwException("Error : Contact No cannot be empty");
-			
 		}
-		
-		
 		if(bookingRequestIncomingDto.getCustName() ==  null || bookingRequestIncomingDto.getCustName().trim().isEmpty()) {
-			
 			throw BRSException.throwException("Error : Customer Name cannot be empty");
-			
 		}
-		
-		
 		if(bookingRequestIncomingDto.getCustMobileNo() ==  null || bookingRequestIncomingDto.getCustMobileNo().trim().isEmpty()) {
-			
 			throw BRSException.throwException("Error : Customer Mobile No cannot be empty");
-			
 		}
-		
-		
 		if(bookingRequestIncomingDto.getCustVehicleNo() ==  null || bookingRequestIncomingDto.getCustVehicleNo().trim().isEmpty()) {
-			
 			throw BRSException.throwException("Error : Customer Vehicle No cannot be empty");
-			
 		}
-		
-		
 		if(bookingRequestIncomingDto.getRequestedBookingDate() ==  null || bookingRequestIncomingDto.getRequestedBookingDate().trim().isEmpty()) {
-			
 			throw BRSException.throwException("Error : Booking Date cannot be empty");
-			
 		}
+		
+		
 		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(bookingRequestIncomingDto.getUserContactNo());
 		if(userInfoEntity==null)
 		{
@@ -159,7 +135,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		
 		logger.info("------------------- " + inputBookTime);		
-		Date convertInputBookDate = new Date();
+		Date convertInputBookDate = null;
 		try {
 			
 			convertInputBookDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(inputBookTime);
@@ -174,6 +150,15 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		Instant inputBookDateInInstant = convertInputBookDate.toInstant();
 		
 		logger.info("Hiiii" + inputBookDateInInstant);
+		
+		
+		int timeVal = bookingRequestRepository.givenDateGreaterThanCurrentDate(inputBookDateInInstant);
+		
+		if(timeVal == 0) {
+			
+			throw BRSException.throwException(EntityType.BOOKING, ExceptionType.NOT_VALID , inputBookTime); 
+		}
+		
 		
 		/*
 		 * UserInfoEntity userInfoEntity =
@@ -231,6 +216,13 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		}
 		
 		logger.info("-----" + "Rates are : " + chargingPointConnectorRateDto.getCancelBookingAmount() + "-----");
+		
+		int isSlotAvailable = bookingRequestRepository.isBookingSlotIsAvailable("SCHEDULED", bookingRequestIncomingDto.getChargingPointId(), bookingRequestIncomingDto.getConnectorId(),
+				inputBookDateInInstant, endTime);
+		
+		if(isSlotAvailable == 1) {
+			throw BRSException.throwException(EntityType.BOOKING, ExceptionType.NOT_AVAILABLE , inputBookTime); 
+		}
 		
 		
 		Double balance=0.0;
@@ -832,7 +824,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	public void oneDayBeforeBookingReminderSchedulers() {
 		// TODO Auto-generated method stub
 		
-		List<BookingRequestEntity>  bookingRequestEntities = bookingRequestRepository.oneDayBookingReminderSchedulersByScheduled();
+		List<BookingRequestEntity>  bookingRequestEntities = bookingRequestRepository.oneDayBookingReminderSchedulersByScheduled(1);
 		
 		for(BookingRequestEntity  bookingRequestEntity : bookingRequestEntities) {
 			
@@ -852,7 +844,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	public void oneHourBeforeBookingReminderSchedulers() {
 		// TODO Auto-generated method stub
 		
-		List<BookingRequestEntity>  bookingRequestEntities = bookingRequestRepository.oneHourBeforeBookingReminderSchedulersByScheduled();
+		List<BookingRequestEntity>  bookingRequestEntities = bookingRequestRepository.oneHourBeforeBookingReminderSchedulersByScheduled(1);
 		
 		for(BookingRequestEntity  bookingRequestEntity : bookingRequestEntities) {
 			

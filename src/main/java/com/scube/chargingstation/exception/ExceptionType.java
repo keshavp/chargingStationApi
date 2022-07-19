@@ -13,8 +13,9 @@ public enum ExceptionType {
     VALUE_NOT_FOUND("value.not.found"),
     VALUE_NOT_LIVE("value.not.live"),
 	CONTACT_ADMINISTRATOR("contact.to.Administrator"),
-	FREQUENCY_NOT_FOUND("frequency.not.found"); 
-	
+	FREQUENCY_NOT_FOUND("frequency.not.found"),
+	NOT_AVAILABLE("not.available"),
+	NOT_VALID("not.valid");
 	
     String value;
 

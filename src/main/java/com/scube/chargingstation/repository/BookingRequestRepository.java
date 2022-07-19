@@ -1,5 +1,6 @@
 package com.scube.chargingstation.repository;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -49,10 +50,20 @@ public interface BookingRequestRepository extends JpaRepository<BookingRequestEn
 	@Query (value = "SELECT TIMESTAMPDIFF(minute,now(),booking_time) AS date_difference FROM booking_request where id =(?1);", nativeQuery = true) // by time TIMEDIFF 
 	int getTimeInMinuteDiff(String bookingId);
 	
-	@Query(value = "SELECT * FROM booking_request where DATEDIFF(booking_time, now()) <= 1 and booking_status = 'SCHEDULED'  and day_reminder_status = 'N'", nativeQuery = true)  // by date DateDIFF
-	List<BookingRequestEntity> oneDayBookingReminderSchedulersByScheduled();
+	@Query(value = "SELECT * FROM booking_request where DATEDIFF(booking_time, now()) <= (?1) and booking_status = 'SCHEDULED'  and day_reminder_status = 'N'", nativeQuery = true)  // by date DateDIFF
+	List<BookingRequestEntity> oneDayBookingReminderSchedulersByScheduled(int day);
 	
-	@Query(value = "SELECT * FROM booking_request where TIMESTAMPDIFF(minute,now(),booking_time) <= 1 and booking_status = 'SCHEDULED'  and hour_reminder_status = 'N'", nativeQuery = true)  // by date DateDIFF
-	List<BookingRequestEntity> oneHourBeforeBookingReminderSchedulersByScheduled();
+	@Query(value = "SELECT * FROM booking_request where TIMESTAMPDIFF(minute,now(),booking_time) <= (?1) and booking_status = 'SCHEDULED'  and hour_reminder_status = 'N'", nativeQuery = true)  // by date DateDIFF
+	List<BookingRequestEntity> oneHourBeforeBookingReminderSchedulersByScheduled(int hour);
+	
+	@Query(value = "SELECT NOW() < (?1)", nativeQuery = true) 
+	int givenDateGreaterThanCurrentDate(Instant bookingTime);
+	
+	
+	@Query(value = "select count(id) as count FROM booking_request where booking_status = (?1)  and fk_charging_point = (?2)  and  fk_connector = (?3)   "
+			+ " and date_add((?4),interval 1 second) between booking_time and booking_endtime "
+			+ " or date_sub((?5),interval 1 second) between booking_time and booking_endtime", nativeQuery = true)
+	int isBookingSlotIsAvailable(String bookingStatus ,String cp ,String connector , Instant bookingStartTime, Instant bookingEndTime);
+			
 }
 
