@@ -115,6 +115,9 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	 		+ " where cr.charging_status = 'Done' and cp.fk_partner = (?1) and cr.created_at between DATE_SUB(now(), INTERVAL 7 DAY) and now() ", nativeQuery = true)
 	 Double weekTotalChargingRequestCountSessionsByPartnerId(String partnerid);
 	 
+	 @Query(value = "SELECT * FROM charging_request where charging_status='Done' and  StartTime >= (?1) and StartTime <= (?2) order by StartTime desc", nativeQuery = true)
+		List<ChargingRequestEntity> getChargingRequestEntityByDateRange(String startDate, String endDate);
+	 
 }
 
 

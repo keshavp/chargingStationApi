@@ -33,7 +33,7 @@ import lombok.experimental.Accessors;
 		private String chargingTime;
 		private String chargedKwh;
 		private String ActualAmt;
-		
+		private String chargePointName;
 		private String name;
 		
 		private String startTime;
@@ -41,6 +41,8 @@ import lombok.experimental.Accessors;
 		
 		private String custName;
 		private String mobileNo;
+		private String partnerName;
+		
 	//	private String chargingTimeForUser;
 		
 		
