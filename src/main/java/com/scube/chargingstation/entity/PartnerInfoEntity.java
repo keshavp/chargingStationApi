@@ -32,4 +32,15 @@ public class PartnerInfoEntity extends BaseEntity{
     @JoinColumn(name = "fk_userInfo")
 	private UserInfoEntity userInfoEntity;
 	
+	private String bnfName;
+	private String beneAccNo;
+	private String beneIfsc;
+	private double percent;
+	@OneToOne
+    @JoinColumn(name = "fk_paymentFrequency")
+	private PaymentFrequencyEntity paymentFrequencyEntity;
+	
+	@OneToOne
+    @JoinColumn(name = "fk_PaymentMode")
+	private PaymentModeEntity paymentModeEntity;
 }

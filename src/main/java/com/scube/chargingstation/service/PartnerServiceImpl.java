@@ -19,9 +19,13 @@ import com.scube.chargingstation.dto.incoming.PartnerIncomingDto;
 import com.scube.chargingstation.dto.mapper.PartnerMapper;
 import com.scube.chargingstation.entity.PartnerDailyShareEntity;
 import com.scube.chargingstation.entity.PartnerInfoEntity;
+import com.scube.chargingstation.entity.PaymentFrequencyEntity;
+import com.scube.chargingstation.entity.PaymentModeEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.repository.PartnerDailyShareRepository;
 import com.scube.chargingstation.repository.PartnerRepository;
+import com.scube.chargingstation.repository.PaymentFrequencyRepository;
+import com.scube.chargingstation.repository.PaymentModeRepository;
 
 import ch.qos.logback.classic.Logger;
 
@@ -37,6 +41,12 @@ public class PartnerServiceImpl implements PartnerService {
 	@Autowired
 	PartnerDailyShareRepository partnerDailyShareRepository;
 
+	@Autowired
+	PaymentFrequencyService paymentFrequencyService;
+	
+	@Autowired
+	PaymentModeService paymentModeService;
+	
 	@Override
 	public boolean addPartner(@Valid PartnerIncomingDto partnerIncomingDto) {
 		// TODO Auto-generated method stub
@@ -73,6 +83,10 @@ public class PartnerServiceImpl implements PartnerService {
 			
 		logger.info(partnerIncomingDto.getPartnerName());
 		
+		PaymentModeEntity paymentModeEntity = paymentModeService.findByNameCode(partnerIncomingDto.getPymtMode());
+		
+		PaymentFrequencyEntity paymentFrequencyEntity = paymentFrequencyService.findByNameCode(partnerIncomingDto.getPaymentFrequency());
+		
 		PartnerInfoEntity partnerInfoEntity = new PartnerInfoEntity();
 		partnerInfoEntity.setPartnerName(partnerIncomingDto.getPartnerName());
 		partnerInfoEntity.setAddress1(partnerIncomingDto.getAddress1());
@@ -84,6 +98,16 @@ public class PartnerServiceImpl implements PartnerService {
 		partnerInfoEntity.setGstn(partnerIncomingDto.getGstn());
 		partnerInfoEntity.setStatus(partnerIncomingDto.getStatus());
 		partnerInfoEntity.setIsdeleted("N");
+		
+		partnerInfoEntity.setPercent(partnerIncomingDto.getPercent());
+		partnerInfoEntity.setBnfName(partnerIncomingDto.getBnfName());
+		partnerInfoEntity.setBeneAccNo(partnerIncomingDto.getBeneAccNo());
+		partnerInfoEntity.setBeneIfsc(partnerIncomingDto.getBeneIfsc());
+		
+		partnerInfoEntity.setPaymentModeEntity(paymentModeEntity);
+		partnerInfoEntity.setPaymentFrequencyEntity(paymentFrequencyEntity);
+		
+		
 		partnerRepository.save(partnerInfoEntity);
 		
 		logger.info("Added Partner Successfully");
@@ -133,6 +157,13 @@ public class PartnerServiceImpl implements PartnerService {
 			throw BRSException.throwException("Error : Partner ID can't be blank");
 		}
 		
+		
+
+		PaymentModeEntity paymentModeEntity = paymentModeService.findByNameCode(partnerIncomingDto.getPymtMode());
+		
+		PaymentFrequencyEntity paymentFrequencyEntity = paymentFrequencyService.findByNameCode(partnerIncomingDto.getPaymentFrequency());
+		
+		
 	//	PartnerInfoEntity partnerInfoEntity = new PartnerInfoEntity();
 		partnerInfoEntity.setPartnerName(partnerIncomingDto.getPartnerName());
 		partnerInfoEntity.setAddress1(partnerIncomingDto.getAddress1());
@@ -144,6 +175,15 @@ public class PartnerServiceImpl implements PartnerService {
 		partnerInfoEntity.setGstn(partnerIncomingDto.getGstn());
 		partnerInfoEntity.setStatus(partnerIncomingDto.getStatus());
 		partnerInfoEntity.setIsdeleted("N");
+		
+		partnerInfoEntity.setPercent(partnerIncomingDto.getPercent());
+		partnerInfoEntity.setBnfName(partnerIncomingDto.getBnfName());
+		partnerInfoEntity.setBeneAccNo(partnerIncomingDto.getBeneAccNo());
+		partnerInfoEntity.setBeneIfsc(partnerIncomingDto.getBeneIfsc());
+		
+		partnerInfoEntity.setPaymentModeEntity(paymentModeEntity);
+		partnerInfoEntity.setPaymentFrequencyEntity(paymentFrequencyEntity);
+		
 		partnerRepository.save(partnerInfoEntity);
 		
 		logger.info("Edited Partner Successfully");
