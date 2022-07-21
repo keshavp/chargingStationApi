@@ -25,4 +25,7 @@ public interface PartnerService {
 	PartnerInfoEntity getPartnerById(String id);
 
 	boolean deletePartnerUserById(String id);
+	
+	boolean addPartnerDailyShare();
+
 }

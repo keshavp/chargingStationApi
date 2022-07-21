@@ -13,6 +13,7 @@ import org.springframework.util.ResourceUtils;
 
 import com.scube.chargingstation.service.BookingRequestService;
 import com.scube.chargingstation.service.ChargingRequestService;
+import com.scube.chargingstation.service.PartnerService;
 import com.scube.chargingstation.service.TransactionsService;
 import com.scube.chargingstation.service.UserInfoOtpService;
 
@@ -32,6 +33,9 @@ public class Schedulers {
 	
 	@Autowired
 	BookingRequestService bookingRequestService;
+	
+	@Autowired
+	PartnerService partnerService;
 	
 	// 5
 	@Scheduled(cron = "${updateStartResult.cronTime}")
@@ -94,6 +98,14 @@ public class Schedulers {
 		
 		//log.info("sendGunInsertNotification");
 		chargingRequestService.stopChargingOnTime();
+		return 0;
+	}
+	
+	@Scheduled(cron = "${partnersDailyShare.cronTime}")
+	public int insertPartnersDailyShare() throws Exception {
+		
+		//log.info("sendGunInsertNotification");
+		partnerService.addPartnerDailyShare();
 		return 0;
 	}
 }

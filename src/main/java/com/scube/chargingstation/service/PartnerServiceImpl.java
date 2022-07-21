@@ -1,6 +1,8 @@
 package com.scube.chargingstation.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -8,12 +10,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.scube.chargingstation.dto.ChargingPointDto;
+import com.scube.chargingstation.dto.MostActiveChargingStationsDto;
+import com.scube.chargingstation.dto.PartnerDailyShareDto;
 import com.scube.chargingstation.dto.PartnerDto;
 import com.scube.chargingstation.dto.incoming.PartnerIncomingDto;
 import com.scube.chargingstation.dto.mapper.PartnerMapper;
+import com.scube.chargingstation.entity.PartnerDailyShareEntity;
 import com.scube.chargingstation.entity.PartnerInfoEntity;
 import com.scube.chargingstation.exception.BRSException;
+import com.scube.chargingstation.repository.PartnerDailyShareRepository;
 import com.scube.chargingstation.repository.PartnerRepository;
 
 import ch.qos.logback.classic.Logger;
@@ -26,6 +33,9 @@ public class PartnerServiceImpl implements PartnerService {
 	
 	@Autowired
 	PartnerRepository partnerRepository;
+	
+	@Autowired
+	PartnerDailyShareRepository partnerDailyShareRepository;
 
 	@Override
 	public boolean addPartner(@Valid PartnerIncomingDto partnerIncomingDto) {
@@ -212,6 +222,34 @@ public class PartnerServiceImpl implements PartnerService {
 		}
 		
 		partnerRepository.delete(partnerInfoEntities);
+		
+		return false;
+	}
+
+	@Override
+	public boolean addPartnerDailyShare() {
+		// TODO Auto-generated method stub
+		ObjectMapper mapper = new ObjectMapper();
+		List <PartnerDailyShareEntity> entities = new ArrayList <PartnerDailyShareEntity>();
+		
+		List<Map<String, String>> list=partnerRepository.getPartnerDailyShare();
+		
+		for (int i = 0; i < list.size(); i++) 
+		{
+			PartnerDailyShareEntity entity =new PartnerDailyShareEntity();
+			PartnerDailyShareDto partnerDailyShareDto=mapper.convertValue(list.get(i), PartnerDailyShareDto.class);
+			entity.setAmount(partnerDailyShareDto.getAmount());
+			entity.setIsdeleted("N");
+			entity.setTotalKwh(partnerDailyShareDto.getTotalKwh());
+			//entity.setInvoiceFilePath(partnerDailyShareDto.get);
+			PartnerInfoEntity pentity=partnerRepository.getById(partnerDailyShareDto.getPartnerId());
+			entity.setPartner(pentity);
+			
+			entities.add(entity);
+			
+		}		
+		partnerDailyShareRepository.saveAll(entities);
+		
 		
 		return false;
 	}
