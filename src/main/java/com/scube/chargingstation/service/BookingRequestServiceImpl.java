@@ -465,7 +465,11 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 			long diffBetweenStartTimeAndEndTime = dateObj1.getTime(); 
 			
-			String formatSlotDateAndTime = "";
+			String formatSlotTime = "";
+			
+			String formatSlotDateTime = "";
+			
+			SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm aa");  // --> Converts slots in Time (HH:mm)
 			
 			while (diffBetweenStartTimeAndEndTime<dateObj2.getTime()) {			
 				
@@ -473,12 +477,16 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 				
 				Date slot = new Date(diffBetweenStartTimeAndEndTime);
 				logger.info("-----" + "Slot Start Date and End Date in (Date format) :" + slot + "------");
-				formatSlotDateAndTime = simpleDateFormat.format(slot);	
+				formatSlotTime = timeFormat.format(slot);	
 				diffBetweenStartTimeAndEndTime += convertSlotInfoIntoSeconds;
 				
-				logger.info("-----" + "Slots are " + formatSlotDateAndTime + "---");
+				logger.info("-----" + "Slots Time are " + formatSlotTime + "---");
 				
-				List<BookingRequestEntity> bookingRequestEntity = bookingRequestRepository.findByBookingTimeAndBookingStatus(formatSlotDateAndTime, "SCHEDULED");
+				formatSlotDateTime = simpleDateFormat.format(slot);
+								
+				logger.info("-----" + "Slots Date & Time are " + formatSlotDateTime + "---");
+				
+				List<BookingRequestEntity> bookingRequestEntity = bookingRequestRepository.findByBookingTimeAndBookingStatus(formatSlotDateTime, "SCHEDULED");
 				
 				logger.info("----" + "Entity " + bookingRequestEntity + "----");
 				
@@ -494,7 +502,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 					
 				}
 				
-				dto.setSlotDateAndTime(formatSlotDateAndTime);
+				dto.setSlotDateAndTime(formatSlotTime);
 				bookingSlotsRespDto.add(dto);
 								
 			}

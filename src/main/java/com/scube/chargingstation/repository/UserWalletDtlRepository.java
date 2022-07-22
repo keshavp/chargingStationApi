@@ -34,7 +34,7 @@ public interface UserWalletDtlRepository extends JpaRepository<UserWalletDtlEnti
 	
 	
 	@Query(value="SELECT * FROM emp_wallet_dtl ew  where ew.transaction_type='Credit' and ew.transaction_id is not null and ew.order_id is not null and ew.fk_user is not null"
-			+ " and ew.created_at > (?1) and  ew.created_at <= (?2);",nativeQuery = true)
+			+ " and ew.created_at >= (?1) and  ew.created_at <= (?2) order by ew.created_at desc;",nativeQuery = true)
 	List<UserWalletDtlEntity> getAddedMoneyRecordsForAllUsers(String startDate, String endDate);
 	
 	
