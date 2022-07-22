@@ -1359,8 +1359,9 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			  {
 			  String chargePointid=entity.getChargingPointEntity().getChargingPointId();
 			  String connectorId=entity.getConnectorEntity().getConnectorId();
+			  int transId=entity.getChargingRequestEntity().getTransactionsEntity().getTransactionId();
 			  try {
-				  boolean response=CheckChargerStatus.callRemoteStopAPI(chargePointid,connectorId);
+				  boolean response=CheckChargerStatus.callRemoteStopAPI(chargePointid,transId);
 
 			  }
 			  catch (Exception e) {

@@ -195,7 +195,7 @@ public class CheckChargerStatus {
 		
 	}
 	
-	public static boolean callRemoteStopAPI(String ChargePointId,String ConnectorId) 
+	public static boolean callRemoteStopAPI(String ChargePointId,int transId) 
 	{
 		URL getUrl = null;
 		//Double allowdChrg=0.0;
@@ -203,7 +203,7 @@ public class CheckChargerStatus {
 		try 
 		{
 		//	allowdChrg=getAllowedCharge(chargingRequestDto);
-			getUrl = new URL(StaticPathContUtils.SERVER_API_URL+"RemoteStop/"+ChargePointId+"/"+ConnectorId);
+			getUrl = new URL(StaticPathContUtils.SERVER_API_URL+"RemoteStop/"+ChargePointId+"/"+transId);
 		//	getUrl = new URL("http://125.99.153.126:8080/API/RemoteStart/1347212300231/1/.05");
 		//	getUrl = new URL("http://125.99.153.126:8080/API/RemoteStart/TACW2242321G0285/1/.05");
 			logger.info("callRemoteStopAPI"+getUrl);
