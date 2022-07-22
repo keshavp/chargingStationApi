@@ -73,6 +73,7 @@ public class ChargingRequestMapper {
 				.setName(chargingRequestEntity.getChargingPointEntity().getName())
 	//			.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getAddress2())
 	//			.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getPincode())
+				.setInvoiceFilePath(StaticPathContUtils.APP_URL_DIR+StaticPathContUtils.SET_RECEIPT_FILE_URL_DIR +chargingRequestEntity.getId())
 				.setMobileNo(chargingRequestEntity.getMobileNo())
 				.setStartTime(DateUtils.formattedInstantToDateTimeString(chargingRequestEntity.getStartTime()))
 				.setChargingTime(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getChargingTime()))

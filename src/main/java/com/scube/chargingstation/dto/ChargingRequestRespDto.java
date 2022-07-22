@@ -42,6 +42,7 @@ import lombok.experimental.Accessors;
 		private String custName;
 		private String mobileNo;
 		private String partnerName;
+		private String  invoiceFilePath;
 		
 	//	private String chargingTimeForUser;
 		
