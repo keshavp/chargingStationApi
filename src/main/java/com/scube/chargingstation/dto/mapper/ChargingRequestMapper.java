@@ -1,8 +1,10 @@
 package com.scube.chargingstation.dto.mapper;
 
 import java.nio.charset.IllegalCharsetNameException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,7 +56,9 @@ public class ChargingRequestMapper {
 		return chargingRequestRespDtos;
 	}
 	
-	public static ChargingRequestRespDto toChargingRequestRespDtos(ChargingRequestEntity chargingRequestEntity) {  
+	public static ChargingRequestRespDto toChargingRequestRespDtos(ChargingRequestEntity chargingRequestEntity) { 
+		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss aa");
 		
 		double originalKwh = chargingRequestEntity.getFinalKwh();
 		
@@ -63,6 +67,16 @@ public class ChargingRequestMapper {
 		double originalFinalAmt = chargingRequestEntity.getFinalAmount();
 		
 		String roundOfFinalAmt = String.format("%.2f", originalFinalAmt);
+		
+		Instant chargeStartTime = chargingRequestEntity.getStartTime();
+		Date chargeDateInstantToDate = Date.from(chargeStartTime);
+		
+		String convertDateToString = simpleDateFormat.format(chargeDateInstantToDate);
+		
+		Instant chargeEndTime = chargingRequestEntity.getStopTime();
+		Date chargeEndDateInstantToDate = Date.from(chargeEndTime);
+		
+		String convertEndDateToString = simpleDateFormat.format(chargeEndDateInstantToDate);
 		
 		return new ChargingRequestRespDto()  
 				.setChargePoint(chargingRequestEntity.getChargingPointEntity().getChargingPointId())
@@ -75,9 +89,9 @@ public class ChargingRequestMapper {
 	//			.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getPincode())
 				.setInvoiceFilePath(StaticPathContUtils.APP_URL_DIR+StaticPathContUtils.SET_RECEIPT_FILE_URL_DIR +chargingRequestEntity.getId())
 				.setMobileNo(chargingRequestEntity.getMobileNo())
-				.setStartTime(DateUtils.formattedInstantToDateTimeString(chargingRequestEntity.getStartTime()))
+				.setStartTime(convertDateToString)
 				.setChargingTime(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getChargingTime()))
-				.setStopTime(DateUtils.formattedInstantToDateTimeString(chargingRequestEntity.getStopTime()))
+				.setStopTime(convertEndDateToString)
 				.setCustName(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getCustName()))
 				.setMobileNo(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getMobileNo()));
 	}

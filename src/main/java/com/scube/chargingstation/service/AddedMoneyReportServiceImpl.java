@@ -2,12 +2,12 @@ package com.scube.chargingstation.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,11 +16,9 @@ import org.springframework.stereotype.Service;
 
 import com.scube.chargingstation.dto.AddedMoneyReportDto;
 import com.scube.chargingstation.dto.incoming.AddedMoneyWalletRequestDto;
-import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.entity.UserWalletDtlEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.repository.UserWalletDtlRepository;
-import com.scube.chargingstation.util.DateUtils;
 
 @Service
 public class AddedMoneyReportServiceImpl implements AddedMoneyReportService{
@@ -85,10 +83,17 @@ public class AddedMoneyReportServiceImpl implements AddedMoneyReportService{
 			
 			AddedMoneyReportDto addedMoneyDto = new AddedMoneyReportDto();
 			
+			SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss aa");
+			
+			Instant userAddedMoneyTime = userWalletDtlEntity.getCreatedAt();
+			Date userAddeddMoneyDate = Date.from(userAddedMoneyTime);
+			
+			String convertAddedMoneyDateToString = dateTimeFormatter.format(userAddeddMoneyDate);
+			
 			addedMoneyDto.setUserName(userWalletDtlEntity.getUserInfoEntity().getUsername());
 			addedMoneyDto.setUserMobileNo(userWalletDtlEntity.getUserInfoEntity().getMobilenumber());
 			addedMoneyDto.setAddedAmount(userWalletDtlEntity.getAmount());
-			addedMoneyDto.setPaymentDate(DateUtils.formattedInstantToDateTimeString(userWalletDtlEntity.getCreatedAt()));
+			addedMoneyDto.setPaymentDate(convertAddedMoneyDateToString);
 			
 			addedMoneyReportDtos.add(addedMoneyDto);
 			
