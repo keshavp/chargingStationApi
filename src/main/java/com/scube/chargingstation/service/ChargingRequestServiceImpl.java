@@ -142,10 +142,17 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			
 		
 			String reqType=chargingRequestDto.getReqType();
+			String BookingReqId=null;
+			
 			if(reqType==null||reqType.isEmpty())
+			{
 				reqType="Charging";
+			}
 			else
+			{
 				reqType="Booking";
+				BookingReqId=chargingRequestDto.getBookingReqId();
+			}
 			
 			logger.info("addChargingRequest getMobileNo"+chargingRequestDto.getMobileNo());
 			logger.info("addChargingRequest getName"+chargingRequestDto.getName());
@@ -231,7 +238,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		  	
 		  	String transactionId="";
 		  	
-		  	transactionId=callRemoteStartAPI(chargingRequestDto,chrg);
+		  	transactionId=CheckChargerStatus.callRemoteStartAPI(chargingRequestDto,chrg);
 		  	
 		  	logger.info("remote start response"+transactionId);
 		  	
@@ -239,13 +246,13 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		  	{
 		  		//call hardreset
 		  		logger.info("before hardreset");
-		  		String strRspnse=callHardResetConnectorAPI(chargingRequestDto);
+		  		String strRspnse=CheckChargerStatus.callHardResetConnectorAPI(chargingRequestDto);
 			  	logger.info("hardreset response"+strRspnse);
 
 		  		if(strRspnse.equals("OK"))
 		  		{
 		  			logger.info("second attempt of callRemoteStartAPI");
-		  			transactionId=callRemoteStartAPI(chargingRequestDto,chrg);
+		  			transactionId=CheckChargerStatus.callRemoteStartAPI(chargingRequestDto,chrg);
 		  			logger.info("remote start 2nd attempt response"+transactionId);
 		  			
 		  			if(transactionId.equals("Offline"))  //remote start first returns connector offline 
@@ -268,13 +275,13 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		  		centity.setChargingPointEntity(chargingPointEntity);
 		  		centity.setConnectorEntity(connectorEntity);
 		  		
-		  		String strRspnse=callResetConnectorAPI(centity);
+		  		String strRspnse=CheckChargerStatus.callResetConnectorAPI(centity);
 			  	logger.info("reset connector response"+strRspnse);
 
 		  		if(strRspnse.equals("OK"))
 		  		{
 		  			logger.info("second attempt of callRemoteStartAPI after reset");
-		  			transactionId=callRemoteStartAPI(chargingRequestDto,chrg);
+		  			transactionId=CheckChargerStatus.callRemoteStartAPI(chargingRequestDto,chrg);
 		  			
 		  			logger.info("remote start 2nd attempt response after reset"+transactionId);
 		  			
@@ -317,7 +324,24 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			chargingRequestEntity.setIsdeleted("N");
 			chargingRequestEntity.setRequestType(reqType);
 			
-			chargingRequestRepository.save(chargingRequestEntity);
+			ChargingRequestEntity chargingRequestEntity1 = chargingRequestRepository.save(chargingRequestEntity);
+			
+			// update chargingrequest Id in Booking request
+			
+			
+			if(reqType.equals("Booking"))
+			{
+	  			logger.info("update chargeing reqst id in booking request");
+
+					Optional<BookingRequestEntity> optionalEntity=bookingRequestRepository.findById(chargingRequestDto.getBookingReqId());
+					BookingRequestEntity bookingRequestEntity=optionalEntity.get();
+					bookingRequestEntity.setBookingStatus("Pending");
+					bookingRequestEntity.setChargingRequestEntity(chargingRequestEntity1);
+					bookingRequestRepository.save(bookingRequestEntity);
+			}
+			
+			
+			
 			
 			return true;
 			
@@ -404,7 +428,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	  Set<ConnectorEntity> conEntitySet 	  =chargingPointEnt.getConnectorEntities();
 	  Set<AmenitiesEntity> ameEntitySet= chargingPointEnt.getAmenities();
 	  
-	  JsonNode jsonNode=callAllChargerStatusAPI(chpointdto);
+	  JsonNode jsonNode=CheckChargerStatus.callAllChargerStatusAPI(chpointdto);
 			
 			  for(ConnectorEntity conEntity : conEntitySet) 
 			  {
@@ -702,10 +726,9 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 
 			try 
 			{
-				callResetConnectorAPI(chargingRequestEntity);
+				CheckChargerStatus.callResetConnectorAPI(chargingRequestEntity);
 			//	notificationService.sendNotification(notificationReqDto);
 				//call ocpp server reset connector API to free the connector
-				
 				
 			}
 			catch(Exception e)
@@ -751,7 +774,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		return ChargingRequestMapper.toChargingRequestRespDto(entity);
 	}
 	
-
+/*
 	public String callRemoteStartAPI(ChargingRequestDto chargingRequestDto,Double allowdChrg) 
 	{
 		URL getUrl = null;
@@ -843,7 +866,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		return strResponse;
 		
 	}
-	
+	*/
 	public Double getAllowedCharge(ChargingRequestDto chargingRequestDto)
 	{
 		Double allowedChrg=0.0;
@@ -867,7 +890,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		
 		return allowedChrg;
 	}
-	
+	/*
 	public String callResetConnectorAPI(ChargingRequestEntity chargingRequestEntity)
 	{
 		URL getUrl = null;
@@ -1023,7 +1046,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		return strResponse;
 		
 	}
-	
+	*/
 	@Override
 	public List<ChargingRequestRespDto> getChargingHistoryDetailsByStation(ChargingStationWiseReportIncomingDto chargingStationWiseReportIncomingDto) {
 		// TODO Auto-generated method stub
@@ -1196,6 +1219,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		return activeChargingStationsDtos ; 
 	}
 	
+	/*
 	public JsonNode callAllChargerStatusAPI(ChargingPointDto chargingPointDto)
 	{
 		URL getUrl = null;
@@ -1269,8 +1293,16 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 				 	   else
 				 	   {
 				 	    logger.info("OnlineConnectors=at 3"+ nodeCnter.get("OnlineConnectors"));
+				 	    logger.info("connector status is"+ nodeCnter.get("status"));
+				 	    String constatus=nodeCnter.get("status").toString();
+				 	    
+				 	    if(constatus.equals("Open"))
+				 	    {
 				 	    final ObjectMapper objectMapper = new ObjectMapper(); 
 				 	    respNode = objectMapper.readTree(nodeCnter.get("OnlineConnectors").toString());
+				 	    }
+				 	    //close will return empty respNode
+				 	    
 				 	   }
 				}
 		 	    	
@@ -1301,6 +1333,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		
 	}
 
+	*/
 	@Override
 	public boolean chargeNow(ChargingRequestDto inputchargingRequestDto) {
 		
@@ -1337,11 +1370,10 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		boolean respFlag=addChargingRequest(respChargingRequestDto);
 		
 		//update booking request status as Pending
-		if(respFlag==true)
-		{
-			bookingRequestEntity.setBookingStatus("Pending");
-			bookingRequestRepository.save(bookingRequestEntity);
-		}
+		/*
+		 * if(respFlag==true) { bookingRequestEntity.setBookingStatus("Pending");
+		 * bookingRequestRepository.save(bookingRequestEntity); }
+		 */
 		
 		
 		// TODO Auto-generated method stub
@@ -1362,6 +1394,10 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			  int transId=entity.getChargingRequestEntity().getTransactionsEntity().getTransactionId();
 			  try {
 				  boolean response=CheckChargerStatus.callRemoteStopAPI(chargePointid,transId);
+			        logger.info("callRemoteStopAPI callRemoteStopAPI for="+chargePointid+"--"+transId+"--"+response);
+
+				  String resp=CheckChargerStatus.callResetConnectorApi(chargePointid,connectorId);
+			        logger.info("callResetConnectorApi after remote stop callRemoteStopAPI="+chargePointid+"--"+connectorId+"--"+resp);
 
 			  }
 			  catch (Exception e) {

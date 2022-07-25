@@ -42,5 +42,11 @@ public class UserWalletDtlEntity extends BaseEntity{
 	
 	@Column(name = "razor_signature")
 	private String  razorSignature;
+	
+	@Column(name = "payment_method")
+	private String  paymentMethod;
+	
+	@Column(name = "current_balance")
+	private Double  currentBalance;
 
 }

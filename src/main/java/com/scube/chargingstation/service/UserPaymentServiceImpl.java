@@ -55,6 +55,7 @@ import com.scube.chargingstation.repository.UserWalletDtlRepository;
 import com.scube.chargingstation.repository.UserWalletRepository;
 import com.scube.chargingstation.util.AesCryptUtil;
 import com.scube.chargingstation.util.RandomStringUtil;
+import com.scube.chargingstation.util.RoundUtil;
 import com.scube.chargingstation.util.StaticPathContUtils;
 import com.scube.chargingstation.util.StringNullEmpty;
 
@@ -151,7 +152,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		userWalletDtlEntity.setUserInfoEntity(userInfoEntity);
 		userWalletDtlEntity.setChargingRequestEntity(crEntity);
 		//userWalletDtlEntity.setAmount(amount);
-		userWalletDtlEntity.setAmount(Double.parseDouble(df.format(amount)));
+		userWalletDtlEntity.setAmount(RoundUtil.doubleRound(amount,2));
 		// userWalletDtlEntity.setTransaction_id(userWalletRequestDto.getTransactionId());
 
 		// save/update user wallet
@@ -186,9 +187,9 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		//userWaltEntity.setCurrentBalance(balance.toString());
 		
 	
-	    System.out.println("after rounding off : " + Double.parseDouble(df.format(balance)));      //1205.64
+	    System.out.println("after rounding off : " + RoundUtil.doubleRound(balance,2));      //1205.64
 	    
-		userWaltEntity.setCurrentBalance(Double.parseDouble(df.format(balance)));
+		userWaltEntity.setCurrentBalance(RoundUtil.doubleRound(balance,2));
 		userWalletRepository.save(userWaltEntity);
 
 		userWalletDtlRepository.save(userWalletDtlEntity);
@@ -210,8 +211,9 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 
 		UserWalletEntity userWalletEntity = userWalletRepository.findByUserInfoEntity(userInfoEntity);
 		if (userWalletEntity != null)
-			balance = userWalletEntity.getCurrentBalance();
+			balance = RoundUtil.doubleRound(userWalletEntity.getCurrentBalance(),2);
 
+		
 		map.put("balance", balance.toString());
 
 		return map;
@@ -770,8 +772,10 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		
 		userWalletDtlEntity.setTransactionId(transactionId);
 		userWalletDtlEntity.setAmount(amount);
+		userWalletDtlEntity.setPaymentMethod(paymentMode);
+
 		
-		userWalletDtlRepository.save(userWalletDtlEntity);
+	//	userWalletDtlRepository.save(userWalletDtlEntity);
 		
 		Double balance = 0.0;
 		UserWalletEntity userWaltEntity = new UserWalletEntity();
@@ -781,9 +785,6 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		if (userchkWaltEntity != null)
 			userWaltEntity = userchkWaltEntity;
 
-		
-	//	Double amount = Double.parseDouble(userWalletRequestDto.getRequestAmount());
-		
 		UserWalletEntity userbalWaltEntity = userWalletRepository.findBalanceByUserId(userWalletDtlEntity.getUserInfoEntity().getId());
 		Double curBal=0.0;
 		
@@ -793,9 +794,12 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		}
 		
 		balance = curBal + amount;
-
+		
+		userWalletDtlEntity.setCurrentBalance(RoundUtil.doubleRound(balance,2));
+		userWalletDtlRepository.save(userWalletDtlEntity);
+		
 		userWaltEntity.setUserInfoEntity(userWalletDtlEntity.getUserInfoEntity());
-		userWaltEntity.setCurrentBalance(balance);
+		userWaltEntity.setCurrentBalance(RoundUtil.doubleRound(balance,2));
 		userWalletRepository.save(userWaltEntity);
 		
 		
