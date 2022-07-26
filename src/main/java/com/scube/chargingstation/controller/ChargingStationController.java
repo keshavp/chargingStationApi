@@ -281,4 +281,12 @@ public class ChargingStationController {
 		
 	}
 	
+	@GetMapping( value = "/chargeStop/{id}" , consumes = APPLICATION_JSON_VALUE)
+	public Response chargeStop(@PathVariable("id") String id) {
+		logger.info("***chargeStop***");
+		
+				return Response.ok().setPayload(chargingRequestService.chargeStop(id));
+		
+	}
+	
 }

@@ -1412,4 +1412,18 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		return false;
 	}
 	
+	@Override
+	public boolean chargeStop(String id) {
+		// TODO Auto-generated method stub
+
+		logger.info("=======chargeStop======id========="+id);
+		
+		ChargingRequestEntity chargingRequestEntity = chargingRequestRepository.findById(id).get();
+		
+		logger.info("=======chargeStop======chargingRequestEntity========="+chargingRequestEntity.getId());
+		logger.info("=======chargeStop======getChargingPointId===getTransactionsEntity======"+chargingRequestEntity.getChargingPointEntity().getChargingPointId()+"======="+chargingRequestEntity.getTransactionsEntity().getTransactionId());
+		
+		return CheckChargerStatus.callRemoteStopAPI(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getTransactionsEntity().getTransactionId());
+	}
+	
 }

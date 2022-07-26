@@ -73,5 +73,7 @@ public interface ChargingRequestService {
 	public boolean chargeNow(ChargingRequestDto chargingRequestDto) ;
 	
 	public boolean stopChargingOnTime();
+
+	public boolean chargeStop(String id);
 	
 }
