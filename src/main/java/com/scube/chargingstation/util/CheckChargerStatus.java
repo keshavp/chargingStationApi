@@ -372,12 +372,19 @@ public class CheckChargerStatus {
 				 	   {
 				 	    logger.info("OnlineConnectors=at 3"+ nodeCnter.get("OnlineConnectors"));
 				 	    logger.info("connector status is"+ nodeCnter.get("status"));
-				 	    String constatus=nodeCnter.get("status").toString();
+				 	    String constatus=nodeCnter.get("status").textValue();
+				 	    
+				 	    logger.info("constatus"+constatus);
+
 				 	    
 				 	    if(constatus.equals("Open"))
 				 	    {
+					 	    logger.info("here");
+
 				 	    final ObjectMapper objectMapper = new ObjectMapper(); 
 				 	    respNode = objectMapper.readTree(nodeCnter.get("OnlineConnectors").toString());
+				 	    logger.info("here respNode"+respNode);
+
 				 	    }
 				 	    //close will return empty respNode
 				 	    
