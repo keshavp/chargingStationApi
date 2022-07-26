@@ -31,5 +31,12 @@ public class PartnerDto {
 	private String status;
 	private String gstn;
 	
+	private double percent;
+	private String pymtMode;
+	private String bnfName;
+	private String beneAccNo;
+	private String beneIfsc;
+	private String paymentFrequency;
+	
 	
 }

@@ -20,10 +20,14 @@ public class PartnerMapper {
         		.setAlternateMobileNo(partnerInfoEntity.getAlternateMobileNo())
         		.setEmail(partnerInfoEntity.getEmail())
         		.setGstn(partnerInfoEntity.getGstn())
-        		.setStatus(partnerInfoEntity.getStatus());
+        		.setStatus(partnerInfoEntity.getStatus())
+        		.setPercent(partnerInfoEntity.getPercent())
+        		.setPymtMode(partnerInfoEntity.getPaymentModeEntity().getNameCode())
+        		.setBnfName(partnerInfoEntity.getBnfName())
+        		.setBeneAccNo(partnerInfoEntity.getBeneAccNo())
+        		.setBeneIfsc(partnerInfoEntity.getBeneIfsc())
+        		.setPaymentFrequency(partnerInfoEntity.getPaymentFrequencyEntity().getNameCode());
 	}
-	
-	
 	public static List<PartnerDto> toPartnersDtos(List<PartnerInfoEntity> partnerInfoEntities) {
 		
 		List<PartnerDto> partnerIncomingDtos = new ArrayList<PartnerDto>();
