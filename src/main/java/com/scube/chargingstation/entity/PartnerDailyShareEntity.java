@@ -31,6 +31,6 @@ public class PartnerDailyShareEntity extends BaseEntity {
 	@Column(name = "invoice_file_path")
 	private String  invoiceFilePath;
 	
-	
+	private double percent;
 	
 }

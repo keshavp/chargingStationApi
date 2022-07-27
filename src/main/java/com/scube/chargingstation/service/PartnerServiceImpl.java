@@ -284,6 +284,7 @@ public class PartnerServiceImpl implements PartnerService {
 			//entity.setInvoiceFilePath(partnerDailyShareDto.get);
 			PartnerInfoEntity pentity=partnerRepository.getById(partnerDailyShareDto.getPartnerId());
 			entity.setPartner(pentity);
+			entity.setPercent(pentity.getPercent());
 			
 			entities.add(entity);
 			
