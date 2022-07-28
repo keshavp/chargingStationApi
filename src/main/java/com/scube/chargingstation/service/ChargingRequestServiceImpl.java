@@ -1396,8 +1396,8 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 				  boolean response=CheckChargerStatus.callRemoteStopAPI(chargePointid,transId);
 			        logger.info("callRemoteStopAPI callRemoteStopAPI for="+chargePointid+"--"+transId+"--"+response);
 
-				  String resp=CheckChargerStatus.callResetConnectorApi(chargePointid,connectorId);
-			        logger.info("callResetConnectorApi after remote stop callRemoteStopAPI="+chargePointid+"--"+connectorId+"--"+resp);
+				//  String resp=CheckChargerStatus.callResetConnectorApi(chargePointid,connectorId);
+			    //    logger.info("callResetConnectorApi after remote stop callRemoteStopAPI="+chargePointid+"--"+connectorId+"--"+resp);
 
 			  }
 			  catch (Exception e) {
