@@ -471,6 +471,8 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 			SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm aa");  // --> Converts slots in Time (HH:mm)
 			
+			int count = 0;
+			
 			while (diffBetweenStartTimeAndEndTime<dateObj2.getTime()) {			
 				
 				BookingSlotsRespDto dto=new BookingSlotsRespDto();
@@ -494,17 +496,21 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 					
 						logger.info("-----" + "Slot is already Booked " + "-----");
 						dto.setSlotAvailability("BOOKED");
+						dto.setId(count);
 				}			
 				else {
 					
 						logger.info("-----" + "Slot is open. Continue your booking " + "-----");
 						dto.setSlotAvailability("OPEN");
+						dto.setId(count);
 					
 				}
 				
 				dto.setSlotDateAndTime(formatSlotTime);
 				bookingSlotsRespDto.add(dto);
-								
+				
+				count++;
+				
 			}
 			
 		}		
@@ -673,13 +679,13 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			if(currentDateFormatInLong<startBookTimeDate.getTime()-cancelSlot) {
 		
 				logger.info("-----" + "CANCEL SLOT" + "-----");
-				responseDto.setCancelNow("CANCEL NOW");
+				responseDto.setCancelNow("Y");
 				
 			}
 			else {
 				
 				logger.info("-----" + "NOT ALLOWED TO CANCEL" + "-----");
-				responseDto.setCancelNow("NOT ALLOWED");
+				responseDto.setCancelNow("N");
 				
 			}
 			
@@ -696,12 +702,18 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			if(currentDate.after(convertReducedDate) && currentDate.before(convertAddTimeDate))	{	
 			
 				logger.info("---" + "Current Time Now" + currentDateFormatInLong + "---");
-				responseDto.setChargeNow("CHARGE NOW");
+				responseDto.setChargeNow("Y");
 			}
 			
+			else {
+				
+				responseDto.setChargeNow("N");
+				
+			}
+			
+			responseDto.setBookingId(bookingRequestEntity.getId());
 			responseDto.setBookingAmount(bookingRequestEntity.getBookingAmount());
 			responseDto.setBookingDateAndTime(DateUtils.formattedInstantToDateTimeString(bookingRequestEntity.getBookingTime()));
-			responseDto.setBookingId(bookingRequestEntity.getId());
 			responseDto.setBookingStatus(bookingRequestEntity.getBookingStatus());
 			responseDto.setCustName(bookingRequestEntity.getCustName());
 			responseDto.setCustMobileNo(bookingRequestEntity.getMobileNo());

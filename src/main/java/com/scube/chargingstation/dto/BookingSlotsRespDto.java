@@ -24,5 +24,7 @@ public class BookingSlotsRespDto {
 	private String slotAvailability;
 	
 	private String slotBookingDate;
+	
+	private int id;
 
 }

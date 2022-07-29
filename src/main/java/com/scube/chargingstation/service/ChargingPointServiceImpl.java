@@ -124,7 +124,7 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		
 		chargingPointEntity.setName(chargingPointIncomingDto.getName());
 		chargingPointEntity.setChargingPointId(chargingPointIncomingDto.getChargingPointId());
-//		chargingPointEntity.setPartnerName(chargingPointIncomingDto.getPartnerName());
+		chargingPointEntity.setPartnerName(chargingPointIncomingDto.getPartnerName());
 		chargingPointEntity.setPartner(partnerInfoEntity);
 		chargingPointEntity.setStartTime(chargingPointIncomingDto.getStartTime());
 		chargingPointEntity.setEndTime(chargingPointIncomingDto.getEndTime());

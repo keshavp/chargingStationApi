@@ -22,7 +22,7 @@ public class ChargingPointMapper {
 				.setId(chargingPointEntity.getId())
 				.setChargingPointId(chargingPointEntity.getChargingPointId())
 				.setName(chargingPointEntity.getName())
-				.setPartnerName(chargingPointEntity.getPartnerName())
+				.setPartnerName(chargingPointEntity.getPartner().getPartnerName())
 				.setStartTime(chargingPointEntity.getStartTime())
 				.setEndTime(chargingPointEntity.getEndTime())
 				.setStatus(chargingPointEntity.getStatus())
