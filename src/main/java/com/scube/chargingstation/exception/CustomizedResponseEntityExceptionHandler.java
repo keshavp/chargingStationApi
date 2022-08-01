@@ -87,8 +87,8 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     @ExceptionHandler(DataIntegrityViolationException.class)
    	public final ResponseEntity handaleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request){
    		
-       	 Response response = Response.exception();
-            response.addErrorMsgToResponse("Cannot delete or update a parent row.", ex);
+       	 Response response = Response.badRequest();
+            response.addErrorMsgToResponse("Cannot delete row.", ex);
             logger.error(ex.getMessage(), ex);
             
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
@@ -98,8 +98,8 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     @ExceptionHandler({ ConstraintViolationException.class })
     public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {
         
-        Response response = Response.accessDenied();
-        response.addErrorMsgToResponse("Cannot delete or update a parent row.", ex);
+        Response response = Response.badRequest();
+        response.addErrorMsgToResponse("Cannot delete row.", ex);
         logger.error(ex.getMessage(), ex);
         return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
     }
