@@ -701,12 +701,13 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 					
 			if(currentDate.after(convertReducedDate) && currentDate.before(convertAddTimeDate))	{	
 			
-				logger.info("---" + "Current Time Now" + currentDateFormatInLong + "---");
+				logger.info("-----" + "CHARGE NOW IS ACTIVE" + "-----");
 				responseDto.setChargeNow("Y");
 			}
 			
 			else {
 				
+				logger.info("-----" + "CHARGE NOW IS NOT ACTIVE" + "-----");
 				responseDto.setChargeNow("N");
 				
 			}
@@ -803,13 +804,58 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		BookingRequestEntity bookingRequestEntity = bookingRequestRepository.findById(bookingId).get();
 		
-			if(bookingRequestEntity == null) {
-				throw BRSException.throwException(EntityType.BOOKING, ExceptionType.ENTITY_NOT_FOUND);
-			}
+		if(bookingRequestEntity == null) {
+			throw BRSException.throwException(EntityType.BOOKING, ExceptionType.ENTITY_NOT_FOUND);
+		}
+		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		Date currentDate = new Date();
+		
+		logger.info("-----" + "The current date in (Date Format) is :" + currentDate + "-----");
+		
+		Date startBookDateAndTime = new Date();
+		
+		long currentDateTimeFormatInLong = currentDate.getTime();
+		
+		String formattedBookStartTime = "";
+		
+		logger.info("-----" + "Time is :" + bookingRequestEntity.getBookingTime() + "-----");
+		
+		Instant startBookInstant = bookingRequestEntity.getBookingTime();
+		
+		startBookDateAndTime = Date.from(startBookInstant);
 			
-			if(bookingRequestEntity.getBookingStatus().equals("CANCELLED")) {
-				 throw BRSException.throwException(EntityType.BOOKING, ExceptionType.ALREADY_EXIST_ENTITY); 
-			}
+		formattedBookStartTime = simpleDateFormat.format(startBookDateAndTime);
+		
+		logger.info("-----" + "The formatted Booking Start Time in (String Format) is :" + formattedBookStartTime + "------");
+		
+		try {
+			
+			startBookDateAndTime = simpleDateFormat.parse(formattedBookStartTime);
+			logger.info("-----" + "The formatted Booking Start Time is (Date Format):" + startBookDateAndTime + "------");
+		
+			
+		} 
+		catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if(currentDateTimeFormatInLong<(startBookDateAndTime.getTime()-cancelSlot)) {
+			
+			logger.info("-----" + "CANCEL" + "-----");
+			
+		}
+		
+		else {
+				throw BRSException.throwException("Error : You cannot cancel this slot now");
+			
+		}
+		
+		if(bookingRequestEntity.getBookingStatus().equals("CANCELLED")) {
+			 throw BRSException.throwException(EntityType.BOOKING, ExceptionType.ALREADY_EXIST_ENTITY); 
+		}
 			
 			int bookingTimeDiff = bookingRequestRepository.getTimeInMinuteDiff(bookingId);
 

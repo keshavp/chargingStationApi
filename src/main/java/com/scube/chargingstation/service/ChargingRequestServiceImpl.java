@@ -11,8 +11,10 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
@@ -128,7 +130,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	@Autowired
 	ChargingPointRepository chargePointRepository;
 	
-	
+	@Value("${chargenow.button.booking}") private long chargeNow;
 	
 	 @Value("${chargingstation.chargertype}")
 	private   String imgLocation;
@@ -303,7 +305,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		  chargingRequestEntity.setTransactionsEntity(transactionsEntity);
 		  else 
 		  {
-			  throw  BRSException.throwException("Error: Can't book, transactionId can not be blank "); 
+		//	  throw  BRSException.throwException("Error: Can't book, transactionId can not be blank "); 
 			  }
 		 
 		  	
@@ -1344,14 +1346,71 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		String bookingReqId=inputchargingRequestDto.getBookingReqId();
 		
 		if((bookingReqId=="") || (bookingReqId.trim().isEmpty())) {
+			
 			throw BRSException.throwException("Error : Booking request Id can't be blank");
+			
 		}
+		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		Date currentDate = new Date();
+		
+		logger.info("-----" + "The current date in (Date Format) is :" + currentDate + "-----");
+		
+		Date startBookTimeDate = new Date();
+		
+		String formattedBookStartTime = "";
+		
 		Optional<BookingRequestEntity> optionalEntity=bookingRequestRepository.findById(bookingReqId);
+		
 		BookingRequestEntity bookingRequestEntity=optionalEntity.get();
 		
 		if(bookingRequestEntity==null) {
+			
 			throw BRSException.throwException("Error : Booking request is invalid");
+			
 		}
+		
+		logger.info("-----" + "Time is :" + bookingRequestEntity.getBookingTime() + "-----");
+		
+		Instant startBookInstant = bookingRequestEntity.getBookingTime();
+		
+		startBookTimeDate = Date.from(startBookInstant);
+			
+		formattedBookStartTime = simpleDateFormat.format(startBookTimeDate);
+		
+		logger.info("-----" + "The formatted Booking Start Time is :" + formattedBookStartTime + "------");
+		
+		try {
+			
+			startBookTimeDate = simpleDateFormat.parse(formattedBookStartTime);
+			logger.info("-----" + "The formatted Booking Start Time is (Date Format):" + startBookTimeDate + "------");
+		
+			
+		} 
+		catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		long reduceBookTime = startBookTimeDate.getTime() - chargeNow;
+		long addBookTime = startBookTimeDate.getTime() + chargeNow;
+		
+		Date convertReducedDate = new Date(reduceBookTime);
+		Date convertAddTimeDate = new Date(addBookTime);
+		
+		if(currentDate.after(convertReducedDate) && currentDate.before(convertAddTimeDate))	{	
+			
+			logger.info("----" + "CHARGE NOW OPEN" + "----");
+		}
+		
+		else {
+			
+			logger.info("----" + "NOT ALLOWED TO CHARGE NOW" + "----");
+			throw BRSException.throwException("Error : Not allowed to charge now. Please wait for some time !!!");
+			
+		}
+		
 		String mobileNo=bookingRequestEntity.getUserInfoEntity().getMobilenumber();
 		
 		respChargingRequestDto.setRequestAmount(Double.toString(bookingRequestEntity.getRequestAmount()));
