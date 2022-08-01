@@ -2,10 +2,14 @@ package com.scube.chargingstation.exception;
 import com.scube.chargingstation.dto.response.Response;
 import com.scube.chargingstation.dto.response.Response.Status;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.naming.AuthenticationException;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 
 import org.hibernate.JDBCException;
-import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -40,20 +44,6 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         Response response = Response.duplicateEntity();
         response.addErrorMsgToResponse(ex.getMessage(), ex);
         return new ResponseEntity(response, HttpStatus.CONFLICT);
-    }
-    
-    @ExceptionHandler(BRSException.DataIntegrityViolationException.class)
-    public final ResponseEntity handleConstraintViolationException(Exception ex, WebRequest request) {
-        Response response = Response.duplicateEntity();
-        response.addErrorMsgToResponse(ex.getMessage(), ex);
-        return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-    }
-    
-    @ExceptionHandler(BRSException.ConstraintViolationException.class)
-    public final ResponseEntity handleDataIntegrityViolationException(Exception ex, WebRequest request) {
-        Response response = Response.duplicateEntity();
-        response.addErrorMsgToResponse(ex.getMessage(), ex);
-        return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
     }
     
     @ExceptionHandler(ArithmeticException.class)
@@ -93,25 +83,26 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
          return new ResponseEntity(response, HttpStatus.UNAUTHORIZED);
 	}
     
-    @ExceptionHandler(ConstraintViolationException.class)
-   	public final ResponseEntity handaleConstraintViolationException(ConstraintViolationException ex, WebRequest request){
-   		
-       	 Response response = Response.exception();
-            response.addErrorMsgToResponse(ex.getMessage(), ex);
-            logger.error(ex.getMessage(), ex);
-            
-            return new ResponseEntity(response, HttpStatus.BAD_GATEWAY);
-   	}
-    
     @ExceptionHandler(DataIntegrityViolationException.class)
    	public final ResponseEntity handaleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request){
    		
        	 Response response = Response.exception();
-            response.addErrorMsgToResponse(ex.getMessage(), ex);
+            response.addErrorMsgToResponse("Cannot delete or update a parent row.", ex);
             logger.error(ex.getMessage(), ex);
             
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
    	}
+    
+    
+    @ExceptionHandler({ ConstraintViolationException.class })
+    public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {
+        
+        Response response = Response.exception();
+        response.addErrorMsgToResponse("Cannot delete or update a parent row.", ex);
+        logger.error(ex.getMessage(), ex);
+        return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+    }
+    
     
     @ExceptionHandler(Exception.class)
 	public final ResponseEntity handaleException(Exception ex, WebRequest request){

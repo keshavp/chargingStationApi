@@ -86,8 +86,8 @@ public class Response<T> {
 
     public void addErrorMsgToResponse(String errorMsg, Exception ex) {
         ResponseError error = new ResponseError()
-                .setDetails(errorMsg)
-                .setMessage(ex.getMessage())
+                .setDetails(ex.getMessage())
+                .setMessage(errorMsg)
                 .setTimestamp(DateUtils.today());
         setErrors(error);
     }
