@@ -305,8 +305,8 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		  chargingRequestEntity.setTransactionsEntity(transactionsEntity);
 		  else 
 		  {
-		//	  throw  BRSException.throwException("Error: Can't book, transactionId can not be blank "); 
-			  }
+			  throw  BRSException.throwException("Error: Can't book, transactionId can not be blank "); 
+		  }
 		 
 		  	
 		  	chargingRequestEntity.setRequestKwh(chrg);
