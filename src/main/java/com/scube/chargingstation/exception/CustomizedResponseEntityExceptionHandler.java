@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -97,10 +98,20 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     @ExceptionHandler({ ConstraintViolationException.class })
     public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {
         
-        Response response = Response.exception();
+        Response response = Response.accessDenied();
         response.addErrorMsgToResponse("Cannot delete or update a parent row.", ex);
         logger.error(ex.getMessage(), ex);
         return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+    }
+    
+    // 403
+    @ExceptionHandler({ AccessDeniedException.class })
+    public ResponseEntity<Object> handleAccessDeniedException(final Exception ex, final WebRequest request) {
+    	
+        Response response = Response.forbidden();
+        response.addErrorMsgToResponse(ex.getMessage(), ex);
+        logger.error(ex.getMessage(), ex);
+        return new ResponseEntity(response, HttpStatus.FORBIDDEN);
     }
     
     

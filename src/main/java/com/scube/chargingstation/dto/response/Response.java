@@ -83,6 +83,14 @@ public class Response<T> {
         response.setStatus(Status.DUPLICATE_ENTITY);
         return response;
     }
+    
+    public static <T> Response<T> forbidden() {
+        Response<T> response = new Response<>();
+        response.setStatus(Status.FORBIDDEN_ENTITY);
+        return response;
+    }
+    
+    
 
     public void addErrorMsgToResponse(String errorMsg, Exception ex) {
         ResponseError error = new ResponseError()
@@ -93,7 +101,7 @@ public class Response<T> {
     }
 
     public enum Status {
-        OK,CREATED, BAD_REQUEST, UNAUTHORIZED, VALIDATION_EXCEPTION, EXCEPTION, WRONG_CREDENTIALS, ACCESS_DENIED, NOT_FOUND, DUPLICATE_ENTITY
+        OK,CREATED, BAD_REQUEST, UNAUTHORIZED, VALIDATION_EXCEPTION, EXCEPTION, WRONG_CREDENTIALS, ACCESS_DENIED, NOT_FOUND, DUPLICATE_ENTITY ,FORBIDDEN_ENTITY
     }
 
     @Getter
