@@ -16,6 +16,7 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -26,6 +27,15 @@ import com.scube.chargingstation.dto.incoming.ContactUsIncomingDto;
 public class ContactUsServiceImpl implements ContactUsService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ContactUsServiceImpl.class);
+	
+	  @Value("${properties.emailport}") private String emailport;
+	  
+	  @Value("${properties.emailhost}") private String emailhost;
+	  
+	  @Value("${properties.accountContactUsEmail}") private String contactusEmailTo;
+	  
+	  @Value("${properties.emailfrom}") private String emailFrom;
+	
 	
 	@Override
 	public boolean getContactUs(@Valid ContactUsIncomingDto contactUsIncomingDto) {
@@ -44,35 +54,15 @@ public class ContactUsServiceImpl implements ContactUsService {
 	@Override
 	public boolean sendEmail(@Valid @RequestBody ContactUsIncomingDto contactUsIncomingDto) throws  Exception {
 
-		//String to = "agtechflorida@gmail.com";
 		
-		String to = "scubeuser8@gmail.com";
+		String to = contactusEmailTo;
 
 		logger.info("-------->1"+to);
 
-		// Sender's email ID needs to be mentioned
-//	        String from = "universityscube@gmail.com";
-		//String from = "scube.usr@gmail.com";
-		
-		
-	//	String from ="mindfulness@graone.co.in";
-		
-		String from ="resolution@educred.co.in";
-		
-
-		// Assuming you are sending email from through gmails smtp
-//	        String host = "smtp.gmail.com";
-	//	String host = "smtp.gmail.com";
-		
-	//	String host = "mail.graone.co.in";
-		
-		//String host = "dallas137.arvixeshared.com";
-		
-		String host = "mail.educred.co.in";
 
 		Properties properties = System.getProperties();
 
-		properties.put("mail.smtp.host", host);
+		properties.put("mail.smtp.host", emailhost);
 		properties.put("mail.smtp.port", "465");
 		properties.put("mail.smtp.ssl.enable", "true");
 
@@ -83,10 +73,7 @@ public class ContactUsServiceImpl implements ContactUsService {
 
 			protected PasswordAuthentication getPasswordAuthentication() {
 
-//	                return new PasswordAuthentication("universityscube@gmail.com", "edu@1234");
-		//		return new PasswordAuthentication("scube.usr@gmail.com", "scube@1234");
-		//		return new PasswordAuthentication("mindfulness@graone.in", "DASA47@gra1");
-				return new PasswordAuthentication("resolution@educred.co.in", "EduCred$2021$");
+				return new PasswordAuthentication(emailFrom, "Dullhousi");
 
 
 			}
@@ -103,7 +90,7 @@ public class ContactUsServiceImpl implements ContactUsService {
 			MimeBodyPart textBodyPart = new MimeBodyPart();
 
 			// Set From: header field of the header.
-			message.setFrom(new InternetAddress(from));
+			message.setFrom(new InternetAddress(emailFrom));
 
 			// Set To: header field of the header.
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
@@ -134,7 +121,7 @@ public class ContactUsServiceImpl implements ContactUsService {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-return true;
+			return true;
 	}
 }
 	

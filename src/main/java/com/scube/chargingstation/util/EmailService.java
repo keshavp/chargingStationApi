@@ -24,6 +24,9 @@
   @Value("${properties.emailhost}") private String emailhost;
   
   @Value("${properties.accountDeleteEmail}") private String delEmailTo;
+  
+  @Value("${properties.emailfrom}") private String emailFrom;
+  
 
   //@Value("${file.reset-password-link}") private String url;
   
@@ -89,10 +92,11 @@
   
   logger.info("*****EmailService accountDeleteEmail*****");
   
-  String to = delEmailTo; String from = "pallavi.dhamal@scubetechserv.com";
+  String to = delEmailTo;
   
   Properties properties = System.getProperties();
-  properties.put("mail.smtp.host", emailhost); properties.put("mail.smtp.port", emailport); 
+  properties.put("mail.smtp.host", emailhost); 
+  properties.put("mail.smtp.port", emailport); 
   properties.put("mail.smtp.ssl.enable", "true");
   properties.put("mail.smtp.auth", "true");
   
@@ -101,7 +105,7 @@
   
   protected PasswordAuthentication getPasswordAuthentication() {
   
-  return new PasswordAuthentication("pallavi.dhamal@scubetechserv.com", "Dullhousi");
+  return new PasswordAuthentication(emailFrom, "Dullhousi");
   
   }
   
@@ -115,7 +119,7 @@
   MimeBodyPart textBodyPart =  new MimeBodyPart();
   
   // Set From: header field of the header. 
-  message.setFrom(new  InternetAddress(from));
+  message.setFrom(new  InternetAddress(emailFrom));
   
   // Set To: header field of the header.
   message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
