@@ -22,7 +22,7 @@ public class ConnectorMapper {
         return new ChargingPointConnectorDto()
         		.setId(connectorEntity.getId())
         		.setConnectorId(connectorEntity.getConnectorId())
-        		.setSlotIntervalTime(connectorEntity.getConnectorSlotIntervalTime())
+        		.setSlotIntervalTime(connectorEntity.getSlotInterval())
         		//.setChargingPoint(connectorEntity.getChargingPointEntity().getChargingPointId())
         		.setChargerId(connectorEntity.getChargerTypeEntity().getId())
         		.setChargerType(connectorEntity.getChargerTypeEntity().getName())
