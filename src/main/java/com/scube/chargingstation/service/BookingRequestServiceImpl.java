@@ -488,7 +488,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 								
 				logger.info("-----" + "Slots Date & Time are " + formatSlotDateTime + "---");
 				
-				List<BookingRequestEntity> bookingRequestEntity = bookingRequestRepository.findByBookingTimeAndBookingStatus(formatSlotDateTime, "SCHEDULED");
+				List<BookingRequestEntity> bookingRequestEntity = bookingRequestRepository.findByBookingTimeAndBookingStatus(formatSlotDateTime, "SCHEDULED", bookingRequestIncomingDto.getConnectorId());
 				
 				logger.info("----" + "Entity " + bookingRequestEntity + "----");
 				
