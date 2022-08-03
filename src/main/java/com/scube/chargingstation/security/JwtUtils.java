@@ -26,7 +26,7 @@ public class JwtUtils {
 
 		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
-		return generateTokenFromUsername(userPrincipal.getEmail());
+		return generateTokenFromUsername(userPrincipal.getMobilenumber());
 
 	}
 	
