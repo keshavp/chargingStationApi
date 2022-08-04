@@ -48,5 +48,7 @@ public class UserWalletDtlEntity extends BaseEntity{
 	
 	@Column(name = "current_balance")
 	private Double  currentBalance;
-
+	
+	@Column(name = "payment_for")
+	private String  paymentFor;
 }

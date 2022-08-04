@@ -14,6 +14,6 @@ public class UserWalletRequestDto{
 	private String  orderId;
 	private String  razorSignature;
 	private String  encResp;
-	
+	private String  paymentFor;
 	
 }

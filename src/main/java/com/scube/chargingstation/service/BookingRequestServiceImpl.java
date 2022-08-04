@@ -240,6 +240,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		userWalletRequestDto.setMobileUser_Id(userInfoEntity.getMobilenumber());
 		userWalletRequestDto.setTransactionType("Debit");
 		userWalletRequestDto.setRequestAmount(String.valueOf(chargingPointConnectorRateDto.getCancelBookingAmount()));
+		userWalletRequestDto.setPaymentFor("Debit -Booking amount");
 		
 		userPaymentService.processWalletMoney(userWalletRequestDto);
 		
@@ -870,6 +871,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 					userWalletRequestDto.setTransactionType("Credit");
 					userWalletRequestDto.setMobileUser_Id(bookingRequestEntity.getUserInfoEntity().getMobilenumber());
 					userWalletRequestDto.setRequestAmount(String.valueOf(bookingRequestEntity.getBookingAmount()));
+					userWalletRequestDto.setPaymentFor("Refund- Booking cancelled");
 					
 					userPaymentService.processWalletMoney(userWalletRequestDto);
 				
