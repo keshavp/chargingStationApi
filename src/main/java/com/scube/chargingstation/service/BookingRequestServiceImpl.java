@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.itextpdf.kernel.utils.CompareTool.CompareResult;
 import com.scube.chargingstation.dto.BookingResponseDto;
 import com.scube.chargingstation.dto.BookingSlotsRespDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
@@ -347,6 +348,10 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		// TODO Auto-generated method stub
 		
 		List<BookingSlotsRespDto> bookingSlotsRespDto = new ArrayList<BookingSlotsRespDto>();
+		
+		List<String> slotTimeList = new ArrayList<String>();
+		
+		List<String> checkSlotDateTimeList = new ArrayList<String>();
 
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
@@ -433,32 +438,9 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			simpleInputDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
 			
 			logger.info("-----" + "The Input Date Format is : " + simpleInputDate + "-----");
-					
-			//comapre i/p date & current dt
-			// if i/p date == currenet date
 			
-			if(simpleCurrentDate.compareTo(simpleInputDate)==0)// Check if the input date is todays date
-			{
-				Calendar currentTimeDate = new GregorianCalendar();
-				
-				String roundedDateTime = currentTimeDate.get(Calendar.HOUR_OF_DAY) + 1 + ":" + "00" + ":" + "00";
-				
-				logger.info("-----" + "The round of Date and Time is : " + roundedDateTime);
-
-				String dtforslot =startDate + " " + roundedDateTime;
-				
-				logger.info("-----" + "Tdtforslot : " + dtforslot);
-				
-				dateObj1 = simpleDateFormat.parse(dtforslot);
-				dateObj2 = simpleDateFormat.parse(startDate + " " + endTimeOfStation);
-				
-			}
-			else { //future date
-				
-				dateObj1=simpleDateFormat.parse(startDate + " " + startTimeOfStation);
-				dateObj2 = simpleDateFormat.parse(startDate + " " + endTimeOfStation);
-		
-			}
+			dateObj1=simpleDateFormat.parse(startDate + " " + startTimeOfStation);
+			dateObj2 = simpleDateFormat.parse(startDate + " " + endTimeOfStation);	
 			
 			logger.info("-----" + "Date Start : " + dateObj1 + "-----");
 			
@@ -470,13 +452,9 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 			String formatSlotDateTime = "";
 			
-			SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm aa");  // --> Converts slots in Time (HH:mm)
+			SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");  // --> Converts slots in Time (HH:mm)
 			
-			int count = 0;
-			
-			while (diffBetweenStartTimeAndEndTime<dateObj2.getTime()) {			
-				
-				BookingSlotsRespDto dto=new BookingSlotsRespDto();
+			while (diffBetweenStartTimeAndEndTime < dateObj2.getTime()) {	
 				
 				Date slot = new Date(diffBetweenStartTimeAndEndTime);
 				logger.info("-----" + "Slot Start Date and End Date in (Date format) :" + slot + "------");
@@ -489,28 +467,55 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 								
 				logger.info("-----" + "Slots Date & Time are " + formatSlotDateTime + "---");
 				
-				List<BookingRequestEntity> bookingRequestEntity = bookingRequestRepository.findByBookingTimeAndBookingStatus(formatSlotDateTime, "SCHEDULED", bookingRequestIncomingDto.getConnectorId());
+//				dto.setSlotDateAndTime(formatSlotTime);	
+				slotTimeList.add(formatSlotTime);
+				checkSlotDateTimeList.add(formatSlotDateTime);
+			}
+			
+			String concatDateAndTimeForSlot = "";
+			
+			System.out.println("Slots in Time Format are : " + slotTimeList);
+			
+			int count = 0;
+			
+			for (int i=0; i<slotTimeList.size(); i++) {	
 				
-				logger.info("----" + "Entity " + bookingRequestEntity + "----");
+				BookingSlotsRespDto slotsRespDto = new BookingSlotsRespDto();
+				
+				System.out.println("Slots in Array List are : " + slotTimeList.get(i));
+				
+				List<BookingRequestEntity> bookingRequestEntity = bookingRequestRepository.findByBookingTimeAndBookingStatus(checkSlotDateTimeList.get(i), "SCHEDULED", bookingRequestIncomingDto.getConnectorId());
+				
+				logger.info("----" + "Entity " + bookingRequestEntity.size() + "----");
 				
 				if(bookingRequestEntity.size()>0) {
 					
 						logger.info("-----" + "Slot is already Booked " + "-----");
-						dto.setSlotAvailability("BOOKED");
-						dto.setId(count);
+						slotsRespDto.setSlotAvailability("BOOKED");
+						slotsRespDto.setSlotId(count);
+						
 				}			
 				else {
 					
 						logger.info("-----" + "Slot is open. Continue your booking " + "-----");
-						dto.setSlotAvailability("OPEN");
-						dto.setId(count);
-					
+						slotsRespDto.setSlotAvailability("OPEN");
+						slotsRespDto.setSlotId(count);
+				}	
+				
+				concatDateAndTimeForSlot = bookingRequestIncomingDto.getRequestedBookingDate() + " " + slotTimeList.get(i);
+				
+				boolean flag = Comparetime(slotTimeList.get(i), dateObj2);
+								
+				if(flag)
+				{
+					//put in dto
+					slotsRespDto.setSlotDateAndTime(concatDateAndTimeForSlot);
+					slotsRespDto.setSlotId(count);
+					bookingSlotsRespDto.add(slotsRespDto);
+
 				}
 				
-				dto.setSlotDateAndTime(formatSlotTime);
-				bookingSlotsRespDto.add(dto);
-				
-				count++;
+				count ++;
 				
 			}
 			
@@ -524,6 +529,51 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		return bookingSlotsRespDto;
 		
+	}
+
+	
+	public boolean Comparetime(String hour, Date dateObj2)
+	{
+	//	String hour = "18:00";
+		System.out.println("------" + hour);
+		System.out.println("------" + dateObj2);
+		
+		Date currentDate = new Date();
+		
+		String slotCurrentDate = new SimpleDateFormat("yyyy-MM-dd").format(currentDate);
+		String slotInputDate = new SimpleDateFormat("yyyy-MM-dd").format(dateObj2);
+		
+		System.out.println("Slot Input Date (In String)" + slotInputDate);
+		System.out.println("Slot Current Date (In String)" + slotCurrentDate);
+		
+		Calendar now = new GregorianCalendar();
+		
+		int nowHour = now.get(Calendar.HOUR_OF_DAY);
+		System.out.println(nowHour + " " + "HOUR_OF_DAY" + "---->>");
+		
+		int nowMin = now.get(Calendar.MINUTE);
+		System.out.println(nowMin + " " + "MINUTE" + "---->>");
+		
+		String[] parts = hour.split(":");
+
+		int horaHour = Integer.valueOf(parts[0]);
+		System.out.println(horaHour + "---->>");
+		int horaMinute = Integer.valueOf(parts[1]);
+		System.out.println(horaMinute + "---->>" );
+		
+		
+		if(slotCurrentDate.compareTo(slotInputDate)==0) {
+		
+			if(60 * nowHour + nowMin < 60 * horaHour + horaMinute) {
+				System.out.println("True");
+				return true;
+			}
+			else {
+				System.out.println("False");
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
