@@ -72,7 +72,7 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	 @Query(value = "SELECT IFNULL(sum(final_kwh),0) as kwh FROM charging_request where charging_status = 'Done' and created_at between DATE_SUB(now(), INTERVAL 7 DAY) and now();", nativeQuery = true)
 	 Double getWeekConsumedKwh();
 
-	 @Query(value = "SELECT IFNULL(sum(cr.final_kwh),0) as kwh ,IFNULL(cp.name,'') as name FROM charging_request cr left join mst_charging_point cp on cr.fk_charging_point = cp.id  where  cr.created_at between DATE_SUB(now(), INTERVAL 30 DAY) and now() and cr.charging_status = 'Done' group by cr.fk_charging_point order by cr.created_at , kwh;", nativeQuery = true)
+	 @Query(value = "SELECT IFNULL(sum(cr.final_kwh),0) as kwh ,IFNULL(cp.name,'') as name FROM charging_request cr left join mst_charging_point cp on cr.fk_charging_point = cp.id  where  cr.created_at between DATE_SUB(now(), INTERVAL 30 DAY) and now() and cr.charging_status = 'Done' group by cr.fk_charging_point order by kwh;", nativeQuery = true)
 	 List<Map<String, String>> getMostActiveChargingStations();
 
 	 @Query(value = "SELECT TIME_FORMAT( SEC_TO_TIME(IFNULL(SUM( TIME_TO_SEC(charging_time) ),'00:00:00')),'%H:%i:%i') AS timeSum FROM charging_request where charging_status = 'Done' and created_at between DATE_SUB(now(), INTERVAL 30 DAY) and now()", nativeQuery = true)
@@ -104,7 +104,7 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 		 		+ "where cr.charging_status = 'Done' and cp.fk_partner = (?1) and cr.created_at between DATE_SUB(now(), INTERVAL 7 DAY) and now();", nativeQuery = true)
 	 Double getWeekConsumedKwhByPartnerId(String partnerid);
 
-	 @Query(value = "SELECT IFNULL(sum(cr.final_kwh),0) as kwh ,IFNULL(cp.name,'') as name FROM charging_request cr left join mst_charging_point cp on cr.fk_charging_point = cp.id  where  cp.fk_partner = (?1) and cr.charging_status = 'Done' and  cr.created_at between DATE_SUB(now(), INTERVAL 30 DAY) and now()  group by cr.fk_charging_point order by cr.created_at , kwh;", nativeQuery = true)
+	 @Query(value = "SELECT IFNULL(sum(cr.final_kwh),0) as kwh ,IFNULL(cp.name,'') as name FROM charging_request cr left join mst_charging_point cp on cr.fk_charging_point = cp.id  where  cp.fk_partner = (?1) and cr.charging_status = 'Done' and  cr.created_at between DATE_SUB(now(), INTERVAL 30 DAY) and now()  group by cr.fk_charging_point order by kwh;", nativeQuery = true)
 	 List<Map<String, String>> getMostActiveChargingStationsByPartnerId(String partnerid);
 
 	 @Query(value = "SELECT TIME_FORMAT( SEC_TO_TIME(IFNULL(SUM( TIME_TO_SEC(cr.charging_time) ),'00:00:00')),'%H:%i:%i') AS timeSum FROM charging_request cr left join mst_charging_point cp on  cr.fk_charging_point = cp.id "
