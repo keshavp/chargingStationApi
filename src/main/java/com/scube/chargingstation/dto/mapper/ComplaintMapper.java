@@ -9,7 +9,7 @@ import com.scube.chargingstation.util.DateUtils;
 
 public class ComplaintMapper {
 	
-	public static ComplaintRespDto tComplaintRespDto(ComplaintEntity complaintEntity) {
+	public static ComplaintRespDto toComplaintRespDto(ComplaintEntity complaintEntity) {
 		
 		return new ComplaintRespDto()
 				.setComplaintId(complaintEntity.getId())
@@ -19,26 +19,22 @@ public class ComplaintMapper {
 				.setUserContactNo(complaintEntity.getUserContactNo())
 				.setComplaintStatus(complaintEntity.getComplaintStatus())
 				.setCommentsResponse(CommentsResponseMapper.toCommentsResponseForComplaintsDtos(complaintEntity.getComplaintResponseEntity()))
-				.setComplaintDate(DateUtils.formattedInstantToDateTimeString(complaintEntity.getCreatedAt()));
+				.setComplaintDate(DateUtils.formattedInstantToSimpleDateTimeFormat(complaintEntity.getCreatedAt()))
+				.setComplaintCloseDate(DateUtils.formattedInstantToSimpleDateTimeFormat(complaintEntity.getComplaintCloseDate()));
 		
 	}
 	
-	/*
-	  
-	public static ComplaintRespDto toComplaintResp (List<ComplaintEntity> complaintEntities) {
-		
-		return new ComplaintRespDto()
-				.setComplaintDate(DateUtils.formattedInstantToDateTimeString(complaintEntities.getCrea))
-	}
 	
-	*/
-	
-	public static List<ComplaintRespDto> tComplaintRespDtos(List<ComplaintEntity> complaintEntities) {
+	public static List<ComplaintRespDto> toComplaintRespDtos(List<ComplaintEntity> complaintEntities) {
  		
 		List<ComplaintRespDto> complaintRespDtos = new ArrayList<ComplaintRespDto>();
+		
 		for(ComplaintEntity complaintEntity : complaintEntities) {
-			complaintRespDtos.add(tComplaintRespDto(complaintEntity)); 
+			
+			complaintRespDtos.add(toComplaintRespDto(complaintEntity)); 
+			
 		}
+		
         return complaintRespDtos;
 	}
 

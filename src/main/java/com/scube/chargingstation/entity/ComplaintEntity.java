@@ -1,5 +1,6 @@
 package com.scube.chargingstation.entity;
 
+import java.time.Instant;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -26,6 +27,16 @@ public class ComplaintEntity extends BaseEntity {
 	
 	private String complaintStatus;
 	
+	private Instant complaintCloseDate;
+	
+	public Instant getComplaintCloseDate() {
+		return complaintCloseDate;
+	}
+
+	public void setComplaintCloseDate(Instant complaintCloseDate) {
+		this.complaintCloseDate = complaintCloseDate;
+	}
+
 	@OneToOne
     @JoinColumn(name = "fk_user")
 	private UserInfoEntity userInfoEntity;

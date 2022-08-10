@@ -1,5 +1,8 @@
 package com.scube.chargingstation.service;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.scube.chargingstation.dto.ComplaintRespDto;
 import com.scube.chargingstation.dto.ComplaintResponseCommentsDto;
 import com.scube.chargingstation.dto.incoming.ComplaintIncomingDto;
+import com.scube.chargingstation.dto.mapper.CommentsResponseMapper;
 import com.scube.chargingstation.dto.mapper.ComplaintMapper;
 import com.scube.chargingstation.entity.ComplainResponseEntity;
 import com.scube.chargingstation.entity.ComplaintEntity;
@@ -21,6 +25,7 @@ import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.repository.ComplaintRepository;
 import com.scube.chargingstation.repository.UserInfoRepository;
+import com.scube.chargingstation.util.DateUtils;
 
 import ch.qos.logback.classic.Logger;
 
@@ -91,9 +96,9 @@ public class ComplaintServiceImpl implements ComplaintService {
 		// TODO Auto-generated method stub
 		logger.info("********ComplaintServiceImpl getAllComplaintInfoList********");
 		
-		List<ComplaintEntity> complaintEntities = complaintRepository.findAll();
+		List<ComplaintEntity> complaintEntities = complaintRepository.getAllComplaintDetailsFromComplaintEntities();
 		
-		return ComplaintMapper.tComplaintRespDtos(complaintEntities);
+		return ComplaintMapper.toComplaintRespDtos(complaintEntities);
 	}
 
 	@Override
@@ -151,7 +156,7 @@ public class ComplaintServiceImpl implements ComplaintService {
 		
 		logger.info("Complaint Info ID :- " + id);
 		
-		return ComplaintMapper.tComplaintRespDto(complaintEntity);
+		return ComplaintMapper.toComplaintRespDto(complaintEntity);
 	}
 
 	@Override
@@ -160,16 +165,21 @@ public class ComplaintServiceImpl implements ComplaintService {
 		
 		logger.info("********ComplaintServiceImpl closeComplaint********");
 		
-		UserInfoEntity userInfoEntity = userInfoService.getUserByMobilenumber(userMobileNo);
-		
+		UserInfoEntity userInfoEntity = userInfoService.getUserByMobilenumber(userMobileNo);		
 		
 		ComplaintEntity complaintEntity = complaintRepository.findById(id).get();
+		
+		Date currentDate = new Date();
+		
+		Instant currentDateInstant = currentDate.toInstant();
 		
 		complaintEntity.setRemark("CLOSE");
 		complaintEntity.setComplaintStatus("CLOSE");
 		complaintEntity.setIsdeleted("Y");
 		complaintEntity.setCloseUserInfoEntity(userInfoEntity);
-		
+			
+		complaintEntity.setComplaintCloseDate(currentDateInstant);
+
 		complaintRepository.save(complaintEntity);
 		
 		return true;
@@ -185,7 +195,7 @@ public class ComplaintServiceImpl implements ComplaintService {
 		
 		List<ComplaintEntity> complaintEntity = complaintRepository.findByUserInfoEntity(userInfoEntity);
 		
-		return ComplaintMapper.tComplaintRespDtos(complaintEntity);
+		return ComplaintMapper.toComplaintRespDtos(complaintEntity);
 	}
 
 }

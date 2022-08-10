@@ -37,4 +37,7 @@ public class ComplaintRespDto {
 	private Set<CommentsResponseForComplaintsDto> commentsResponse ;
 	
 	private String commentDate;
+	
+	private String complaintCloseDate;
+	
 }
