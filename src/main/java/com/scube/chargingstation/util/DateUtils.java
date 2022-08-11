@@ -13,6 +13,8 @@ import java.util.Locale;
 public class DateUtils {
 
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    
+    private static SimpleDateFormat simpleDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss aa");
 
     private static final DateTimeFormatter myInvoiceDateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
 			.withLocale(Locale.UK)
@@ -72,5 +74,12 @@ public class DateUtils {
         
         return true;
       }
+    
+    public static String formattedInstantToSimpleDateTimeFormat(Instant date) {
+    	
+//        return date != null ? simpleDateTimeFormat.format(Date.from(date)) : todayStr();
+    	return date != null ? simpleDateTimeFormat.format(Date.from(date)) : "";
+        
+    } 
 
 }
