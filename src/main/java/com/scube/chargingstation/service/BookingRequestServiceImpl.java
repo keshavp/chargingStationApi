@@ -673,7 +673,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			formatSlotBookingDate = simpleDateFormat.format(c.getTime());
 			
 			bookingDateDtos.setSlotBookingDate(formatSlotBookingDate);
-			bookingDateDtos.setSlotId(count);
+			bookingDateDtos.setDateId(count);
 			
 			count++;
 			
