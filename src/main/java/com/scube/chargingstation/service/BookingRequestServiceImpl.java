@@ -452,6 +452,8 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 			String formatSlotDateTime = "";
 			
+			String getAmPmMarker = "";
+			
 			SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");  // --> Converts slots in Time (HH:mm)
 			
 			while (diffBetweenStartTimeAndEndTime < dateObj2.getTime()) {	
@@ -473,6 +475,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			}
 			
 			String concatDateAndTimeForSlot = "";
+			String getAmPmMarker1 = "";
 			
 			System.out.println("Slots in Time Format are : " + slotTimeList);
 			
@@ -500,9 +503,25 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 						logger.info("-----" + "Slot is open. Continue your booking " + "-----");
 						slotsRespDto.setSlotAvailability("OPEN");
 						slotsRespDto.setSlotId(count);
-				}	
+				}
 				
-				concatDateAndTimeForSlot = bookingRequestIncomingDto.getRequestedBookingDate() + " " + slotTimeList.get(i);
+				String[] parts = slotTimeList.get(i).split(":");
+				int slotHour = Integer.valueOf(parts[0]);
+				
+				System.out.println("-----><<<<" + slotHour);
+				
+				if(slotHour>11) {
+					
+					getAmPmMarker1 = "PM";
+					
+				}
+				else {
+					
+					getAmPmMarker1 = "AM";
+					
+				}
+				
+				concatDateAndTimeForSlot = bookingRequestIncomingDto.getRequestedBookingDate() + " " + slotTimeList.get(i) + " " +  getAmPmMarker1;
 				
 				boolean flag = Comparetime(slotTimeList.get(i), dateObj2);
 								
@@ -639,6 +658,8 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 		logger.info("-----" + "The End Date Slot is : " + endBookDate + "-----");
 		
+		int count = 0;
+		
 		for(int i=0;i<endBookDate;i++) {
 			
 			BookingSlotsRespDto bookingDateDtos = new BookingSlotsRespDto();
@@ -652,6 +673,10 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			formatSlotBookingDate = simpleDateFormat.format(c.getTime());
 			
 			bookingDateDtos.setSlotBookingDate(formatSlotBookingDate);
+			bookingDateDtos.setSlotId(count);
+			
+			count++;
+			
 			bookingSlotsRespDto.add(bookingDateDtos);
 		}
 		
