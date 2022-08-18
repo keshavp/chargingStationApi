@@ -496,7 +496,20 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		 	   {
 		 	     connectorStatus =node.get("Status").toString();
 		 	   }
-		 	     conDto.setAvailable(connectorStatus.equals("1") ? "Y":"N");	
+		 	   
+		 	   
+		 	   if(connectorStatus.equals("1")) //Available
+		 	   {
+		 		  conDto.setAvailable("Y");
+		 	   }
+		 	   else if(connectorStatus.equals("2")) //occupied
+		 	   {
+			 		  conDto.setAvailable("Y");
+		 	   }
+		 		 else {
+		 			 conDto.setAvailable("N");
+				}
+		 	   //  conDto.setAvailable(connectorStatus.equals("1") ? "Y":"N");	
 				  
 				  conDto.setConnectorId(conEntity.getConnectorId()); //
 				  conDto.setChargingPoint(conEntity.getChargingPointEntity().getChargingPointId()); 
