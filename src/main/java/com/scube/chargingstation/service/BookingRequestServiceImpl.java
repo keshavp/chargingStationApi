@@ -303,6 +303,8 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 		}
 		
+		String selectedConnectorId = connectorEntity.getId();
+		
 		 
 		if(bookingRequestIncomingDto.getRequestedBookingDate()==null || bookingRequestIncomingDto.getRequestedBookingDate().trim().isEmpty()) {
 			
@@ -338,14 +340,16 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		List<BookingSlotsRespDto> bookingSlotsRespDto = new ArrayList<BookingSlotsRespDto>();
 
-		bookingSlotsRespDto=slotCreation(bookingRequestIncomingDto,convertSlotInfoIntoSeconds);
+		bookingSlotsRespDto=slotCreation(bookingRequestIncomingDto,convertSlotInfoIntoSeconds, selectedConnectorId);
 				
 		return bookingSlotsRespDto;
 	}
 
 	
-	public List<BookingSlotsRespDto> slotCreation(BookingRequestIncomingDto bookingRequestIncomingDto,long convertSlotInfoIntoSeconds) {
+	public List<BookingSlotsRespDto> slotCreation(BookingRequestIncomingDto bookingRequestIncomingDto,long convertSlotInfoIntoSeconds, String selectedConnectorId) {
 		// TODO Auto-generated method stub
+		
+		logger.info("Selected connector and charging point :" + selectedConnectorId);
 		
 		List<BookingSlotsRespDto> bookingSlotsRespDto = new ArrayList<BookingSlotsRespDto>();
 		
@@ -452,8 +456,6 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 			String formatSlotDateTime = "";
 			
-			String getAmPmMarker = "";
-			
 			SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");  // --> Converts slots in Time (HH:mm)
 			
 			while (diffBetweenStartTimeAndEndTime < dateObj2.getTime()) {	
@@ -485,9 +487,9 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 				
 				BookingSlotsRespDto slotsRespDto = new BookingSlotsRespDto();
 				
-				System.out.println("Slots in Array List are : " + slotTimeList.get(i));
+				System.out.println("Slots in Array List are : " + slotTimeList.get(i) + checkSlotDateTimeList.get(i));
 				
-				List<BookingRequestEntity> bookingRequestEntity = bookingRequestRepository.findByBookingTimeAndBookingStatus(checkSlotDateTimeList.get(i), "SCHEDULED", bookingRequestIncomingDto.getConnectorId());
+				List<BookingRequestEntity> bookingRequestEntity = bookingRequestRepository.findByBookingTimeAndBookingStatus(checkSlotDateTimeList.get(i), "SCHEDULED", selectedConnectorId);
 				
 				logger.info("----" + "Entity " + bookingRequestEntity.size() + "----");
 				
