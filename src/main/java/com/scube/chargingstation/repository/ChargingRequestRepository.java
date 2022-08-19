@@ -46,7 +46,7 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	
 	
 	
-	@Query(value = " SELECT cr.request_amount as requestedAmount,cr.request_kwh as requestedKwh,cs.ChargeSpeed as chargingSpeed,"
+	@Query(value = " SELECT cr.id , cr.request_amount as requestedAmount,cr.request_kwh as requestedKwh,cs.ChargeSpeed as chargingSpeed,"
 			+ " ROUND( tr.LastMeter-tr.MeterStart,2) as currentKwh, IFNULL(cs.sOc,'' ) as chargingPercent ,  IFNULL(cr.vehicle_no,'Request') as vehicleNo ,'' as estimatedTime "
 			+ " from charging_request cr ,connectorstatus cs ,transactions tr "
 			+ " where cr.fk_transactions=cs.TransactionId and cr.fk_transactions=tr.TransactionId and  cr.fk_user=(?1)  and cr.charging_status in ('Starting') ",nativeQuery = true)

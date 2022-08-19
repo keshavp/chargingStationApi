@@ -20,6 +20,7 @@ public class ChargingStatusMapper {
 			
 			final ChargingStatusRespDto pojo = mapper.convertValue(list.get(i), ChargingStatusRespDto.class);
 		
+			obj.setId(pojo.getId());
 			obj.setChargingPercent(pojo.getChargingPercent());
 			obj.setChargingSpeed(pojo.getChargingSpeed());
 			obj.setEstimatedTime(pojo.getEstimatedTime());

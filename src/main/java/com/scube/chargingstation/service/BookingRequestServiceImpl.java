@@ -13,6 +13,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -976,7 +978,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		for(BookingRequestEntity  bookingRequestEntity : bookingRequestEntities) {
 			
 			String title="Booking reminder for EV-Dock.";
-			String body=" Hi "+bookingRequestEntity.getUserInfoEntity().getUsername()+", you have an EV car charging booking on ( "+ bookingRequestEntity.getBookingTime() +") at "+bookingRequestEntity.getChargingPointEntity().getName()+" with Evdock .";
+			String body=" Hi "+bookingRequestEntity.getUserInfoEntity().getUsername()+", you have an EV car charging booking on ( "+ DateUtils.formattedInstantToSimpleDateTimeFormat(bookingRequestEntity.getBookingTime()) +") at "+bookingRequestEntity.getChargingPointEntity().getName()+" with Evdock .";
 			
 			NotificationReqDto notificationReqDto =new NotificationReqDto();
 			notificationReqDto.setMobileUser_Id(bookingRequestEntity.getUserInfoEntity().getMobilenumber());
@@ -996,7 +998,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		for(BookingRequestEntity  bookingRequestEntity : bookingRequestEntities) {
 			
 			String title="Booking reminder for EV-Dock.";
-			String body=" Hi "+bookingRequestEntity.getUserInfoEntity().getUsername()+", you have an EV car charging booking on ( "+ bookingRequestEntity.getBookingTime() +") at "+bookingRequestEntity.getChargingPointEntity().getName()+" with Evdock .";
+			String body=" Hi "+bookingRequestEntity.getUserInfoEntity().getUsername()+", you have an EV car charging booking on ( "+ DateUtils.formattedInstantToSimpleDateTimeFormat(bookingRequestEntity.getBookingTime()) +") at "+bookingRequestEntity.getChargingPointEntity().getName()+" with Evdock .";
 			
 			NotificationReqDto notificationReqDto =new NotificationReqDto();
 			notificationReqDto.setMobileUser_Id(bookingRequestEntity.getUserInfoEntity().getMobilenumber());
@@ -1005,5 +1007,23 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			notificationService.sendNotification(notificationReqDto);
 			
 		}
+	}
+	
+	@Override
+	public boolean bookingReminderById(String Id) {
+		// TODO Auto-generated method stub
+		
+		BookingRequestEntity  bookingRequestEntity = bookingRequestRepository.findById(Id).get();
+			
+			String title="Booking reminder for EV-Dock.";	
+			String body=" Hi "+bookingRequestEntity.getUserInfoEntity().getUsername()+", you have an EV car charging booking on ( "+ DateUtils.formattedInstantToSimpleDateTimeFormat(bookingRequestEntity.getBookingTime()) +") at "+bookingRequestEntity.getChargingPointEntity().getName()+" with Evdock .";
+			
+			NotificationReqDto notificationReqDto =new NotificationReqDto();
+			notificationReqDto.setMobileUser_Id(bookingRequestEntity.getUserInfoEntity().getMobilenumber());
+			notificationReqDto.setTitle(title);
+			notificationReqDto.setBody(body);
+			notificationService.sendNotification(notificationReqDto);
+			
+			return true;
 	}
 }

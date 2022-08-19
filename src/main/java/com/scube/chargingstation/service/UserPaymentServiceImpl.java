@@ -153,6 +153,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		userWalletDtlEntity.setChargingRequestEntity(crEntity);
 		//userWalletDtlEntity.setAmount(amount);
 		userWalletDtlEntity.setAmount(RoundUtil.doubleRound(amount,2));
+		userWalletDtlEntity.setPaymentFor(userWalletRequestDto.getPaymentFor());
 		// userWalletDtlEntity.setTransaction_id(userWalletRequestDto.getTransactionId());
 
 		// save/update user wallet

@@ -21,6 +21,7 @@ import lombok.experimental.Accessors;
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public class ChargingStatusRespDto  {
 
+		private String id;
 		private Double requestedAmount;
 		private Double requestedKwh;
 		private Double currentKwh;

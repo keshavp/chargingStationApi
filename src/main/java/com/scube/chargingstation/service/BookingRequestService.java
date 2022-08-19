@@ -37,5 +37,5 @@ public interface BookingRequestService {
 
 	public void oneHourBeforeBookingReminderSchedulers();
 
-	
+	public boolean bookingReminderById(String bookingId);
 }	

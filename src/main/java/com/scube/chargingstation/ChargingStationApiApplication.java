@@ -1,5 +1,9 @@
 package com.scube.chargingstation;
 
+import java.util.TimeZone;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -23,6 +27,12 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 @SecurityScheme(name = "javainuseapi", scheme = "basic", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
 public class ChargingStationApiApplication extends SpringBootServletInitializer {
 
+	@PostConstruct
+	  public void init(){
+	    // Setting Spring Boot SetTimeZone
+	    TimeZone.setDefault(TimeZone.getTimeZone("IST"));
+	  }
+	
 	public static void main(String[] args) {
 		SpringApplication.run(ChargingStationApiApplication.class, args);
 	}

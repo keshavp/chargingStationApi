@@ -100,4 +100,14 @@ public class BookingRequestController {
 		return Response.ok().setPayload(bookingRequestService.getUpcomingBookingCancelById(bookingId));
 		
 	}
+	
+	@GetMapping (value = "/bookingReminderById/{bookingId}")
+	public Response bookingReminderById(@PathVariable ("bookingId") String bookingId) throws Exception {
+		
+		logger.info("***BookingRequestController bookingReminderById***");
+		return Response.ok().setPayload(bookingRequestService.bookingReminderById(bookingId));
+		
+	}
+	
+	
 }
