@@ -758,7 +758,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 			BookingResponseDto responseDto = new BookingResponseDto();
 			
-			if(currentDateFormatInLong<startBookTimeDate.getTime()-cancelSlot) {
+			if(currentDateFormatInLong<startBookTimeDate.getTime()-cancelSlot && bookingRequestEntity.getBookingStatus()=="SCHEDULED") {
 		
 				logger.info("-----" + "CANCEL SLOT" + "-----");
 				responseDto.setCancelNow("Y");
@@ -780,8 +780,8 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			logger.info("---" + "Converted Sub Time" + convertReducedDate + "---");
 			
 			logger.info("---" + "Converted Add Time" + convertAddTimeDate + "---");
-					
-			if(currentDate.after(convertReducedDate) && currentDate.before(convertAddTimeDate))	{	
+			
+			if(currentDate.after(convertReducedDate) && currentDate.before(convertAddTimeDate) && bookingRequestEntity.getBookingStatus() != "CANCELLED")	{	
 			
 				logger.info("-----" + "CHARGE NOW IS ACTIVE" + "-----");
 				responseDto.setChargeNow("Y");
@@ -796,7 +796,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 			responseDto.setBookingId(bookingRequestEntity.getId());
 			responseDto.setBookingAmount(bookingRequestEntity.getBookingAmount());
-			responseDto.setBookingDateAndTime(DateUtils.formattedInstantToDateTimeString(bookingRequestEntity.getBookingTime()));
+			responseDto.setBookingDateAndTime(DateUtils.formattedInstantToSimpleDateTimeFormat(bookingRequestEntity.getBookingTime()));
 			responseDto.setBookingStatus(bookingRequestEntity.getBookingStatus());
 			responseDto.setCustName(bookingRequestEntity.getCustName());
 			responseDto.setCustMobileNo(bookingRequestEntity.getMobileNo());
