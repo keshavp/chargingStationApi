@@ -144,6 +144,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw BRSException.throwException("Error : Please select your Date and Slot Time");
 		}
 		
 		logger.info("--->>>" +convertInputBookDate );
@@ -304,6 +305,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		}
 		
 		String selectedConnectorId = connectorEntity.getId();
+		logger.info("Selected Connector ID : " + selectedConnectorId);
 		
 		 
 		if(bookingRequestIncomingDto.getRequestedBookingDate()==null || bookingRequestIncomingDto.getRequestedBookingDate().trim().isEmpty()) {

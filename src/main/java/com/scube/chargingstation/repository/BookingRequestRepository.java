@@ -23,7 +23,7 @@ public interface BookingRequestRepository extends JpaRepository<BookingRequestEn
 	@Query (value = "SELECT * from booking_request where fk_user=(?1) and booking_time <= CURDATE();", nativeQuery = true)
 	List<BookingRequestEntity> findByUserInfoEntity(UserInfoEntity id);
 	
-	@Query (value = "SELECT * from booking_request where fk_user=(?1) and booking_time >= NOW() order by booking_time asc;", nativeQuery = true)
+	@Query (value = "SELECT * from booking_request where fk_user=(?1) and booking_time >= NOW() and booking_status = 'SCHEDULED' order by booking_time asc;", nativeQuery = true)
 	List<BookingRequestEntity> getUpcomingBookingTimeByUserInfoEntity(UserInfoEntity id);
 	
 	
@@ -61,8 +61,8 @@ public interface BookingRequestRepository extends JpaRepository<BookingRequestEn
 	
 	
 	@Query(value = "select count(id) as count FROM booking_request where booking_status = (?1)  and fk_charging_point = (?2)  and  fk_connector = (?3)   "
-			+ " and date_add((?4),interval 1 second) between booking_time and booking_endtime "
-			+ " or date_sub((?5),interval 1 second) between booking_time and booking_endtime", nativeQuery = true)
+			+ " and (date_add((?4),interval 1 second) between booking_time and booking_endtime "
+			+ " or date_sub((?5),interval 1 second) between booking_time and booking_endtime)", nativeQuery = true)
 	int isBookingSlotIsAvailable(String bookingStatus ,String cp ,String connector , Instant bookingStartTime, Instant bookingEndTime);
 			
 }
