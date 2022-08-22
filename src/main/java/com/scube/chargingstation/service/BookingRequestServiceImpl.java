@@ -756,9 +756,13 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 				e.printStackTrace();
 			}
 			
+			String bookStatus = bookingRequestEntity.getBookingStatus();
+			
+			logger.info("Current Book Status True or Not ----> " + bookStatus);
+			
 			BookingResponseDto responseDto = new BookingResponseDto();
 			
-			if(currentDateFormatInLong<startBookTimeDate.getTime()-cancelSlot && bookingRequestEntity.getBookingStatus()=="SCHEDULED") {
+			if(currentDateFormatInLong<startBookTimeDate.getTime()-cancelSlot && bookingRequestEntity.getBookingStatus() != "CANCELLED") {
 		
 				logger.info("-----" + "CANCEL SLOT" + "-----");
 				responseDto.setCancelNow("Y");
