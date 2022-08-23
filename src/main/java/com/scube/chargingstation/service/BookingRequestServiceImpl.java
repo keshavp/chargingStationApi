@@ -756,13 +756,9 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 				e.printStackTrace();
 			}
 			
-			String bookStatus = bookingRequestEntity.getBookingStatus();
-			
-			logger.info("Current Book Status True or Not ----> " + bookStatus);
-			
 			BookingResponseDto responseDto = new BookingResponseDto();
 			
-			if(currentDateFormatInLong<startBookTimeDate.getTime()-cancelSlot && bookingRequestEntity.getBookingStatus() != "CANCELLED") {
+			if(currentDateFormatInLong<startBookTimeDate.getTime()-cancelSlot && !bookingRequestEntity.getBookingStatus().equals("CANCELLED")) {
 		
 				logger.info("-----" + "CANCEL SLOT" + "-----");
 				responseDto.setCancelNow("Y");
@@ -785,7 +781,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 			logger.info("---" + "Converted Add Time" + convertAddTimeDate + "---");
 			
-			if(currentDate.after(convertReducedDate) && currentDate.before(convertAddTimeDate) && bookingRequestEntity.getBookingStatus() != "CANCELLED")	{	
+			if(currentDate.after(convertReducedDate) && currentDate.before(convertAddTimeDate) && !bookingRequestEntity.getBookingStatus().equals("CANCELLED"))	{	
 			
 				logger.info("-----" + "CHARGE NOW IS ACTIVE" + "-----");
 				responseDto.setChargeNow("Y");
