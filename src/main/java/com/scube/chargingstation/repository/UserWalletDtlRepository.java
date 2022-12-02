@@ -24,12 +24,19 @@ public interface UserWalletDtlRepository extends JpaRepository<UserWalletDtlEnti
 	UserWalletDtlEntity findByOrderId(String OrderId);
 
 	//DATE_FORMAT(trhistory.created_at, '%d %m %Y %r')
-	@Query(value="select trhistory.amount as amount,DATE_FORMAT(trhistory.created_at, '%Y-%m-%d %r') as transactionDate, trhistory.transaction_type as transactionType,trhistory.remark,trhistory.fk_chargingreq as chargingRequestId "
-			+ " from (SELECT * ,'Added Money'as remark FROM  emp_wallet_dtl ewd where ewd.fk_user =?1 and transaction_type='Credit' and ewd.transaction_id is not null"+
-			" union " +
-		 	"SELECT *,  CASE WHEN ewd.transaction_type='Debit' THEN 'For Charging' WHEN ewd.transaction_type='Credit' THEN 'Refund' ELSE ''  END AS remark" + 
-			 " FROM  emp_wallet_dtl ewd where ewd.fk_user =?1 and ewd.fk_chargingreq is not null) as trhistory "+
-			" order by created_at desc ",nativeQuery = true)
+	/*
+	 * @Query(
+	 * value="select trhistory.amount as amount,DATE_FORMAT(trhistory.created_at, '%Y-%m-%d %r') as transactionDate, trhistory.transaction_type as transactionType,trhistory.remark,trhistory.fk_chargingreq as chargingRequestId "
+	 * +
+	 * " from (SELECT * ,'Added Money'as remark FROM  emp_wallet_dtl ewd where ewd.fk_user =?1 and transaction_type='Credit' and ewd.transaction_id is not null"
+	 * + " union " +
+	 * "SELECT *,  CASE WHEN ewd.transaction_type='Debit' THEN 'For Charging' WHEN ewd.transaction_type='Credit' THEN 'Refund' ELSE ''  END AS remark"
+	 * +
+	 * " FROM  emp_wallet_dtl ewd where ewd.fk_user =?1 and ewd.fk_chargingreq is not null) as trhistory "
+	 * + " order by created_at desc ",nativeQuery = true)
+	 */
+	@Query(value="SELECT amount , DATE_FORMAT(created_at, '%Y-%m-%d %r') as transactionDate ,transaction_type as transactionType, payment_for as remark, "
+			+ " fk_chargingreq as chargingRequestId  FROM `ocpp.core`.emp_wallet_dtl",nativeQuery = true)
 	List<Map<String, String>> getUserTrHistory(String userId);
 	
 	

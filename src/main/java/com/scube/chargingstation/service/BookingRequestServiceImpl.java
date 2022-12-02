@@ -837,7 +837,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	}
 	 
 	@Override
-	public void bookingAutoCancellationSchedulers() {
+	public void bookingAutoCancellationSchedulers() throws Exception {
 		// TODO Auto-generated method stub
 		
 		List<BookingRequestEntity> bookingRequestScheduledEntities = bookingRequestRepository.getBookingRequestAfterPassBufferTime();
@@ -846,7 +846,15 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		for( BookingRequestEntity bookingRequestEntity : bookingRequestScheduledEntities) {
 			
+		//	bookingRequestEntity.setBookingStatus("CANCELLED");
+			
+			BookingRequestEntity bookingRequestPdfEntity =   cancellationReceiptPdf.generatePdf(bookingRequestEntity);
+			
 			bookingRequestEntity.setBookingStatus("CANCELLED");
+			bookingRequestEntity.setInvoiceFilePath(bookingRequestPdfEntity.getInvoiceFilePath());
+			bookingRequestEntity.setReceiptNo(bookingRequestPdfEntity.getReceiptNo());
+		//	bookingRequestRepository.save(bookingRequestEntity);
+			
 			
 			bookingRequestEntities.add(bookingRequestEntity);
 		}

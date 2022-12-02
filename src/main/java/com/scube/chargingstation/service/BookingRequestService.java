@@ -25,7 +25,7 @@ public interface BookingRequestService {
 
 	void updateBookingRequestEntityCompletedByChargingRequest(String chargingRequestId);
 	
-	public void bookingAutoCancellationSchedulers();
+	public void bookingAutoCancellationSchedulers() throws Exception;
 
 	public String getUpcomingBookingCancelById(String bookingId) throws Exception;
 	
