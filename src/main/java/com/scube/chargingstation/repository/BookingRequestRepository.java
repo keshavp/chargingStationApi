@@ -20,11 +20,11 @@ public interface BookingRequestRepository extends JpaRepository<BookingRequestEn
 	
 	List<BookingRequestEntity> findByBookingStatus( String bookingStatus);
 	
-	@Query (value = "SELECT * from booking_request where fk_user=(?1) and booking_time <= CURDATE();", nativeQuery = true)
-	List<BookingRequestEntity> findByUserInfoEntity(UserInfoEntity id);
+	@Query (value = "SELECT * from booking_request where fk_user=(?1) and booking_time <= NOW() and booking_status NOT IN ('SCHEDULED') order by booking_time desc;", nativeQuery = true)
+	List<BookingRequestEntity> getBookingHistoryByUserInfoEntity(UserInfoEntity id);
 	
-	@Query (value = "SELECT * from booking_request where fk_user=(?1) and booking_time >= NOW() order by booking_time asc;", nativeQuery = true)
-	List<BookingRequestEntity> getUpcomingBookingTimeByUserInfoEntity(UserInfoEntity id);
+	@Query (value = "SELECT * from booking_request where fk_user=(?1) and booking_time >= CURDATE() and booking_status = 'SCHEDULED' order by booking_time asc;", nativeQuery = true)
+	List<BookingRequestEntity> getUpcomingBookingScheduleByUserInfoEntity(UserInfoEntity id);
 	
 	
 	@Query(value = "SELECT * from booking_request where DATE_FORMAT(booking_time, \"%Y-%m-%d %H:%i:%s\") <= CURDATE() order by booking_time desc;", nativeQuery = true)

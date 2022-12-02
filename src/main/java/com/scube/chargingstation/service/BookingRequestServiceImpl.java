@@ -265,7 +265,10 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		bookingRequestEntity.setBookingEndtime(endTime);
 		bookingRequestEntity.setBookingAmount(chargingPointConnectorRateDto.getCancelBookingAmount());
 		
-		bookingRequestRepository.save(bookingRequestEntity);
+		 bookingRequestRepository.save(bookingRequestEntity);
+		
+		
+		
 		
 		return true;
 	}
@@ -697,7 +700,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		UserInfoEntity userInfoEntity = userInfoService.getUserByMobilenumber(userMobileNo);
 		
-		List<BookingRequestEntity> bookingRequestEntities = bookingRequestRepository.findByUserInfoEntity(userInfoEntity);
+		List<BookingRequestEntity> bookingRequestEntities = bookingRequestRepository.getBookingHistoryByUserInfoEntity(userInfoEntity);
 		
 		return BookingMapper.toBookingResponseDtos(bookingRequestEntities);
 	}
@@ -712,7 +715,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		UserInfoEntity userInfoEntity = userInfoService.getUserByMobilenumber(userMobileNo);
 		
-		List<BookingRequestEntity> bookingRequestEntities = bookingRequestRepository.getUpcomingBookingTimeByUserInfoEntity(userInfoEntity);
+		List<BookingRequestEntity> bookingRequestEntities = bookingRequestRepository.getUpcomingBookingScheduleByUserInfoEntity(userInfoEntity);
 		
 		if(bookingRequestEntities == null) {
 			
