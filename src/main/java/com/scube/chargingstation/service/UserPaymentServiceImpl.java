@@ -42,11 +42,13 @@ import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
 import com.scube.chargingstation.dto.mapper.ChargingHistoryMapper;
 import com.scube.chargingstation.dto.mapper.ChargingPointMapper;
 import com.scube.chargingstation.dto.mapper.RazorOrderIdMapper;
+import com.scube.chargingstation.entity.BookingRequestEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
 import com.scube.chargingstation.entity.UserWalletDtlEntity;
 import com.scube.chargingstation.entity.UserWalletEntity;
 import com.scube.chargingstation.exception.BRSException;
+import com.scube.chargingstation.repository.BookingRequestRepository;
 import com.scube.chargingstation.repository.ChargerTypeRepository;
 import com.scube.chargingstation.repository.ChargingPointRepository;
 import com.scube.chargingstation.repository.ChargingRequestRepository;
@@ -67,6 +69,9 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 
 	@Autowired
 	ChargingRequestRepository chargingRequestRepository;
+	
+	@Autowired
+	BookingRequestRepository bookingRequestRepository;
 
 	@Autowired
 	ChargerTypeRepository chargerTypeRepository;
@@ -147,10 +152,21 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 			crEntity = chargingRequestEntity.get();
 		}
 		Double amount = Double.parseDouble(userWalletRequestDto.getRequestAmount());
-
+		
+		if(userWalletRequestDto.getBooking_request() != null) {
+		
+				BookingRequestEntity bookingRequestEntity = bookingRequestRepository.findById(userWalletRequestDto.getBooking_request()).get();
+				
+				if(bookingRequestEntity == null) {
+					throw BRSException.throwException("Error: Booking Not Found");
+				}
+				userWalletDtlEntity.setBookingRequestEntity(bookingRequestEntity);
+		}
+		
 		userWalletDtlEntity.setTransactionType(userWalletRequestDto.getTransactionType());
 		userWalletDtlEntity.setUserInfoEntity(userInfoEntity);
 		userWalletDtlEntity.setChargingRequestEntity(crEntity);
+		
 		//userWalletDtlEntity.setAmount(amount);
 		userWalletDtlEntity.setAmount(RoundUtil.doubleRound(amount,2));
 		userWalletDtlEntity.setPaymentFor(userWalletRequestDto.getPaymentFor());
@@ -265,6 +281,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		//userWalletDtlEntity.setTransactionType(userWalletRequestDto.getTransactionType());
 		userWalletDtlEntity.setTransactionType("Credit");
 		userWalletDtlEntity.setUserInfoEntity(userInfoEntity);
+		userWalletDtlEntity.setPaymentFor("Added Money");
 		//userWalletDtlEntity.setChargingRequestEntity(crEntity);
 		userWalletDtlEntity.setAmount(Double.parseDouble(df.format(Double.parseDouble(userWalletRequestDto.getRequestAmount()))));
 		userWalletDtlEntity.setOrderId(OrderId);
@@ -643,6 +660,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 				}
 				String OrderId=RandomStringUtil.getUniqueID();
 				userWalletDtlEntity.setTransactionType("Credit");
+				userWalletDtlEntity.setPaymentFor("Added Money");
 				userWalletDtlEntity.setUserInfoEntity(userInfoEntity);
 				userWalletDtlEntity.setAmount(Double.parseDouble(df.format(Double.parseDouble(userWalletRequestDto.getRequestAmount()))));
 				userWalletDtlEntity.setOrderId(OrderId);
