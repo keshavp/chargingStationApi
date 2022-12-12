@@ -36,7 +36,7 @@ public interface UserWalletDtlRepository extends JpaRepository<UserWalletDtlEnti
 	 * + " order by created_at desc ",nativeQuery = true)
 	 */
 	@Query(value="SELECT amount , DATE_FORMAT(created_at, '%Y-%m-%d %r') as transactionDate ,transaction_type as transactionType, payment_for as remark, "
-			+ " fk_chargingreq as chargingRequestId  FROM `ocpp.core`.emp_wallet_dtl",nativeQuery = true)
+			+ " fk_chargingreq as chargingRequestId , fk_booking_request as bookingRequestId  FROM emp_wallet_dtl where fk_user=(?1) order by created_at desc;",nativeQuery = true)
 	List<Map<String, String>> getUserTrHistory(String userId);
 	
 	
@@ -44,5 +44,7 @@ public interface UserWalletDtlRepository extends JpaRepository<UserWalletDtlEnti
 			+ " and ew.created_at >= (?1) and  ew.created_at <= (?2) order by ew.created_at desc;",nativeQuery = true)
 	List<UserWalletDtlEntity> getAddedMoneyRecordsForAllUsers(String startDate, String endDate);
 	
+	@Query(value = "SELECT * FROM emp_wallet_dtl where fk_booking_request=(?1) and payment_for = 'Debit - Booking Amount';", nativeQuery = true)
+	UserWalletDtlEntity getBookingDetailFromUserWalletDtlEntity(String bookingId);
 	
 }
