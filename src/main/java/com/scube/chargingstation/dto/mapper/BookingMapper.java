@@ -32,7 +32,8 @@ public class BookingMapper {
 				.setConnectorId(bookingRequestEntity.getConnectorEntity().getConnectorId())
 				.setConnectorName(bookingRequestEntity.getConnectorEntity().getChargerTypeEntity().getName())
 				.setBookingAmount(bookingRequestEntity.getBookingAmount())
-				.setRequestedAmount(bookingRequestEntity.getRequestAmount());
+				.setRequestedAmount(bookingRequestEntity.getRequestAmount())
+				.setBookingStatus(bookingRequestEntity.getBookingStatus());
 		
 	}
 	
