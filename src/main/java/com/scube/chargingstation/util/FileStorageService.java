@@ -28,10 +28,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.scube.chargingstation.entity.BookingRequestEntity;
+import com.scube.chargingstation.entity.CarModelEntity;
 import com.scube.chargingstation.entity.ChargerTypeEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.exception.FileStorageException;
+import com.scube.chargingstation.repository.BookingRequestRepository;
+import com.scube.chargingstation.repository.CarModelRepository;
 import com.scube.chargingstation.repository.ChargerTypeRepository;
 import com.scube.chargingstation.repository.ChargingRequestRepository;
 import com.scube.chargingstation.util.FileStorageProperties;
@@ -48,6 +52,12 @@ public class FileStorageService {
 	 
 	@Autowired
 	ChargerTypeRepository chargerTypeRepository;
+	
+	@Autowired
+	CarModelRepository carModelRepository;
+	
+	@Autowired
+	BookingRequestRepository bookingRequestRepository;
 	
 	@Autowired
 	ChargingRequestRepository chargingRequestRepository; 
@@ -123,6 +133,28 @@ public class FileStorageService {
 			  	            logger.info("filePath===="+ filePath);
 			  	            
 			 			}
+			 			if(docFor.equals("BRC")) {
+				 			
+			 				BookingRequestEntity bookingRequestEntity = bookingRequestRepository.findById(id).get();
+			        		
+			        		if(bookingRequestEntity==null)
+			        		{
+			        			throw BRSException.throwException("Error: Booking Request is invalid");
+			        		}
+			        		
+			        		fileName = bookingRequestEntity.getInvoiceFilePath();  		
+			        		logger.info("fileName===="+ fileName);
+			 				
+				 			newPAth = this.fileBaseLocation+"/"+UploadPathContUtils.FILE_RECEIPT_DIR;
+				 			logger.info("newPAth===="+ newPAth);
+			        		
+			        		fileStorageLocation = Paths.get(newPAth).toAbsolutePath().normalize();
+			        		logger.info("fileStorageLocation===="+ fileStorageLocation);
+			  	            
+			  	            filePath = fileStorageLocation.resolve(fileName).normalize();
+			  	            logger.info("filePath===="+ filePath);
+			  	            
+			 			}
 			 			
 		 			 return getFileResource(filePath);
 		        	
@@ -160,8 +192,31 @@ public class FileStorageService {
 		  	            filePath = fileStorageLocation.resolve(fileName).normalize();
 		  	            logger.info("filePath===="+ filePath);
 		 			}
-		  	            
-		  	          return getFileResource(filePath);
+			 		
+			 		// Uncomment for Car Model Image Upload
+					/*
+					 * else if(imageFor.equals("CMT")) {
+					 * 
+					 * CarModelEntity carModelEntity = carModelRepository.findById(id).get();
+					 * 
+					 * if(carModelEntity==null) { throw
+					 * BRSException.throwException("Error: Car Model is Invalid"); }
+					 * 
+					 * fileName = carModelEntity.getImagePath(); logger.info("fileName===="+
+					 * fileName);
+					 * 
+					 * newPAth = this.fileBaseLocation+"/"+UploadPathContUtils.FILE_CM_TYPE_DIR;
+					 * logger.info("newPath===="+ newPAth);
+					 * 
+					 * fileStorageLocation = Paths.get(newPAth).toAbsolutePath().normalize();
+					 * logger.info("fileStorageLocation===="+ fileStorageLocation);
+					 * 
+					 * filePath = fileStorageLocation.resolve(fileName).normalize();
+					 * logger.info("filePath===="+ filePath);
+					 * 
+					 * }
+					 */ 
+		  	        return getFileResource(filePath);
 		        		
 		        	
 		        } catch (Exception ex) {
@@ -216,24 +271,38 @@ public class FileStorageService {
 					
 					 System.out.println("newPath=============" + newPath);
 				
-				this.fileStorageLocation = Paths.get(newPath).toAbsolutePath().normalize();
+					 this.fileStorageLocation = Paths.get(newPath).toAbsolutePath().normalize();
 				
-				Files.createDirectories(this.fileStorageLocation);
+					 Files.createDirectories(this.fileStorageLocation);
 				
-				Path targetLocation = this.fileStorageLocation.resolve(fileNewName);
+					 Path targetLocation = this.fileStorageLocation.resolve(fileNewName);
 				
-				Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+					 Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 				
-				/*
-				 * System.out.println("fileName" + fileNewName+ " ---filePath" +
-				 * targetLocation);
-				 * 
-				 * returnPath = newPath + fileNewName;
-				 * 
-				 * System.out.println("returnPath=============" + returnPath);
-				 */
+					/*
+					 * System.out.println("fileName" + fileNewName+ " ---filePath" +
+					 * targetLocation);
+					 * 
+					 * returnPath = newPath + fileNewName;
+					 * 
+					 * System.out.println("returnPath=============" + returnPath);
+					 */
 				 
 				}
+				// Car Model
+				/*
+				 * else if(imageFor.equals("CMT")) { newPath = this.fileBaseLocation
+				 * +"/"+UploadPathContUtils.FILE_CM_TYPE_DIR;
+				 * 
+				 * logger.info("New Path for Car Model ========>>>>" + newPath);
+				 * 
+				 * this.fileStorageLocation = Paths.get(newPath).toAbsolutePath().normalize();
+				 * Files.createDirectories(this.fileStorageLocation);
+				 * 
+				 * Path targetLocation = this.fileStorageLocation.resolve(fileNewName);
+				 * Files.copy(file.getInputStream(), targetLocation,
+				 * StandardCopyOption.REPLACE_EXISTING); }
+				 */
 				
 				return String.valueOf(fileNewName);
 			}catch (IOException ex) {
