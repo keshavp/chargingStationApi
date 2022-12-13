@@ -28,4 +28,6 @@ public class ChargingHistoryDto {
 	private String remark;
 	private String chargingRequestId;
 	
+	private String bookingRequestId;
+	
 }
