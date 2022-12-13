@@ -15,5 +15,6 @@ public class UserWalletRequestDto{
 	private String  razorSignature;
 	private String  encResp;
 	private String  paymentFor;
+	private String booking_request;
 	
 }

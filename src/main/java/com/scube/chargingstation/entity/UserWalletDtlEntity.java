@@ -25,8 +25,11 @@ public class UserWalletDtlEntity extends BaseEntity{
 	
 	@OneToOne
     @JoinColumn(name = "fk_chargingreq")
-    private
-	ChargingRequestEntity chargingRequestEntity;
+    private ChargingRequestEntity chargingRequestEntity;
+	
+	@OneToOne
+	@JoinColumn(name = "fk_booking_request")
+	private BookingRequestEntity bookingRequestEntity;
 	
 	@Column(name = "amount")
 	private Double  amount;
