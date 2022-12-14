@@ -35,9 +35,9 @@ public interface UserWalletDtlRepository extends JpaRepository<UserWalletDtlEnti
 	 * " FROM  emp_wallet_dtl ewd where ewd.fk_user =?1 and ewd.fk_chargingreq is not null) as trhistory "
 	 * + " order by created_at desc ",nativeQuery = true)
 	 */
-	@Query(value="SELECT amount , DATE_FORMAT(created_at, '%Y-%m-%d %r') as transactionDate ,transaction_type as transactionType, payment_for as remark,"
-			+ "fk_chargingreq as chargingRequestId , fk_booking_request as bookingRequestId  FROM emp_wallet_dtl where fk_user=(?1)"
-			+ "order by created_at desc;",nativeQuery = true)
+	@Query(value="SELECT amount , DATE_FORMAT(created_at, '%Y-%m-%d %T %p') as transactionDate ,transaction_type as transactionType, payment_for as remark, \r\n"
+			+ "fk_chargingreq as chargingRequestId , fk_booking_request as bookingRequestId FROM emp_wallet_dtl where fk_user=(?1)\r\n"
+			+ "order by DATE_FORMAT(created_at, '%Y-%m-%d %T %p') desc;",nativeQuery = true)
 	List<Map<String, String>> getUserTrHistory(String userId);
 	
 	
