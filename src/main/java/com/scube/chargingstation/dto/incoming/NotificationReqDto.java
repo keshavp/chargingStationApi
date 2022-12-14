@@ -8,5 +8,6 @@ public class NotificationReqDto {
 	private String  mobileUser_Id;
 	private String  title;
 	private String  body;
+	private String  sendid;
 	
 }

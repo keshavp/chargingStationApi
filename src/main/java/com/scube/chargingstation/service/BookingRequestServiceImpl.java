@@ -867,12 +867,15 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		for( BookingRequestEntity bookingRequestEntity : bookingRequestScheduledEntities) {
 		
 			String title="Booking cancelled for EV-Dock.";
-			String body=" Hi "+bookingRequestEntity.getUserInfoEntity().getUsername()+", your Ev car charging booking on ( "+ bookingRequestEntity.getBookingTime() +") at "+bookingRequestEntity.getChargingPointEntity().getName()+" with Evdock has been cancelled due to no show.";
+			String body=" Hi "+bookingRequestEntity.getUserInfoEntity().getUsername()+", your Ev car charging booking on ( "+ DateUtils.formattedInstantToSimpleDateTimeFormat(bookingRequestEntity.getBookingTime()) +") at "+bookingRequestEntity.getChargingPointEntity().getName()+" with Evdock has been cancelled due to no show.";
 
 			NotificationReqDto notificationReqDto =new NotificationReqDto();
 			notificationReqDto.setMobileUser_Id(bookingRequestEntity.getUserInfoEntity().getMobilenumber());
 			notificationReqDto.setTitle(title);
 			notificationReqDto.setBody(body);
+			
+			logger.info("AutoCancellationSchedulers:------Booking id - "+notificationReqDto.getSendid() + "DEVICE_TOKEN "+bookingRequestEntity.getUserInfoEntity().getFcmToken() +" for mobile no "+notificationReqDto.getMobileUser_Id());
+			
 			notificationService.sendNotification(notificationReqDto);
 		
 		}
@@ -995,6 +998,11 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			notificationReqDto.setMobileUser_Id(bookingRequestEntity.getUserInfoEntity().getMobilenumber());
 			notificationReqDto.setTitle(title);
 			notificationReqDto.setBody(body);
+			notificationReqDto.setSendid(bookingRequestEntity.getId());
+
+			
+			logger.info("oneDayBeforeBookingReminderSchedulers:------Booking id - "+notificationReqDto.getSendid() + "DEVICE_TOKEN "+bookingRequestEntity.getUserInfoEntity().getFcmToken() +" for mobile no "+notificationReqDto.getMobileUser_Id());
+			
 			notificationService.sendNotification(notificationReqDto);
 			
 		}
@@ -1015,6 +1023,10 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			notificationReqDto.setMobileUser_Id(bookingRequestEntity.getUserInfoEntity().getMobilenumber());
 			notificationReqDto.setTitle(title);
 			notificationReqDto.setBody(body);
+			notificationReqDto.setSendid(bookingRequestEntity.getId());
+			
+			logger.info("OneHourBeforeBookingReminderSchedulers:------Booking id - "+notificationReqDto.getSendid() + "DEVICE_TOKEN "+bookingRequestEntity.getUserInfoEntity().getFcmToken() +" for mobile no "+notificationReqDto.getMobileUser_Id());
+			
 			notificationService.sendNotification(notificationReqDto);
 			
 		}
@@ -1033,6 +1045,9 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			notificationReqDto.setMobileUser_Id(bookingRequestEntity.getUserInfoEntity().getMobilenumber());
 			notificationReqDto.setTitle(title);
 			notificationReqDto.setBody(body);
+			
+			logger.info("bookingReminderById:------Booking id - "+notificationReqDto.getSendid() + "DEVICE_TOKEN "+bookingRequestEntity.getUserInfoEntity().getFcmToken() +" for mobile no "+notificationReqDto.getMobileUser_Id());
+			
 			notificationService.sendNotification(notificationReqDto);
 			
 			return true;
