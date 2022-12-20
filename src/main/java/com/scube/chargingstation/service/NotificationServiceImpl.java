@@ -64,6 +64,8 @@ import com.scube.chargingstation.repository.UserWalletRepository;
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
+	
+	
 	@Autowired
 	ChargingPointRepository chargingPointRepository;
 	
@@ -109,8 +111,6 @@ public class NotificationServiceImpl implements NotificationService {
 			
 			//String DEVICE_TOKEN="dEpGWA5UROmaIvcq8OJtma:APA91bEdk7MRhaajWlub-3Ow4VUIE_upMvEX6W88Rc0AMJ4k9pAL-u8PwBeHudk67LlkW8wqos7yEQf1V33kqesgWbWzzD-vah0ez-H8_JNcayIKew5SFdzH2WRz92KdYC_BLHlTR_RR";
 		            
-			logger.info("Booking id - "+notificationReqDto.getSendid() + "DEVICE_TOKEN "+DEVICE_TOKEN +" for mobile no "+notificationReqDto.getMobileUser_Id());
-			
 			if((DEVICE_TOKEN==null)||(DEVICE_TOKEN.isEmpty()))
 			{
 			  throw BRSException.throwException("Error: NO Device Token");
@@ -165,7 +165,7 @@ public class NotificationServiceImpl implements NotificationService {
 			
 			//String DEVICE_TOKEN="dEpGWA5UROmaIvcq8OJtma:APA91bEdk7MRhaajWlub-3Ow4VUIE_upMvEX6W88Rc0AMJ4k9pAL-u8PwBeHudk67LlkW8wqos7yEQf1V33kqesgWbWzzD-vah0ez-H8_JNcayIKew5SFdzH2WRz92KdYC_BLHlTR_RR";
 		            
-			logger.info("DEVICE_TOKEN "+DEVICE_TOKEN +" for mobile no "+bookingRequestEntity.getUserInfoEntity().getMobilenumber());
+			logger.info("sendBookingReminderNotification:------DEVICE_TOKEN "+DEVICE_TOKEN +" for mobile no "+bookingRequestEntity.getUserInfoEntity().getMobilenumber());
 			
 			if((DEVICE_TOKEN==null)||(DEVICE_TOKEN.isEmpty()))
 			{

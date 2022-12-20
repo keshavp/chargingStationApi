@@ -2,6 +2,8 @@ package com.scube.chargingstation.util;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -37,12 +39,18 @@ public class Schedulers {
 	@Autowired
 	PartnerService partnerService;
 	
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+	
 	// 5
 	@Scheduled(cron = "${updateStartResult.cronTime}")
 	public int updateStartResult() throws Exception {
 		    
 		//log.info("updateStartResult ======================== "+ new Date().getTime());
 	 	// transactionsService.updateStartResultInitiated();
+		
+	//	log.info("updateStartResultSchedulers ======================== "+ sdf.format(new Date()));
+		
 	 	transactionsService.chargingRequestedBill();
 	 	
 	 	infoOtpService.removeUnVerificationUser();
@@ -53,26 +61,27 @@ public class Schedulers {
 	@Scheduled(cron = "${bookingAuto.cronTime}")
 	public void bookingAutoCancellation() throws Exception {
 
-		//log.info("bookingAutoCancellation ======================== "+ new Date().getTime());
-		
 		bookingRequestService.bookingAutoCancellationSchedulers();
 	}
 	
-	@Scheduled(cron = "${bookingReminder.oneDayBefore}")
-	public int oneDayBeforeBookingReminder() throws Exception {
-		    
-		log.info("oneDayBeforeBookingReminderSchedulers ======================== "+ new Date().getTime());
-		bookingRequestService.oneDayBeforeBookingReminderSchedulers();
-	 	
-		return 0;
-	}
+	// comment by keshav 16-12-2022 
+	/*
+	 * @Scheduled(cron = "${bookingReminder.oneDayBefore}") public int
+	 * oneDayBeforeBookingReminder() throws Exception {
+	 * 
+	 * bookingRequestService.oneDayBeforeBookingReminderSchedulers();
+	 * 
+	 * return 0; }
+	 */
 	
 	@Scheduled(cron = "${bookingReminder.oneHour}")
 	public int oneHourBeforeBookingReminder() throws Exception {
 		    
-		log.info("oneHourBeforeBookingReminderSchedulers ======================== "+ new Date().getTime());
+	//	log.info("oneHourBeforeBookingReminderSchedulers ======================== "+ sdf.format(new Date()));
 		bookingRequestService.oneHourBeforeBookingReminderSchedulers();
-	 	
+		
+	// add  by keshav 16-12-2022 
+		bookingRequestService.oneDayBeforeBookingReminderSchedulers();	 	
 		return 0;
 	}
 	
@@ -88,6 +97,7 @@ public class Schedulers {
 	public int sendGunInsertNotification() throws Exception {
 		
 		//log.info("sendGunInsertNotification");
+		log.info("sendGunInsertNotificationSchedulers ======================== "+ sdf.format(new Date()));
 		chargingRequestService.sendGunInsertNotification();
 		return 0;
 	}
@@ -97,6 +107,7 @@ public class Schedulers {
 	public int stopChargingOnTime() throws Exception {
 		
 		//log.info("sendGunInsertNotification");
+		log.info("stopChargingOnTimeSchedulers ======================== "+ sdf.format(new Date()));
 		chargingRequestService.stopChargingOnTime();
 		return 0;
 	}
@@ -104,7 +115,8 @@ public class Schedulers {
 	@Scheduled(cron = "${partnersDailyShare.cronTime}")
 	public int insertPartnersDailyShare() throws Exception {
 		
-		//log.info("sendGunInsertNotification");
+		//log.info("sendGunInsertNotification")
+		log.info("insertPartnersDailyShareSchedulers ======================== "+ sdf.format(new Date()));
 		partnerService.addPartnerDailyShare();
 		return 0;
 	}
