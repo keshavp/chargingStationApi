@@ -7,4 +7,6 @@ public class UploadPathContUtils {
 	public static final String FILE_C_TYPE_DIR = "images/connectortypes";
 	//file upload path for carrier rates 
 	
+	//File upload path for car model type
+	public static final String FILE_CM_TYPE_DIR = "images/carmodeltypes";
 }
