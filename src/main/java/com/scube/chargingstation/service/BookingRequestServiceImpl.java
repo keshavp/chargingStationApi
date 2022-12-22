@@ -26,19 +26,24 @@ import com.scube.chargingstation.dto.BookingResponseDto;
 import com.scube.chargingstation.dto.BookingSlotsRespDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
 import com.scube.chargingstation.dto.incoming.BookingRequestIncomingDto;
+import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.NotificationReqDto;
 import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
 import com.scube.chargingstation.dto.mapper.BookingMapper;
 import com.scube.chargingstation.entity.BookingRequestEntity;
+import com.scube.chargingstation.entity.ChargingPointConnectorRateEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
+import com.scube.chargingstation.entity.UserWalletDtlEntity;
 import com.scube.chargingstation.entity.UserWalletEntity;
 import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.exception.EntityType;
 import com.scube.chargingstation.exception.ExceptionType;
 import com.scube.chargingstation.repository.BookingRequestRepository;
+import com.scube.chargingstation.repository.ChargingPointConnectorRateRepository;
 import com.scube.chargingstation.repository.UserInfoRepository;
+import com.scube.chargingstation.repository.UserWalletDtlRepository;
 import com.scube.chargingstation.repository.UserWalletRepository;
 import com.scube.chargingstation.util.CancellationReceiptPdf;
 import com.scube.chargingstation.util.DateUtils;
@@ -57,6 +62,9 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	ChargingPointService chargingPointService;
 	
 	@Autowired
+	ChargingRequestService chargingRequestService;
+	
+	@Autowired
 	ConnectorService connectorService;
 	
 	@Autowired
@@ -67,6 +75,12 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	
 	@Autowired
 	UserWalletRepository userWalletRepository;
+	
+	@Autowired
+	UserWalletDtlRepository userWalletDtlRepository;
+	
+	@Autowired
+	ChargingPointConnectorRateRepository chargingPointConnectorRateRepository;
 	
 	@Autowired
 	ChargingPointConnectorRateService chargingPointConnectorRateService;
@@ -208,45 +222,55 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		UserWalletRequestDto userWalletRequestDto = new UserWalletRequestDto();
 		
-		ChargingPointConnectorRateDto chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(bookingRequestIncomingDto.getChargingPointId(), 
-				bookingRequestIncomingDto.getConnectorId(), bookingRequestIncomingDto.getRequestedAmount());
+		ChargingPointConnectorRateEntity chargingPointConnectorRateDtoFor1Kwh = chargingPointConnectorRateRepository.getEntityByChargingPointIdAndConnectorIdAndKwh1(chargingPointEntity, connectorEntity);
 		
-		logger.info("-----" + "Rates are : " + chargingPointConnectorRateDto + "-----");
+		logger.info("-----" + "Rates are : " + chargingPointConnectorRateDtoFor1Kwh + "-----");
 			
-		if(chargingPointConnectorRateDto == null) {
+		if(chargingPointConnectorRateDtoFor1Kwh == null) {
 			
 			throw BRSException.throwException("Error : No Rate Present for selected Charging Point and Connector");
 			
 		}
 		
-		logger.info("-----" + "Rates are : " + chargingPointConnectorRateDto.getCancelBookingAmount() + "-----");
-		
+		logger.info("-----" + "Rates are : " + chargingPointConnectorRateDtoFor1Kwh.getCancelBookingAmount() + "-----");
+				
 		int isSlotAvailable = bookingRequestRepository.isBookingSlotIsAvailable("SCHEDULED", bookingRequestIncomingDto.getChargingPointId(), bookingRequestIncomingDto.getConnectorId(),
 				inputBookDateInInstant, endTime);
 		
 		if(isSlotAvailable == 1) {
 			throw BRSException.throwException(EntityType.BOOKING, ExceptionType.NOT_AVAILABLE , inputBookTime); 
 		}
+				
+		Double kwhForReqBookingTime=0.0;
 		
+		ChargingRequestDto chargingRequestDto = new ChargingRequestDto();
+		chargingRequestDto.setChargingPreferenceType(bookingRequestIncomingDto.getBookingPreferenceType());
+		chargingRequestDto.setRequestedKwh(String.valueOf(bookingRequestIncomingDto.getRequestedKwh()));
+		chargingRequestDto.setRequestAmount(String.valueOf(bookingRequestIncomingDto.getRequestedAmount()));
+		chargingRequestDto.setRequestedTimeInMins(bookingRequestIncomingDto.getRequestedTimeInMins());
+		
+		if(bookingRequestIncomingDto.getBookingPreferenceType().equals("Time")) {
+			kwhForReqBookingTime = chargingRequestService.getAllowedCharge(chargingRequestDto, chargingPointConnectorRateDtoFor1Kwh);
+			logger.info("KWH For Requested Booking Time " + kwhForReqBookingTime);
+		}
+		
+		Double totalAmtForRequestedKwh = getTotalAmt(bookingRequestIncomingDto, chargingPointConnectorRateDtoFor1Kwh, kwhForReqBookingTime);
+		
+		logger.info("Total Amount requested for:------ " + " is " + totalAmtForRequestedKwh);
+		
+		ChargingPointConnectorRateEntity chargingPointConnectorRateDtoEntity = getCalculatedAmount(chargingPointEntity, connectorEntity, totalAmtForRequestedKwh);
+
 		
 		Double balance=0.0;
 		Double dCurBal=userWalletEntity.getCurrentBalance();
-		Double bookAmt=chargingPointConnectorRateDto.getCancelBookingAmount(); // book amount
-			
+		Double bookAmt=chargingPointConnectorRateDtoEntity.getCancelBookingAmount(); // book amount	
+		
+		logger.info("Booking Amount :---- " + bookAmt);
 		
 		if(dCurBal<bookAmt)
 		{
 			  throw BRSException.throwException("Error: Insufficient Wallet Balance");
 		}
-		
-		
-		
-		userWalletRequestDto.setMobileUser_Id(userInfoEntity.getMobilenumber());
-		userWalletRequestDto.setTransactionType("Debit");
-		userWalletRequestDto.setRequestAmount(String.valueOf(chargingPointConnectorRateDto.getCancelBookingAmount()));
-		userWalletRequestDto.setPaymentFor("Debit -Booking amount");
-		
-		userPaymentService.processWalletMoney(userWalletRequestDto);
 		
 		BookingRequestEntity bookingRequestEntity = new BookingRequestEntity();
 		
@@ -257,20 +281,116 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		bookingRequestEntity.setChargingPointEntity(chargingPointEntity);
 		bookingRequestEntity.setBookingStatus("SCHEDULED");
 		bookingRequestEntity.setConnectorEntity(connectorEntity);
-		bookingRequestEntity.setRequestAmount(bookingRequestIncomingDto.getRequestedAmount());
+		bookingRequestEntity.setBookingPreferenceType(bookingRequestIncomingDto.getBookingPreferenceType());
+		
+		if(String.valueOf(bookingRequestIncomingDto.getRequestedAmount()) != null) {
+			bookingRequestEntity.setRequestAmount(bookingRequestIncomingDto.getRequestedAmount());
+		}
+		else {
+			bookingRequestEntity.setRequestAmount(totalAmtForRequestedKwh);
+		}
+		
+		if(String.valueOf(bookingRequestIncomingDto.getRequestedKwh()) != null) {
+			bookingRequestEntity.setRequestedKwh(bookingRequestIncomingDto.getRequestedKwh());
+		}
+		if(bookingRequestIncomingDto.getRequestedTimeInMins() != null) {
+			bookingRequestEntity.setRequestedKwh(kwhForReqBookingTime);
+		}
+		if(String.valueOf(bookingRequestIncomingDto.getRequestedAmount()) != null) {
+			bookingRequestEntity.setRequestedKwh(chargingPointConnectorRateDtoEntity.getKwh());
+		}
+		
+		
+		bookingRequestEntity.setRequestedTime(bookingRequestIncomingDto.getRequestedTimeInMins());
+		
 		bookingRequestEntity.setBookingTime(inputBookDateInInstant);
 		bookingRequestEntity.setCustName(bookingRequestIncomingDto.getCustName());
 		bookingRequestEntity.setMobileNo(bookingRequestIncomingDto.getCustMobileNo());
 		bookingRequestEntity.setVehicleNO(bookingRequestIncomingDto.getCustVehicleNo());
 		bookingRequestEntity.setBookingEndtime(endTime);
-		bookingRequestEntity.setBookingAmount(chargingPointConnectorRateDto.getCancelBookingAmount());
 		
-		 bookingRequestRepository.save(bookingRequestEntity);
+		bookingRequestEntity.setBookingAmount(bookAmt);
 		
+		bookingRequestEntity =  bookingRequestRepository.save(bookingRequestEntity);
 		
+		userWalletRequestDto.setMobileUser_Id(userInfoEntity.getMobilenumber());
+		userWalletRequestDto.setTransactionType("Debit");
+		userWalletRequestDto.setRequestAmount(String.valueOf(bookAmt));
+		userWalletRequestDto.setPaymentFor("Debit - Booking amount");
+		userWalletRequestDto.setBooking_request(bookingRequestEntity.getId());
 		
+		userPaymentService.processWalletMoney(userWalletRequestDto);
 		
 		return true;
+	}
+	
+	
+	public Double getTotalAmt(BookingRequestIncomingDto bookingRequestIncomingDto, ChargingPointConnectorRateEntity chargingPointConnectorRateEntity,
+			Double calculatedKwhForRequestedTime) {
+		
+		ChargingRequestDto chargingRequestDto = new ChargingRequestDto();
+		chargingRequestDto.setChargingPreferenceType(bookingRequestIncomingDto.getBookingPreferenceType());
+		chargingRequestDto.setRequestedKwh(String.valueOf(bookingRequestIncomingDto.getRequestedKwh()));
+		chargingRequestDto.setRequestAmount(String.valueOf(bookingRequestIncomingDto.getRequestedAmount()));
+		chargingRequestDto.setRequestedTimeInMins(bookingRequestIncomingDto.getRequestedTimeInMins());
+		
+		Double totalChargeAmountForKwhAndTime = 0.0;
+		
+		if(bookingRequestIncomingDto.getBookingPreferenceType().equals("KWH")) {
+			Double amountFor1Kwh = chargingPointConnectorRateEntity.getAmount();
+			totalChargeAmountForKwhAndTime = chargingRequestService.getChargeAmountForKwhAndTime(amountFor1Kwh, chargingRequestDto, chargingPointConnectorRateEntity);
+		
+			logger.info("Total Charge Amount for" + bookingRequestIncomingDto.getRequestedKwh() + " KWH is " + totalChargeAmountForKwhAndTime);
+			return totalChargeAmountForKwhAndTime;
+		}
+		if(bookingRequestIncomingDto.getBookingPreferenceType().equals("Amount")) {
+			Double requestedAmountForBookingTypeAmount = bookingRequestIncomingDto.getRequestedAmount();
+			logger.info("Requested Amount for Charging by User :----- " + requestedAmountForBookingTypeAmount);
+			return requestedAmountForBookingTypeAmount;
+		}
+		if(bookingRequestIncomingDto.getBookingPreferenceType().equals("Time")) {
+			Double requestedAmountForBookingTypeTime = chargingRequestService.getChargeAmountForKwhAndTime
+					(calculatedKwhForRequestedTime, chargingRequestDto, chargingPointConnectorRateEntity);
+			logger.info("Requested Amount for Charging Type - Time by User :----- " + requestedAmountForBookingTypeTime);
+			return requestedAmountForBookingTypeTime;
+		}
+		
+		return totalChargeAmountForKwhAndTime;
+	}
+	
+	
+	public ChargingPointConnectorRateEntity getCalculatedAmount(ChargingPointEntity chargingPointEntity, ConnectorEntity connectorEntity, 
+			Double calculatedAmount) {
+		
+		Double maxAmount = chargingPointConnectorRateRepository.getMaxAmountFromEntity(chargingPointEntity, connectorEntity);
+		
+		ChargingPointConnectorRateEntity chargingPointConnectorRateEntityObj = new ChargingPointConnectorRateEntity();
+		ChargingPointConnectorRateEntity chargingPointConnectorRateEntityObject = new ChargingPointConnectorRateEntity();
+		
+		if(calculatedAmount > maxAmount) {
+			logger.info("Calculated Amount is greater than Max Amount");
+			chargingPointConnectorRateEntityObject = chargingPointConnectorRateRepository.
+									getBookingAmountForRequestedAmountKwhAndTime(chargingPointEntity, connectorEntity, maxAmount);
+			
+			if(chargingPointConnectorRateEntityObject == null) {
+				throw BRSException.throwException("No Records Present");
+			}
+			
+			return chargingPointConnectorRateEntityObject;
+		}
+		else {
+			logger.info("Calculated Amount is less than Max Amount");
+			chargingPointConnectorRateEntityObj = chargingPointConnectorRateRepository.
+					getBookingAmountForRequestedAmountKwhAndTime(chargingPointEntity, connectorEntity, calculatedAmount);
+			
+			if(chargingPointConnectorRateEntityObj == null) {
+				throw BRSException.throwException("No Records Present");
+			}
+			
+			logger.info("Cancellation Amount " + chargingPointConnectorRateEntityObj.getCancelBookingAmount());
+			
+			return chargingPointConnectorRateEntityObj;
+		}
 	}
 
 	@Override
@@ -858,6 +978,15 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			bookingRequestEntity.setReceiptNo(bookingRequestPdfEntity.getReceiptNo());
 		//	bookingRequestRepository.save(bookingRequestEntity);
 			
+			UserWalletDtlEntity userWalletDtlEntity = userWalletDtlRepository.getBookingDetailFromUserWalletDtlEntity(bookingRequestEntity.getId());
+			
+			if(userWalletDtlEntity == null) {
+				throw BRSException.throwException("Error : No Record present for Booking ID");
+			}
+			
+			userWalletDtlEntity.setPaymentFor("No Refund - Booking Autocancelled");
+			
+			userWalletDtlRepository.save(userWalletDtlEntity);
 			
 			bookingRequestEntities.add(bookingRequestEntity);
 		}
@@ -966,7 +1095,9 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 					userWalletRequestDto.setTransactionType("Credit");
 					userWalletRequestDto.setMobileUser_Id(bookingRequestEntity.getUserInfoEntity().getMobilenumber());
 					userWalletRequestDto.setRequestAmount(String.valueOf(bookingRequestEntity.getBookingAmount()));
-					userWalletRequestDto.setPaymentFor("Refund- Booking cancelled");
+					userWalletRequestDto.setPaymentFor("Refund - Booking cancelled");
+					logger.info("Booking ID" + bookingId);
+					userWalletRequestDto.setBooking_request(bookingId);
 					
 					userPaymentService.processWalletMoney(userWalletRequestDto);
 				
@@ -979,6 +1110,16 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			bookingRequestEntity.setInvoiceFilePath(bookingRequestPdfEntity.getInvoiceFilePath());
 			bookingRequestEntity.setReceiptNo(bookingRequestPdfEntity.getReceiptNo());
 			bookingRequestRepository.save(bookingRequestEntity);
+			
+			UserWalletDtlEntity userWalletDtlEntity = userWalletDtlRepository.getBookingDetailFromUserWalletDtlEntity(bookingId);
+			
+			if(userWalletDtlEntity == null) {
+				throw BRSException.throwException("Error : No Record Present");
+			}
+			
+			userWalletDtlEntity.setPaymentFor("No Refund - Booking Cancelled");
+			
+			userWalletDtlRepository.save(userWalletDtlEntity);
 			
 		return "Booking successful cancellation. no refund";
 	}

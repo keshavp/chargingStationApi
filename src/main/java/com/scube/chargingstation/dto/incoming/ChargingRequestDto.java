@@ -19,5 +19,10 @@ public class ChargingRequestDto{
 	private String  bookingReqId;
 	private String  bookingAmount;
 	private String  reqType;
+	
+	private String  chargingPreferenceType;
+	
+	private String requestedKwh;
+	private String requestedTimeInMins;
 
 }

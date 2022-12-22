@@ -49,6 +49,7 @@ import com.scube.chargingstation.dto.MostActiveChargingStationsDto;
 import com.scube.chargingstation.dto.UserDashboardDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
+import com.scube.chargingstation.dto.incoming.BookingRequestIncomingDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationWiseReportIncomingDto;
@@ -62,6 +63,7 @@ import com.scube.chargingstation.entity.AmenitiesEntity;
 import com.scube.chargingstation.entity.BookingRequestEntity;
 import com.scube.chargingstation.entity.CarModelEntity;
 import com.scube.chargingstation.entity.ChargerTypeEntity;
+import com.scube.chargingstation.entity.ChargingPointConnectorRateEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
@@ -73,8 +75,10 @@ import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.repository.BookingRequestRepository;
 import com.scube.chargingstation.repository.CarModelRepository;
 import com.scube.chargingstation.repository.ChargerTypeRepository;
+import com.scube.chargingstation.repository.ChargingPointConnectorRateRepository;
 import com.scube.chargingstation.repository.ChargingPointRepository;
 import com.scube.chargingstation.repository.ChargingRequestRepository;
+import com.scube.chargingstation.repository.ConnectorRepository;
 import com.scube.chargingstation.repository.PartnerRepository;
 import com.scube.chargingstation.repository.TransactionsRepository;
 import com.scube.chargingstation.repository.UserInfoRepository;
@@ -122,6 +126,9 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	ChargingPointConnectorRateService chargingPointConnectorRateService;
 	
 	@Autowired
+	ChargingPointConnectorRateRepository chargingPointConnectorRateRepository;
+	
+	@Autowired
 	TransactionsRepository transactionsRepository;
 	
 	@Autowired
@@ -129,6 +136,9 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	
 	@Autowired
 	ChargingPointRepository chargePointRepository;
+	
+	@Autowired
+	ConnectorRepository connectorRepository;
 	
 	@Value("${chargenow.button.booking}") private long chargeNow;
 	
@@ -140,8 +150,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	 
 	
 	@Override
-	public boolean addChargingRequest(ChargingRequestDto chargingRequestDto) {
-			
+	public boolean addChargingRequest(ChargingRequestDto chargingRequestDto) {		
 		
 			String reqType=chargingRequestDto.getReqType();
 			String BookingReqId=null;
@@ -196,9 +205,16 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		//	Double dCurBal=Double.parseDouble(curBal); //double existing balance
 			
 			Double dCurBal=userWalletEntity.getCurrentBalance();
-
-			Double reqAmt=Double.parseDouble(chargingRequestDto.getRequestAmount()); //requested charging amount
-			
+		  	
+		  	String reqAmtByUser = chargingRequestDto.getRequestAmount();
+		  	Double reqAmt;
+		  	
+		  	if(reqAmtByUser == null) {
+		  		reqAmt = 0.0; //requested charging amount
+		  	}
+		  	else {
+		  		reqAmt=Double.parseDouble(chargingRequestDto.getRequestAmount());
+		  	}
 			String bookingAmount=chargingRequestDto.getBookingAmount();
 			Double bookingAmt=0.0;
 			
@@ -235,8 +251,19 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			}
 		  	// to call remote start API need transaction Id and allowedcharge value
 		  	
+		    ChargingPointConnectorRateEntity chargingPointConnectorRateEntity = chargingPointConnectorRateRepository.
+		    		getEntityByChargingPointIdAndConnectorIdAndKwh1(chargingPointEntity, connectorEntity);
+		  	
+		    if(chargingPointConnectorRateEntity == null) { 
+		    	throw BRSException.throwException("Error : NO Values Present for the " + 
+		    				chargingPointEntity.getChargingPointId() + " and " + connectorEntity.getConnectorId()); 
+		    }
+		    
 		 	Double chrg=0.0;
-		  	chrg= getAllowedCharge(chargingRequestDto);
+		  	chrg= getAllowedCharge(chargingRequestDto, chargingPointConnectorRateEntity);
+		  	
+		  	Double chargeAmountForKwhAndTime = 0.0;
+		  	chargeAmountForKwhAndTime = getChargeAmountForKwhAndTime(chrg, chargingRequestDto, chargingPointConnectorRateEntity);
 		  	
 		  	String transactionId="";
 		  	
@@ -305,18 +332,27 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		  chargingRequestEntity.setTransactionsEntity(transactionsEntity);
 		  else 
 		  {
-			  throw  BRSException.throwException("Error: Can't book, transactionId can not be blank "); 
+	//		  throw  BRSException.throwException("Error: Can't book, transactionId can not be blank "); 
 		  }
 		 
-		  	
+		  //	if(reqAmtByUser != null) {
 		  	chargingRequestEntity.setRequestKwh(chrg);
+		//  	}
+		  	
 			chargingRequestEntity.setChargingPointEntity(chargingPointEntity);
 			chargingRequestEntity.setConnectorEntity(connectorEntity);
 			chargingRequestEntity.setUserInfoEntity(userInfoEntity);
 			chargingRequestEntity.setStatus(chargingRequestDto.getStatus());  
-			chargingRequestEntity.setRequestAmount(Double.valueOf(chargingRequestDto.getRequestAmount()));
+			if(reqAmtByUser != null) {
+				chargingRequestEntity.setRequestAmount(Double.valueOf(chargingRequestDto.getRequestAmount()));
+			}
+			else {
+				// In case of KWH and Time
+				chargingRequestEntity.setRequestAmount(chargeAmountForKwhAndTime);
+			}
 			chargingRequestEntity.setChargingStatus("Pending");
-			
+			chargingRequestEntity.setChargingPreferenceType(chargingRequestDto.getChargingPreferenceType());
+			chargingRequestEntity.setRequestedTime(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestDto.getRequestedTimeInMins()));
 			chargingRequestEntity.setCustName(chargingRequestDto.getName());
 			chargingRequestEntity.setMobileNo(chargingRequestDto.getMobileNo());
 			chargingRequestEntity.setVehicleNO(chargingRequestDto.getVechicleNo());
@@ -341,9 +377,6 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 					bookingRequestEntity.setChargingRequestEntity(chargingRequestEntity1);
 					bookingRequestRepository.save(bookingRequestEntity);
 			}
-			
-			
-			
 			
 			return true;
 			
@@ -475,10 +508,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 						
 					node = objectMapper.readTree(jsonNode.get(conEntity.getConnectorId()).toString());
 					}
-				} catch (JsonMappingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JsonProcessingException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -882,29 +912,88 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		
 	}
 	*/
-	public Double getAllowedCharge(ChargingRequestDto chargingRequestDto)
+	public Double getAllowedCharge(ChargingRequestDto chargingRequestDto, ChargingPointConnectorRateEntity chargingPointConnectorRateEntity)
 	{
 		Double allowedChrg=0.0;
 		
-		
 		logger.info("cp id"+chargingRequestDto.getChargePointId());
 		logger.info("cp conne id"+chargingRequestDto.getConnectorId());
-		logger.info("cp getRequestAmount"+chargingRequestDto.getRequestAmount());   
-
-		//ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getConnectorId(),chargingRequestEntity.getRequestAmount());
-		
-		ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(chargingRequestDto.getChargePointId(),Integer.toString(chargingRequestDto.getConnectorId()),Double.parseDouble(chargingRequestDto.getRequestAmount()));
-		
-		if(chargingPointConnectorRateDto==null)
-		{
-			throw BRSException.throwException("Error: NO Rate present for chargepoint connector"); 
+		logger.info("cp getRequestAmount"+chargingRequestDto.getRequestAmount());
+	     	  
+		if(chargingPointConnectorRateEntity == null) { 
+			  throw BRSException.throwException("Error : No Time Value Present"); 
 		}
 		
-		if(chargingPointConnectorRateDto!=null)
-		allowedChrg=chargingPointConnectorRateDto.getKWh();
 		
-		return allowedChrg;
+		//ChargingPointConnectorRateDto	chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getConnectorEntity().getConnectorId(),chargingRequestEntity.getRequestAmount());
+		
+		if(chargingRequestDto.getChargingPreferenceType().equals("Amount")) {
+			
+			logger.info("Charge Preference is Amount");
+		
+			ChargingPointConnectorRateDto chargingPointConnectorRateDto = chargingPointConnectorRateService.getConnectorByChargingPointNameAndConnectorIdAndAmount(chargingRequestDto.getChargePointId(),Integer.toString(chargingRequestDto.getConnectorId()),Double.parseDouble(chargingRequestDto.getRequestAmount()));
+		
+			if(chargingPointConnectorRateDto==null) {
+				throw BRSException.throwException("Error: NO Rate present for chargepoint connector"); 
+			}
+		
+			if(chargingPointConnectorRateDto!=null) {
+				allowedChrg=chargingPointConnectorRateDto.getKWh();
+			}
+			return allowedChrg;
+		}
+		
+		else if(chargingRequestDto.getChargingPreferenceType().equals("KWH")) {
+			
+			 allowedChrg = Double.parseDouble(chargingRequestDto.getRequestedKwh()); 
+			 return allowedChrg;
+		
+		}
+			
+		else if(chargingRequestDto.getChargingPreferenceType().equals("Time")) {
+			
+			logger.info("Charge Preference is Time");
+			  
+			logger.info("Time for 1 KWH is :-----" + chargingPointConnectorRateEntity.getTime() + " mins ");
+			 
+			String timeFor1Kwh = chargingPointConnectorRateEntity.getTime();
+			 
+			double totalKWhForReqTime = Double.valueOf(chargingRequestDto.getRequestedTimeInMins()) / Double.parseDouble(timeFor1Kwh);
+			 
+			logger.info("Total Charge KWH for " + chargingRequestDto.getRequestedTimeInMins() + " Minutes is " + totalKWhForReqTime + " KWH ");
+			 
+			allowedChrg = totalKWhForReqTime;
+			 
+			return allowedChrg;
+		}
+		
+		return allowedChrg; 
 	}
+	
+	
+	public Double getChargeAmountForKwhAndTime(Double kwhForTime, ChargingRequestDto chargingRequestDto, 
+			ChargingPointConnectorRateEntity chargingPointConnectorRateEntity) {
+		
+		logger.info("Amount for 1 KWH is :-----" + chargingPointConnectorRateEntity.getAmount() + " Rs ");
+		
+		Double actualChargeAmount=0.0;
+		
+		Double chargeAmountFor1Kwh = chargingPointConnectorRateEntity.getAmount();
+		
+		if(chargingRequestDto.getChargingPreferenceType().equals("KWH")) {
+			logger.info("Calculating Amount for KWH");
+			actualChargeAmount = chargeAmountFor1Kwh * Double.parseDouble(chargingRequestDto.getRequestedKwh());
+			return actualChargeAmount;
+		}
+		else if(chargingRequestDto.getChargingPreferenceType().equals("Time")) {
+			logger.info("Calculating Amount for Time");
+			actualChargeAmount = chargeAmountFor1Kwh * kwhForTime;
+			return actualChargeAmount;
+		}
+		return actualChargeAmount;
+	}
+	
+	
 	/*
 	public String callResetConnectorAPI(ChargingRequestEntity chargingRequestEntity)
 	{
@@ -1427,9 +1516,14 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		String mobileNo=bookingRequestEntity.getUserInfoEntity().getMobilenumber();
 		
 		respChargingRequestDto.setRequestAmount(Double.toString(bookingRequestEntity.getRequestAmount()));
+		respChargingRequestDto.setRequestedKwh(Double.toString(bookingRequestEntity.getRequestedKwh()));
+		respChargingRequestDto.setRequestedTimeInMins(bookingRequestEntity.getRequestedTime());
+		
 		respChargingRequestDto.setChargePointId(bookingRequestEntity.getChargingPointEntity().getChargingPointId());
 		respChargingRequestDto.setConnectorId(Integer.parseInt(bookingRequestEntity.getConnectorEntity().getConnectorId()));
 		respChargingRequestDto.setBookingReqId(bookingReqId);
+		// Changes for Preference Type
+		respChargingRequestDto.setChargingPreferenceType(bookingRequestEntity.getBookingPreferenceType());
 		respChargingRequestDto.setMobileUser_Id(mobileNo);
 		respChargingRequestDto.setStatus("Pending");
 		

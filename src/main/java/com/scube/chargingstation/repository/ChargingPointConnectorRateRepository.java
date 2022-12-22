@@ -13,7 +13,7 @@ import com.scube.chargingstation.entity.ConnectorEntity;
 
 @Repository
 public interface ChargingPointConnectorRateRepository extends JpaRepository<ChargingPointConnectorRateEntity, Long>  {
-
+	
 	ChargingPointConnectorRateEntity findByChargingPointEntityAndConnectorEntity(ChargingPointEntity chargingPointEntity, ConnectorEntity connectorEntity);
 
 	ChargingPointConnectorRateEntity findByChargingPointEntityAndConnectorEntityAndAmount(ChargingPointEntity chargingPointEntity, ConnectorEntity connectorEntity, double amount);
@@ -27,7 +27,15 @@ public interface ChargingPointConnectorRateRepository extends JpaRepository<Char
 	@Query(value = "SELECT * FROM mst_charging_point_connector_calculation group by fk_charging_point ,fk_connector;", nativeQuery=true )
 	List<ChargingPointConnectorRateEntity> getAllAddedConnectorRateGroupByChargingPointEntityAndConnectEntity();
 	
-//	ChargingPointConnectorRateEntity findByPricingDetailsId(String id);
+	@Query(value = "SELECT * FROM mst_charging_point_connector_calculation where fk_charging_point=(?1) and fk_connector=(?2) and kWh = '1';", nativeQuery=true )
+	ChargingPointConnectorRateEntity getEntityByChargingPointIdAndConnectorIdAndKwh1(ChargingPointEntity chargingPointEntity, ConnectorEntity connectorEntity);
+	
+	@Query(value = "SELECT max(amount) as amount FROM mst_charging_point_connector_calculation where fk_charging_point=(?1) and fk_connector=(?2);", nativeQuery = true)
+	Double getMaxAmountFromEntity(ChargingPointEntity chargingPointEntity, ConnectorEntity connectorEntity);
+	
+	@Query(value = "SELECT * FROM mst_charging_point_connector_calculation tbl1 where "
+			+ "tbl1.fk_charging_point=(?1) and tbl1.fk_connector=(?2) and (amount >=(?3)) order by amount limit 1;", nativeQuery = true)
+	ChargingPointConnectorRateEntity getBookingAmountForRequestedAmountKwhAndTime(ChargingPointEntity chargingPointEntity, ConnectorEntity connectorEntity, Double amount);
 	
 	@Query(value = "SELECT * FROM  mst_charging_point_connector_calculation where fk_charging_point = (?1) and fk_connector = (?2);", nativeQuery=true )
 	List<ChargingPointConnectorRateEntity> getConnectorRateByChargingPointEntityAndConnectEntity(String chargingPoint, String connector);

@@ -16,6 +16,8 @@ public class BookingRequestIncomingDto {
 	private String userContactNo;
 	
 	private double requestedAmount;
+	private double requestedKwh;
+	private String requestedTimeInMins;
 	
 	private String bookingStatus;
 	
@@ -26,5 +28,7 @@ public class BookingRequestIncomingDto {
 	private String custMobileNo;
 	
 	private String custVehicleNo;
+	
+	private String bookingPreferenceType;
 		
 }

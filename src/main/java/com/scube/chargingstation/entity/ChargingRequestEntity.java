@@ -109,4 +109,10 @@ public class ChargingRequestEntity extends BaseEntity {
 	@Column(name = "request_type")
 	private String  requestType;
 	
+	@Column(name = "charging_preference_type")
+	private String chargingPreferenceType;
+	
+	@Column(name = "requested_time")
+	private String requestedTime;
+	
 }

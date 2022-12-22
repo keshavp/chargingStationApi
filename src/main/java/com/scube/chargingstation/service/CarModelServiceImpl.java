@@ -71,14 +71,23 @@ import com.scube.chargingstation.repository.ChargingRequestRepository;
 import com.scube.chargingstation.repository.UserInfoRepository;
 import com.scube.chargingstation.repository.UserWalletDtlRepository;
 import com.scube.chargingstation.repository.UserWalletRepository;
+import com.scube.chargingstation.util.FileStorageProperties;
+import com.scube.chargingstation.util.FileStorageService;
 
 @Service
 public class CarModelServiceImpl implements CarModelService {
 
 	@Autowired
 	CarModelRepository carModelRepository;
+	
 	@Autowired
 	ChargerTypeService chargerTypeService;
+	
+	@Autowired
+	FileStorageService fileStorageService;
+	
+	@Autowired
+	FileStorageProperties fileStorageProperties;
 	   
   	private static final Logger logger = LoggerFactory.getLogger(CarModelServiceImpl.class);
 
@@ -95,18 +104,19 @@ public class CarModelServiceImpl implements CarModelService {
 		{
 			throw BRSException.throwException("Car description can't be blank");
 		}
+		
+		if(carModelIncomigDto.getImgPath()==" " )
+		{
+			throw BRSException.throwException("ImagePath can't be balnk");
+		}
 			
 		
 		/*
 		 * if(carModelIncomigDto.getStatus()==" " ) { throw
 		 * BRSException.throwException("Staus can't be blank"); }
 		 */
-	/*	if(carModelIncomigDto.getImgPath()==" " )
-		{
-			throw BRSException.throwException("ImagePath can't be balnk");
-		}
-		   */
-			Set<ChargerTypeEntity> chargerTypeEntities =new HashSet<ChargerTypeEntity>();
+		
+		Set<ChargerTypeEntity> chargerTypeEntities =new HashSet<ChargerTypeEntity>();
 		
 		for(ChargerTypeDto  chargerTypeDtos : carModelIncomigDto.getChargertypes()) {
 				
@@ -119,7 +129,6 @@ public class CarModelServiceImpl implements CarModelService {
 		}
 		if(carModelIncomigDto.getChargertypes().size()<=0)
 		{
-		
 			throw BRSException.throwException("ChargerTypes can't be blank or null");
 		}
 	
@@ -128,7 +137,7 @@ public class CarModelServiceImpl implements CarModelService {
 		carModelEntity.setModel(carModelIncomigDto.getModel());
 		carModelEntity.setDescription(carModelIncomigDto.getDescription());
 		 carModelEntity.setChargertypes(chargerTypeEntities);
-		carModelEntity.setStatus(carModelIncomigDto.getStatus());
+		carModelEntity.setStatus("ACTIVE");
 		carModelEntity.setImagePath(carModelIncomigDto.getImgPath());
 		carModelEntity.setIsdeleted("N");
 		carModelRepository.save(carModelEntity);
@@ -145,15 +154,15 @@ public class CarModelServiceImpl implements CarModelService {
 		
 	}
 	@Override
-	public boolean editCarModel(@Valid CarModelIncomingDto carModelIncomigDto) {
+	public boolean editCarModel(@Valid CarModelIncomingDto carModelIncomingDto) {
 		// TODO Auto-generated method stub
 		 
-		if(carModelIncomigDto.getModel()==" " || carModelIncomigDto.getModel()==null)
+		if(carModelIncomingDto.getModel()==" " || carModelIncomingDto.getModel()==null)
 		{
 			throw BRSException.throwException("CarModel can't be blank or null");
 		}
 		
-        if(carModelIncomigDto.getDescription()==" "|| carModelIncomigDto.getDescription()==null)
+        if(carModelIncomingDto.getDescription()==" "|| carModelIncomingDto.getDescription()==null)
         {
         	throw BRSException.throwException("Car Description can't be blank or null");
         }
@@ -164,7 +173,7 @@ public class CarModelServiceImpl implements CarModelService {
 		 */
         Set<ChargerTypeEntity> chargerTypeEntities =new HashSet<ChargerTypeEntity>();
 		
-		for(ChargerTypeDto  chargerTypeDtos : carModelIncomigDto.getChargertypes()) {
+		for(ChargerTypeDto  chargerTypeDtos : carModelIncomingDto.getChargertypes()) {
 				
 		  ChargerTypeEntity carModelEntity = chargerTypeService.findById(chargerTypeDtos.getId());
 				
@@ -174,18 +183,19 @@ public class CarModelServiceImpl implements CarModelService {
 				
 		}
 		
-	/*    if(carModelIncomigDto.getImgPath()==" " || carModelIncomigDto.getImgPath()==null)
-	    {
-	    	throw BRSException.throwException("Car charger types can't be blank or null"); 
-	    }   */
+		/*
+		 * if(carModelIncomingDto.getImgPath()==" " ||
+		 * carModelIncomingDto.getImgPath()==null) { throw
+		 * BRSException.throwException("Car charger types can't be blank or null"); }
+		 */
 		 
-	    CarModelEntity carModelEntity=carModelRepository.findById(carModelIncomigDto.getId()).get();
+	    CarModelEntity carModelEntity=carModelRepository.findById(carModelIncomingDto.getId()).get();
 	    
-	    carModelEntity.setModel(carModelIncomigDto.getModel());
-	    carModelEntity.setDescription(carModelIncomigDto.getDescription());
+	    carModelEntity.setModel(carModelIncomingDto.getModel());
+	    carModelEntity.setDescription(carModelIncomingDto.getDescription());
 //	    carModelEntity.setStatus(carModelIncomigDto.getStatus());	
 	    carModelEntity.setChargertypes(chargerTypeEntities);
-	    carModelEntity.setImagePath(carModelIncomigDto.getImgPath());
+	    carModelEntity.setImagePath(carModelIncomingDto.getImgPath());
 	    carModelRepository.save(carModelEntity);
 		return true;
 	}
@@ -218,6 +228,21 @@ public class CarModelServiceImpl implements CarModelService {
 		return CarModelMapper.toCarModelDto(carModelEntity);
 	}
 	
+	/*
+	 * @Override public String saveDocument(MultipartFile file) { // TODO
+	 * Auto-generated method stub
+	 * 
+	 * logger.info("---------CarModelServiceImpl saveDocument----------------");
+	 * 
+	 * String fileSubPath = "CMT"; String filePath; filePath =
+	 * fileStorageService.storeFile(file , fileSubPath);
+	 * 
+	 * logger.info("File Path of Car Model is -----> " + filePath);
+	 * 
+	 * logger.info("--------- File Uploaded Successfully ----------------");
+	 * 
+	 * return filePath; }
+	 */
 	
 }
 

@@ -1,25 +1,21 @@
 package com.scube.chargingstation.service;
 
 import java.util.List;
-import java.util.Map;
 
-import javax.validation.Valid;
-
-import com.scube.chargingstation.dto.ChargingHistoryDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.ChargingRequestRespDto;
 import com.scube.chargingstation.dto.ChargingStatusRespDto;
 import com.scube.chargingstation.dto.MostActiveChargingStationsDto;
 import com.scube.chargingstation.dto.UserDashboardDto;
+import com.scube.chargingstation.dto.incoming.BookingRequestIncomingDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationDto;
 import com.scube.chargingstation.dto.incoming.ChargingStationWiseReportIncomingDto;
+import com.scube.chargingstation.entity.ChargingPointConnectorRateEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
-import com.scube.chargingstation.dto.response.Response;
-
 
 public interface ChargingRequestService {
 
@@ -66,6 +62,11 @@ public interface ChargingRequestService {
 	public String get30daysTotalChargingTimeByPartnerId(UserInfoEntity userInfoEntity);
 
 	public Double weekTotalChargingRequestCountSessionsByPartnerId(UserInfoEntity userInfoEntity);
+	
+	public Double getChargeAmountForKwhAndTime(Double kwhForTime, ChargingRequestDto chargingRequestDto, 
+			ChargingPointConnectorRateEntity chargingPointConnectorRateEntity);
+	
+	public Double getAllowedCharge(ChargingRequestDto chargingRequestDto, ChargingPointConnectorRateEntity chargingPointConnectorRateEntity);
 
 	public List<MostActiveChargingStationsDto> getMostActiveChargingStationsByPartnerId(UserInfoEntity userInfoEntity);
 

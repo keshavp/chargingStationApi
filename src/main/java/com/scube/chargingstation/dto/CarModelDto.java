@@ -23,7 +23,9 @@ public class CarModelDto {
 	private String id;
 	private String model;
 	private String description;
-	//private String imagePath;
-	 private Set<ChargerTypeDto> chargertypes ;
-	 private String Status;
+	private String imagePath;
+	private String filename;
+	
+	private Set<ChargerTypeDto> chargertypes ;
+	private String Status;
 }

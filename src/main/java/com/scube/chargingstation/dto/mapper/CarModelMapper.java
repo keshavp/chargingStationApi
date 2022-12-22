@@ -1,12 +1,11 @@
   package com.scube.chargingstation.dto.mapper;
 
   import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.scube.chargingstation.dto.CarModelDto;
 import com.scube.chargingstation.entity.CarModelEntity;
+import com.scube.chargingstation.util.StaticPathContUtils;
 
 public class CarModelMapper {
 
@@ -14,10 +13,12 @@ public class CarModelMapper {
  		
       return new CarModelDto()
     		  .setId(carModelEntity.getId())
-        		.setModel(carModelEntity.getModel())
-        		.setDescription(carModelEntity.getDescription())
-        		.setChargertypes(ChargerTypeMapper.toChargerTypeDto(carModelEntity.getChargertypes()))
-                .setStatus(carModelEntity.getStatus());
+        	  .setModel(carModelEntity.getModel())
+        	  .setDescription(carModelEntity.getDescription())
+        	  .setChargertypes(ChargerTypeMapper.toChargerTypeDto(carModelEntity.getChargertypes()))
+        	  .setImagePath(StaticPathContUtils.APP_URL_DIR+StaticPathContUtils.SET_CAR_MODEL_TYPE_FILE_URL_DIR+carModelEntity.getId())
+        	  .setFilename(carModelEntity.getImagePath())
+              .setStatus(carModelEntity.getStatus());
                
 	}
 	

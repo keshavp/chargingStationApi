@@ -24,6 +24,12 @@ public class BookingRequestEntity extends BaseEntity{
 	@Column(name = "request_amount", columnDefinition = "double default 0")
 	private double  requestAmount;
 	
+	@Column(name = "requested_kwh", columnDefinition = "double default 0")
+	private double requestedKwh;
+	
+	@Column(name = "requested_time")
+	private String requestedTime;
+	
 	@Column (name = "booking_status")
 	private String bookingStatus;
 	
@@ -45,6 +51,9 @@ public class BookingRequestEntity extends BaseEntity{
 	
 	@Column (name = "booking_time")
 	private Instant bookingTime;
+	
+	@Column (name = "booking_preference_type")
+	private String bookingPreferenceType;
 	
 	@Column(name = "cust_name")
 	private String  custName;
