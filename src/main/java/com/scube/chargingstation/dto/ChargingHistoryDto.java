@@ -29,5 +29,7 @@ public class ChargingHistoryDto {
 	private String chargingRequestId;
 	
 	private String bookingRequestId;
+	private String transactionId;
+	private String orderId;
 	
 }

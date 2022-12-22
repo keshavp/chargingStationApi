@@ -28,5 +28,7 @@ public class ChargingHistoryRespDto {
 	private String remark;
 	private String receipt;
 	private String chargingReqId;
+	private String transactionId;
+	private String orderId;
 
 }

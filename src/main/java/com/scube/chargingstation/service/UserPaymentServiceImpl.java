@@ -449,8 +449,8 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		userWalletRepository.save(userWaltEntity);
 		
 		return true;
-	}
-
+	}      
+      
 	@Override
 	public List<ChargingHistoryRespDto> getChargingTrHistory(UserWalletRequestDto userWalletRequestDto) {
 		// TODO Auto-generated method stub
@@ -465,7 +465,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		}
 		List<Map<String, String>> listDtl=userWalletDtlRepository.getUserTrHistory(userInfoEntity.getId());
 		
-		List<ChargingHistoryRespDto> chargingHistoryDtoLst = ChargingHistoryMapper.toChargingHistoryDto(listDtl);
+		List<ChargingHistoryRespDto> chargingHistoryDtoLst = ChargingHistoryMapper.toChargingHistoryDtoNew(listDtl);
 		
 		return chargingHistoryDtoLst;
 	}
