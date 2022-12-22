@@ -37,6 +37,12 @@ public class DateUtils {
     public static String todayStr() {
         return sdf.format(today());
     }
+    
+    
+    public static String todayStrSimpleDateTimeFormat() {
+        return simpleDateTimeFormat.format(today());
+    }
+    
 
     /**
      * Returns the formatted String date for the passed java.util.Date object
@@ -80,6 +86,7 @@ public class DateUtils {
 //        return date != null ? simpleDateTimeFormat.format(Date.from(date)) : todayStr();
     	return date != null ? simpleDateTimeFormat.format(Date.from(date)) : "";
         
-    } 
+    }
+
 
 }

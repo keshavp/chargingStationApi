@@ -876,7 +876,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 			logger.info("AutoCancellationSchedulers:------Booking id - "+notificationReqDto.getSendid() + "DEVICE_TOKEN "+bookingRequestEntity.getUserInfoEntity().getFcmToken() +" for mobile no "+notificationReqDto.getMobileUser_Id());
 			
-			notificationService.sendNotification(notificationReqDto);
+//			notificationService.sendNotification(notificationReqDto);
 		
 		}
 	}
@@ -987,7 +987,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	public void oneDayBeforeBookingReminderSchedulers() {
 		// TODO Auto-generated method stub
 		
-		List<BookingRequestEntity>  bookingRequestEntities = bookingRequestRepository.oneDayBookingReminderSchedulersByScheduled(1);
+		List<BookingRequestEntity>  bookingRequestEntities = bookingRequestRepository.oneDayBookingReminderSchedulersByScheduled(24);
 		
 		for(BookingRequestEntity  bookingRequestEntity : bookingRequestEntities) {
 			
@@ -1003,7 +1003,17 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 			logger.info("oneDayBeforeBookingReminderSchedulers:------Booking id - "+notificationReqDto.getSendid() + "DEVICE_TOKEN "+bookingRequestEntity.getUserInfoEntity().getFcmToken() +" for mobile no "+notificationReqDto.getMobileUser_Id());
 			
-			notificationService.sendNotification(notificationReqDto);
+			// comment by keshav 16-12-2022 
+			// notificationService.sendNotification(notificationReqDto);
+			
+			if(notificationService.sendNotification(notificationReqDto)) {
+				
+				logger.info("oneDayBeforeBookingReminderSchedulers:- Send ");
+				
+				bookingRequestEntity.setOneDayReminderStatus("Y");
+				bookingRequestEntity.setOneDayReminderTime(DateUtils.todayStrSimpleDateTimeFormat());
+			}
+			
 			
 		}
 	}
@@ -1027,7 +1037,16 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 			logger.info("OneHourBeforeBookingReminderSchedulers:------Booking id - "+notificationReqDto.getSendid() + "DEVICE_TOKEN "+bookingRequestEntity.getUserInfoEntity().getFcmToken() +" for mobile no "+notificationReqDto.getMobileUser_Id());
 			
-			notificationService.sendNotification(notificationReqDto);
+			// comment by keshav 16-12-2022 
+			// notificationService.sendNotification(notificationReqDto);
+			
+			if(notificationService.sendNotification(notificationReqDto)) {
+				
+				logger.info("oneHourBeforeBookingReminderSchedulers:- Send ");
+				
+				bookingRequestEntity.setHourReminderStatus("Y");
+				bookingRequestEntity.setHourReminderTime(DateUtils.todayStrSimpleDateTimeFormat());
+			}
 			
 		}
 	}
