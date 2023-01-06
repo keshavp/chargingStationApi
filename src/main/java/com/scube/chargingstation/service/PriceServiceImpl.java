@@ -19,7 +19,7 @@ import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
 import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.PartnerDto;
 import com.scube.chargingstation.dto.PriceDto;
-import com.scube.chargingstation.dto.incoming.ChargingPointConnectorRateIncomingDto;
+import com.scube.chargingstation.dto.incoming.ChargingPointConnectorRateIncomingDto; 
 import com.scube.chargingstation.dto.incoming.PriceMasterDto;
 import com.scube.chargingstation.dto.mapper.PriceMapper;
 import com.scube.chargingstation.entity.ChargingPointConnectorRateEntity;
@@ -87,13 +87,12 @@ public class PriceServiceImpl implements PriceService{
 		{
 			ChargingPointConnectorRateEntity chargingpointconnectorRateEntity =new ChargingPointConnectorRateEntity();
 			
-			
-			
-			
 			chargingpointconnectorRateEntity.setAmount(priceMasterDtos.getAmount());
 			chargingpointconnectorRateEntity.setChargingAmount(priceMasterDtos.getChargingAmount());
+			chargingpointconnectorRateEntity.setType(priceMasterDtos.getType());
 			chargingpointconnectorRateEntity.setCgst(priceMasterDtos.getCgst());
 			chargingpointconnectorRateEntity.setKwh(priceMasterDtos.getKwh());
+			chargingpointconnectorRateEntity.setTime(priceMasterDtos.getTime());
 			chargingpointconnectorRateEntity.setSgst(priceMasterDtos.getSgst());
 			chargingpointconnectorRateEntity.setStatus(chargingPointConnectorRateIncomingDto.getStatus());
 			chargingpointconnectorRateEntity.setCancelBookingAmount(priceMasterDtos.getCancelBookingAmount());
@@ -135,13 +134,15 @@ public class PriceServiceImpl implements PriceService{
 		List<PriceMasterDto> psd=new ArrayList<PriceMasterDto>();
 		for(PriceMasterDto priceMasterDtos : chargingPointConnectorRateIncomingDto.getAmount())
 		{
-			ChargingPointConnectorRateEntity chargingpointconnectorRateEntity =chargingPointConnectorRateRepository.findById(priceMasterDtos.getId()).get();
+			ChargingPointConnectorRateEntity chargingpointconnectorRateEntity = chargingPointConnectorRateRepository.findById(priceMasterDtos.getId()).get();
 			
          
 			chargingpointconnectorRateEntity.setAmount(priceMasterDtos.getAmount());
 			chargingpointconnectorRateEntity.setChargingAmount(priceMasterDtos.getChargingAmount());
+			chargingpointconnectorRateEntity.setType(priceMasterDtos.getType());
 			chargingpointconnectorRateEntity.setCgst(priceMasterDtos.getCgst());
 			chargingpointconnectorRateEntity.setKwh(priceMasterDtos.getKwh());
+			chargingpointconnectorRateEntity.setTime(priceMasterDtos.getTime());
 			chargingpointconnectorRateEntity.setSgst(priceMasterDtos.getSgst());
 			chargingpointconnectorRateEntity.setStatus(chargingPointConnectorRateIncomingDto.getStatus());
 			chargingpointconnectorRateEntity.setCancelBookingAmount(priceMasterDtos.getCancelBookingAmount());
@@ -169,6 +170,7 @@ public class PriceServiceImpl implements PriceService{
 		List<ChargingPointConnectorRateEntity> chargingPointConnectorRateEntities = chargingPointConnectorRateRepository.getAllAddedConnectorRateGroupByChargingPointEntityAndConnectEntity();
 		
 		return PriceMapper.toPriceDtos(chargingPointConnectorRateEntities);
+		
 	}
 
 

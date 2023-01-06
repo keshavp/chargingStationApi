@@ -16,6 +16,7 @@ public class ChargingPointConnectorRateEntity extends BaseEntity {
 
 	private double amount;
 	private double chargingAmount;
+	private String type;
 	private double cgst;
 	private double sgst;
 	private double kwh;

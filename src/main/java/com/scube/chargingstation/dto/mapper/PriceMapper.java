@@ -23,7 +23,8 @@ public class PriceMapper {
 				.setPricingTime(chargingPointConnectorRateEntity.getTime())
 				.setCancelBookingAmount(chargingPointConnectorRateEntity.getCancelBookingAmount())
 				.setChargingPointId(chargingPointConnectorRateEntity.getChargingPointEntity().getId())
-				.setConnectorId(chargingPointConnectorRateEntity.getConnectorEntity().getId());
+				.setConnectorId(chargingPointConnectorRateEntity.getConnectorEntity().getId())
+				.setPricingType(chargingPointConnectorRateEntity.getType());
 	}
 
 	public static PriceDto toPriceDto(ChargingPointConnectorRateEntity chargingPointConnectorRateEntity) {
