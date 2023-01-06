@@ -458,16 +458,30 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 		logger.info("userInfo"+userWalletRequestDto.getMobileUser_Id());
 		
 		UserInfoEntity userInfoEntity = userInfoRepository.findByMobilenumber(userWalletRequestDto.getMobileUser_Id());
-		if (userInfoEntity == null)
-		{
-			throw BRSException.throwException("Error: User does not exist");
+		
+		if(userWalletRequestDto.getMobileUser_Id().equals("All")) {
 			
+			List<Map<String, String>> listDt=userWalletDtlRepository.getUserTrHistoryForAllUser();
+			
+			List<ChargingHistoryRespDto> defaultAllchargingHistoryDtoLst = ChargingHistoryMapper.toChargingHistoryDto(listDt);
+			
+			return defaultAllchargingHistoryDtoLst;
 		}
+		else {
+		
+			if (userInfoEntity == null)
+			{
+				throw BRSException.throwException("Error: User does not exist");
+				
+			}
+		
+	
 		List<Map<String, String>> listDtl=userWalletDtlRepository.getUserTrHistory(userInfoEntity.getId());
 		
 		List<ChargingHistoryRespDto> chargingHistoryDtoLst = ChargingHistoryMapper.toChargingHistoryDtoNew(listDtl);
 		
 		return chargingHistoryDtoLst;
+		}
 	}
 
 	//

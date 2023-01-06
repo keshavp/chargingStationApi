@@ -15,6 +15,7 @@ import org.springframework.util.ResourceUtils;
 
 import com.scube.chargingstation.service.BookingRequestService;
 import com.scube.chargingstation.service.ChargingRequestService;
+import com.scube.chargingstation.service.DeleteFileService;
 import com.scube.chargingstation.service.PartnerService;
 import com.scube.chargingstation.service.TransactionsService;
 import com.scube.chargingstation.service.UserInfoOtpService;
@@ -39,8 +40,11 @@ public class Schedulers {
 	@Autowired
 	PartnerService partnerService;
 	
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	
+	@Autowired
+	DeleteFileService deleteFileService;
 
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	
 	// 5
 	@Scheduled(cron = "${updateStartResult.cronTime}")
@@ -58,9 +62,19 @@ public class Schedulers {
 		return 0;
 	}
 	
+	@Scheduled(cron = "${deleteBacklogFiles.cronTime}")
+	public int deleteBacklogData() throws Exception{
+		
+		deleteFileService.deleteExcelfileDemo();
+		
+		return 0;
+	}
+	
 	@Scheduled(cron = "${bookingAuto.cronTime}")
 	public void bookingAutoCancellation() throws Exception {
 
+		//log.info("bookingAutoCancellation ======================== "+ new Date().getTime());
+		
 		bookingRequestService.bookingAutoCancellationSchedulers();
 	}
 	
@@ -97,7 +111,6 @@ public class Schedulers {
 	public int sendGunInsertNotification() throws Exception {
 		
 		//log.info("sendGunInsertNotification");
-		log.info("sendGunInsertNotificationSchedulers ======================== "+ sdf.format(new Date()));
 		chargingRequestService.sendGunInsertNotification();
 		return 0;
 	}
@@ -107,7 +120,6 @@ public class Schedulers {
 	public int stopChargingOnTime() throws Exception {
 		
 		//log.info("sendGunInsertNotification");
-		log.info("stopChargingOnTimeSchedulers ======================== "+ sdf.format(new Date()));
 		chargingRequestService.stopChargingOnTime();
 		return 0;
 	}
@@ -115,8 +127,7 @@ public class Schedulers {
 	@Scheduled(cron = "${partnersDailyShare.cronTime}")
 	public int insertPartnersDailyShare() throws Exception {
 		
-		//log.info("sendGunInsertNotification")
-		log.info("insertPartnersDailyShareSchedulers ======================== "+ sdf.format(new Date()));
+		//log.info("sendGunInsertNotification");
 		partnerService.addPartnerDailyShare();
 		return 0;
 	}

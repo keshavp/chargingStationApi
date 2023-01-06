@@ -273,7 +273,10 @@ public class FileStorageService {
 				
 					 this.fileStorageLocation = Paths.get(newPath).toAbsolutePath().normalize();
 				
+
 					 Files.createDirectories(this.fileStorageLocation);
+
+	
 				
 					 Path targetLocation = this.fileStorageLocation.resolve(fileNewName);
 				
@@ -311,6 +314,7 @@ public class FileStorageService {
 			
 		
 		}
+			
 }
 
 
