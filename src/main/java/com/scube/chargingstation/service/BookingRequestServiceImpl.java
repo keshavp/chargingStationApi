@@ -1012,6 +1012,8 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 				
 				bookingRequestEntity.setOneDayReminderStatus("Y");
 				bookingRequestEntity.setOneDayReminderTime(DateUtils.todayStrSimpleDateTimeFormat());
+				
+				bookingRequestRepository.save(bookingRequestEntity);
 			}
 			
 			
@@ -1046,6 +1048,8 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 				
 				bookingRequestEntity.setHourReminderStatus("Y");
 				bookingRequestEntity.setHourReminderTime(DateUtils.todayStrSimpleDateTimeFormat());
+				
+				bookingRequestRepository.save(bookingRequestEntity);
 			}
 			
 		}
