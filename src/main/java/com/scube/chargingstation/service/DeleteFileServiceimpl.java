@@ -16,6 +16,8 @@ import com.google.common.io.Files;
 import com.scube.chargingstation.util.FileStorageService;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class DeleteFileServiceimpl implements DeleteFileService{
@@ -25,61 +27,91 @@ public class DeleteFileServiceimpl implements DeleteFileService{
 	
 	@Value("${file.delete1}")
 	private String deletefile1;
+	
+	@Value("${deletefile.frequency.indays}")
+	private int daysToSubtract;
+	
+	private static final Logger logger = LoggerFactory.getLogger(DeleteFileServiceimpl.class);
 		
-	public boolean deleteExcelfileDemo() throws IOException  {
+	public boolean deleteExcelfileDemo()  {
 
 		 String set45 = deletefile;
 		 
 		 String set46 = deletefile1;
 		 
+		 logger.info("file folder path:-"+set45+"---"+set46);
+		 
+		// int daysToSubtract;
+		 
 		 Date  curreDate = new Date(); 
 		 String var23 = new SimpleDateFormat("yyyy-MM-dd").format(curreDate);
-		 System.out.println("CurrentDatecheck:-"+var23);
+		 logger.info("CurrentDatecheck:-"+var23);
 	     LocalDate lDate = LocalDate.parse(var23);      
 	     
-	     LocalDate returnvalue = lDate.minusMonths(1);
-	     System.out.println("minus date:-"+returnvalue);
+	     //LocalDate returnvalue = lDate.minusMonths(1);
+	     
+	     LocalDate returnvalue = lDate.minusDays(daysToSubtract);
+	     logger.info("minus date:-"+returnvalue);
 	    	     
 	     Date beforeCurrentDate = Date.from(returnvalue.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
+try {
+	
+		
+		
 
 		 File f1[] = new File(set45).listFiles();    
 		 
 		 for (File filename : f1) {
 				 
+			 logger.info("11!");
 			 Date fileFolderDate = new Date(filename.lastModified()); 
  		
 	            if (fileFolderDate.before(beforeCurrentDate)) {
 	          
+	            	
+	             	 logger.info("deleting folder 1 file");
+
 	            	filename.delete();
 
 	            }
 	            else {
 	            	
-	            	 System.out.println("\n"+"Date is within Range:-" + filename.getName()+"\n");
+	            	 logger.info("folder 1 Date is within Range:-" + filename.getName()+"\n");
 	            	 
 	            }
 		 }
 
 	 
-	 File f2[] = new File(set46).listFiles();    
+		
+		  File f2[] = new File(set46).listFiles();
+		  
+		  for (File filename2 : f2) {
+			  logger.info("22!");
+		  Date fileFolderDate2 = new Date(filename2.lastModified());
+		  
+		  if (fileFolderDate2.before(beforeCurrentDate)) {
+			  
+         	 logger.info("deleting folder 2 file");
+		  
+		  filename2.delete(); 
+		  } else 
+		  {
+		  
+			  logger.info(" folder 2 Date2 is within Range:-" + filename2.getName()+"\n");
+		  
+		  } 
+		  }
 		 
-		 for (File filename2 : f2) {
-				 
-			 Date fileFolderDate2 = new Date(filename2.lastModified()); 
- 		
-	            if (fileFolderDate2.before(beforeCurrentDate)) {
-	          
-	            	filename2.delete();
-	            }
-	            else {
-	            	
-	            	 System.out.println("\n"+"Date2 is within Range:-" + filename2.getName()+"\n");
-	            	 
-	            }
-		 }
-		return true;	  
-  
+		 
+		
+		
+} catch (Exception e) {
+	// TODO: handle exception
+	logger.info("in delete file exception"+e.toString());
+	
+}	
+return true;	
 	}
 	
 }

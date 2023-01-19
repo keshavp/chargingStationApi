@@ -65,6 +65,7 @@ public class Schedulers {
 	@Scheduled(cron = "${deleteBacklogFiles.cronTime}")
 	public int deleteBacklogData() throws Exception{
 		
+		log.info("deleteBacklogData");
 		deleteFileService.deleteExcelfileDemo();
 		
 		return 0;
