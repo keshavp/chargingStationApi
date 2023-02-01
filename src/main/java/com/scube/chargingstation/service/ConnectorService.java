@@ -1,11 +1,7 @@
 package com.scube.chargingstation.service;
 
 import java.util.List;
-
-import javax.validation.Valid;
-
 import com.scube.chargingstation.dto.ChargingPointConnectorDto;
-import com.scube.chargingstation.dto.incoming.ConnectorTypeIncomingDto;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
 
@@ -27,4 +23,6 @@ public interface ConnectorService {
 	
 	List<ConnectorEntity> getConnectorEntityByChargingPoint(String chargingPoint);
 
+	List<ConnectorEntity> getAllConnectorEntityListByChargingPointEntity(ChargingPointEntity chargingPoint);
+	
 }

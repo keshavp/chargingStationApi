@@ -17,6 +17,7 @@ import com.scube.chargingstation.service.BookingRequestService;
 import com.scube.chargingstation.service.ChargingRequestService;
 import com.scube.chargingstation.service.DeleteFileService;
 import com.scube.chargingstation.service.PartnerService;
+import com.scube.chargingstation.service.ServerAPIResetService;
 import com.scube.chargingstation.service.TransactionsService;
 import com.scube.chargingstation.service.UserInfoOtpService;
 
@@ -40,6 +41,8 @@ public class Schedulers {
 	@Autowired
 	PartnerService partnerService;
 	
+	@Autowired
+	ServerAPIResetService serverAPIResetService;
 	
 	@Autowired
 	DeleteFileService deleteFileService;
@@ -123,13 +126,24 @@ public class Schedulers {
 		//log.info("sendGunInsertNotification");
 		chargingRequestService.stopChargingOnTime();
 		return 0;
-	}
+	} 
 	
 	@Scheduled(cron = "${partnersDailyShare.cronTime}")
 	public int insertPartnersDailyShare() throws Exception {
 		
 		//log.info("sendGunInsertNotification");
 		partnerService.addPartnerDailyShare();
+		return 0;
+	}
+	
+	@Scheduled(cron = "${check.charger.status.frequency}")
+	public int checkAllChargerStatusAndSendEmail() throws Exception {
+		
+		log.info("------ Schedulers checkAllChargerStatusAndSendEmail ------- ");
+		
+		serverAPIResetService.sendEmailForChargerStatus();
+		serverAPIResetService.saveAllChargerStatusData();
+		
 		return 0;
 	}
 }

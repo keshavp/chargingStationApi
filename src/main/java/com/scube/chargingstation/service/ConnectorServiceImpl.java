@@ -1,21 +1,15 @@
   package com.scube.chargingstation.service;
 
 import java.util.List;
-
-import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.scube.chargingstation.dto.ChargingPointConnectorDto;
-import com.scube.chargingstation.dto.incoming.ConnectorTypeIncomingDto;
 import com.scube.chargingstation.dto.mapper.ConnectorMapper;
-import com.scube.chargingstation.entity.ChargerTypeEntity;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
-import com.scube.chargingstation.exception.BRSException;
 import com.scube.chargingstation.repository.ConnectorRepository;
 
 @Service
@@ -84,6 +78,14 @@ public class ConnectorServiceImpl implements ConnectorService {
 		
 		return connectorRepository.getConnectorByChargingPointEntity(chargingPoint);
 	}
-
-
+	
+	
+	@Override
+	public List<ConnectorEntity> getAllConnectorEntityListByChargingPointEntity(ChargingPointEntity chargingPoint) {
+		// TODO Auto-generated method stub
+		logger.info("----- ConnectorServiceImpl getAllConnectorEntityListByChargingPointEntity -----");
+		
+		return connectorRepository.findByChargingPointEntity(chargingPoint);
+	}
+	
 }

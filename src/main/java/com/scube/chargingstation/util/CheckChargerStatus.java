@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scube.chargingstation.controller.ChargingRequestController;
 import com.scube.chargingstation.dto.ChargingPointDto;
 import com.scube.chargingstation.dto.incoming.ChargingRequestDto;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
@@ -663,6 +662,64 @@ public class CheckChargerStatus {
 
         // Getting response code
 		return strResponse;
+		
+	}
+	
+	
+	public static JsonNode callAllChargingStationAndChargerStatusApi() {
+		
+		logger.info("---------- CheckChargerStatus callAllChargingStationAndChargerStatusApi -----------------");
+		
+		URL getUrl = null;
+		String responseString = null;
+		JsonNode jsonNodeResponseData = null;
+		
+		try {
+			
+			getUrl = new URL(StaticPathContUtils.SERVER_API_URL+"AllChargersStatus");
+			logger.info("----- URL -----" + getUrl);
+			
+			HttpURLConnection conection;
+			conection = (HttpURLConnection) getUrl.openConnection();
+			conection.setRequestMethod("GET");
+			
+	        logger.info("All Chargers Status API Response Message :--- " + conection.getResponseMessage());
+	        logger.info("All Chargers Status API Response Code :--- "+ conection.getResponseCode());
+	        
+	        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader((conection.getInputStream())));
+
+	        if (conection.getResponseCode()==200 && conection.getResponseMessage().equals("OK") ) {
+	        	bufferedReader = new BufferedReader(new InputStreamReader(conection.getInputStream()));
+	        } else {
+				throw BRSException.throwException("Error: in AllChargersStatus API call"); 
+	        }
+	        
+	        StringBuilder stringBuilder = new StringBuilder();
+	        
+	        while ((responseString = bufferedReader.readLine()) != null) 
+	        	stringBuilder.append(responseString);
+	        
+	        logger.info("--- JSON Response in String :-- " + stringBuilder);
+	        
+	        ObjectMapper objectMapper = new ObjectMapper();
+	        
+	        jsonNodeResponseData = objectMapper.readTree(stringBuilder.toString());       
+	        
+	        logger.info("All Chargers Status Response Status :- " + jsonNodeResponseData.get("Status").textValue());
+	        logger.info("All Chargers Status Response Payload Data :- " + jsonNodeResponseData.get("Payload").textValue());
+	        
+	        logger.info("---- Size of JSON Data :--- " + jsonNodeResponseData.size());
+	        logger.info("---- Size of JSON Payload data :--- " + jsonNodeResponseData.get("Payload").size());
+	        
+		}
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.info("Error: AllChargersStatus API="+e.toString());
+			throw BRSException.throwException("Error: callAllChargingStationAndChargerStatusApi API"+e.toString()); 
+		}
+		
+		return jsonNodeResponseData;
 		
 	}
 	

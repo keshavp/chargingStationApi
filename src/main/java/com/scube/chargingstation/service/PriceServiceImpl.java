@@ -85,15 +85,13 @@ public class PriceServiceImpl implements PriceService{
 		List<PriceMasterDto> psd=new ArrayList<PriceMasterDto>();
 		for(PriceMasterDto priceMasterDtos : chargingPointConnectorRateIncomingDto.getAmount())
 		{
-			ChargingPointConnectorRateEntity chargingpointconnectorRateEntity =new ChargingPointConnectorRateEntity();
-			
-			
+			ChargingPointConnectorRateEntity chargingpointconnectorRateEntity = new ChargingPointConnectorRateEntity();
 			
 			
 			chargingpointconnectorRateEntity.setAmount(priceMasterDtos.getAmount());
+			chargingpointconnectorRateEntity.setKwh(priceMasterDtos.getKwh());
 			chargingpointconnectorRateEntity.setChargingAmount(priceMasterDtos.getChargingAmount());
 			chargingpointconnectorRateEntity.setCgst(priceMasterDtos.getCgst());
-			chargingpointconnectorRateEntity.setKwh(priceMasterDtos.getKwh());
 			chargingpointconnectorRateEntity.setSgst(priceMasterDtos.getSgst());
 			chargingpointconnectorRateEntity.setStatus(chargingPointConnectorRateIncomingDto.getStatus());
 			chargingpointconnectorRateEntity.setCancelBookingAmount(priceMasterDtos.getCancelBookingAmount());
@@ -107,8 +105,25 @@ public class PriceServiceImpl implements PriceService{
 						
 		}
 		
+		// Full Charging Pricing
+		ChargingPointConnectorRateEntity chargingpointconnectorRateEntity = new ChargingPointConnectorRateEntity();
 			
-			chargingPointConnectorRateRepository.saveAll(chargingpointconnectorRateEntities);
+		chargingpointconnectorRateEntity.setAmount(0);
+		chargingpointconnectorRateEntity.setKwh(1000);
+		chargingpointconnectorRateEntity.setChargingAmount(0);
+		chargingpointconnectorRateEntity.setCgst(0);
+		chargingpointconnectorRateEntity.setSgst(0);
+		chargingpointconnectorRateEntity.setStatus("ACTIVE");
+		chargingpointconnectorRateEntity.setCancelBookingAmount(50);
+		
+		chargingpointconnectorRateEntity.setConnectorEntity(connectorEntity);
+		chargingpointconnectorRateEntity.setChargingPointEntity(chargingPointEntity);
+		chargingpointconnectorRateEntity.setIsdeleted("N");
+		
+		chargingpointconnectorRateEntities.add(chargingpointconnectorRateEntity);
+			
+		
+		chargingPointConnectorRateRepository.saveAll(chargingpointconnectorRateEntities);
 			
 		return true;
 	}

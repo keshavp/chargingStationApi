@@ -24,6 +24,11 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 
 	ChargingRequestEntity findByChargingPointEntityAndConnectorEntityAndStatus(ChargingPointEntity chargingPointEntity,
 			ConnectorEntity connectorEntity, String string);
+	
+	ChargingRequestEntity findByChargingPointEntityAndConnectorEntityAndChargingStatus(ChargingPointEntity chargingPointEntity,
+			ConnectorEntity connectorEntity, String chargingStatus);
+	
+	ChargingRequestEntity findByChargingPointEntityAndChargingStatus(ChargingPointEntity chargingPointEntity, String chargingStatus);
 
 	List<ChargingRequestEntity> findByChargingStatus(String string);
 	

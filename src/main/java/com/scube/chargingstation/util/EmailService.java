@@ -12,6 +12,8 @@
   import org.slf4j.Logger; import org.slf4j.LoggerFactory; import
   org.springframework.beans.factory.annotation.Value; import
   org.springframework.stereotype.Service;
+
+import com.scube.chargingstation.dto.CheckAllChargerStatusDto;
   
   @Service public class EmailService 
   {
@@ -152,6 +154,56 @@
   
   }
   
-  
+  public boolean sendEmailForAllChargerStatus(String emailContent, String thankYouContent, String currentDate) {
+	  
+	  logger.info("------ EmailService sendEmailForAllChargerStatus -------");
+	  
+	  String receipientAddress = delEmailTo;
+	  
+	  Properties properties = System.getProperties();
+	  properties.put("mail.smtp.host", emailhost); 
+	  properties.put("mail.smtp.port", emailport); 
+	  properties.put("mail.smtp.ssl.enable", "true");
+	  properties.put("mail.smtp.auth", "true");
+	  
+	  Session session = Session.getInstance(properties, new  javax.mail.Authenticator() {
+		  protected PasswordAuthentication getPasswordAuthentication() {
+			  return new PasswordAuthentication(emailFrom, "Dullhousi");  
+		  }	  
+	  }); 
+	  
+	  session.setDebug(true);
+	  
+	  try {
+		  
+		  MimeMessage message = new MimeMessage(session); 
+		  
+		  message.setFrom(new  InternetAddress(emailFrom));
+		  message.addRecipient(Message.RecipientType.TO, new InternetAddress(receipientAddress));
+		  message.setSubject("Attention Required !!!");
+		  
+		  String vmFileContent = "Hello EV Dock, <br><br>" 
+				  				+ " We are sharing the updated Charging Station and Charger Status.<br> "
+				  				+ "The below issue was reported at around " + currentDate + "<br>"
+		 	    				+ "PFB details for your reference." + "<br> "
+		 	    				+ emailContent + thankYouContent ;
+		  
+		  message.setText(vmFileContent,"UTF-8", "html");
+		  
+		  logger.info("---- Sending in process -----");
+		  
+		  Transport.send(message);
+		  
+		  logger.info("---- Mail sent successfully -----");
+		  
+	  } 
+	  catch (Exception e) {
+		// TODO: handle exception
+		  logger.info("------ MessagingException ------ " + e.toString());
+		  return false;
+	  }
+	  
+	  return false;
+	  
   }
- 
+}
