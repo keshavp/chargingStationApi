@@ -93,12 +93,11 @@ public class ServerAPIResetServiceImpl implements ServerAPIResetService {
 		
 		logger.info("Charging Request Dto :--- " + chargingRequestDto);
 		
-		/*
-		 * String response =
-		 * CheckChargerStatus.callHardResetConnectorAPI(chargingRequestDto);
-		 * 
-		 * logger.info("Response for Hard Reset :---- " + response);
-		 */
+		
+		  String response =		  CheckChargerStatus.callHardResetConnectorAPI(chargingRequestDto);
+		  
+		  logger.info("Response for Hard Reset :---- " + response);
+		 
 		
 		logger.info("---- Hard Reset Successfully Completed -----");
 		
@@ -145,10 +144,10 @@ public class ServerAPIResetServiceImpl implements ServerAPIResetService {
 			
 			logger.info("---- No Charging going on currently on " + serverAPIResetIncomingDto.getChargingPointId() + 
 					" on Connector :-- " + connectorEntityList.get(i).getConnectorId() + ". Processing with Soft Reset");
-	/*		
+			
 			String response = CheckChargerStatus.callResetConnectorApi(chargingPointEntity.getChargingPointId(), connectorEntityList.get(i).getConnectorId());
 			logger.info("Response for Soft Reset :---- " + response);
-	*/	
+		
 		} 
 		
 		return true;
