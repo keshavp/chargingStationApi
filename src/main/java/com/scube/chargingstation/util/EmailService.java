@@ -6,14 +6,12 @@
   import javax.validation.Valid; import javax.mail.Message; import
   javax.mail.MessagingException; import javax.mail.PasswordAuthentication;
   import javax.mail.Session; import javax.mail.Transport; import
-  javax.mail.internet.InternetAddress; import javax.mail.internet.MimeBodyPart;
+  javax.mail.internet.InternetAddress;
   import javax.mail.internet.MimeMessage;
   
   import org.slf4j.Logger; import org.slf4j.LoggerFactory; import
   org.springframework.beans.factory.annotation.Value; import
   org.springframework.stereotype.Service;
-
-import com.scube.chargingstation.dto.CheckAllChargerStatusDto;
   
   @Service public class EmailService 
   {
@@ -118,7 +116,6 @@ import com.scube.chargingstation.dto.CheckAllChargerStatusDto;
   try {
   
   MimeMessage message = new MimeMessage(session); 
-  MimeBodyPart textBodyPart =  new MimeBodyPart();
   
   // Set From: header field of the header. 
   message.setFrom(new  InternetAddress(emailFrom));
