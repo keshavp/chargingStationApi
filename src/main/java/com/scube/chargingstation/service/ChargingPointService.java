@@ -1,5 +1,6 @@
 package com.scube.chargingstation.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -38,4 +39,8 @@ public interface ChargingPointService {
 	List<ChargingPointDto> getNearByChargingPoints(Double lat,Double longi);
 	
 	ChargingPointEntity getChargingPointEntityByChargePointId(String chargingPointId);
+
+	List<Object> getQRCodeImage(String id);
+	
+	HashMap<String, Object> getQRCodeImage(String id,String connectorId);
 }

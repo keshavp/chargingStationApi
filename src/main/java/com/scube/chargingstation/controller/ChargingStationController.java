@@ -289,4 +289,26 @@ public class ChargingStationController {
 		
 	}
 	
+	@GetMapping("/QRCode/{id}")
+    public Response  getQRCode(@PathVariable("id") String id){
+		
+    			
+    	List<Object> image = chargingPointService.getQRCodeImage(id); 
+		
+		//QRCodeGenerator.getQRCodeImage(codeGenerationRequestDto,250,250);
+    	
+    	return Response.ok().setPayload(image);	
+    }
+	
+	@GetMapping("/QRCode/{id}/{cid}")
+    public Response  getQRCode(@PathVariable("id") String id ,@PathVariable("cid") String cid){
+		
+    			
+		HashMap<String, Object> image = chargingPointService.getQRCodeImage(id , cid); 
+		
+		//QRCodeGenerator.getQRCodeImage(codeGenerationRequestDto,250,250);
+    	
+    	return Response.ok().setPayload(image);	
+    }
+	
 }

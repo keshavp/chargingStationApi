@@ -1,5 +1,8 @@
 package com.scube.chargingstation.service;
 
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +39,7 @@ import com.scube.chargingstation.repository.ChargingPointRepository;
 import com.scube.chargingstation.repository.ConnectorStatusRepository;
 import com.scube.chargingstation.repository.RoleRepository;
 import com.scube.chargingstation.util.CheckChargerStatus;
+import com.scube.chargingstation.util.QRCodeGenerator;
 
 @Service
 public class ChargingPointServiceImpl implements ChargingPointService {
@@ -424,6 +428,78 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	public ChargingPointEntity getChargingPointEntityByChargePointId(String chargingPointId) {
 		// TODO Auto-generated method stub
 		return chargingPointRepository.findChargingPointEntityByChargingPointId(chargingPointId);
+	}
+
+	@Override
+	public List<Object> getQRCodeImage(String id) {
+		// TODO Auto-generated method stub
+		
+		List<Object> objects = new ArrayList<>();
+		
+		ChargingPointEntity chargingPointEntity = chargingPointRepository.findById(id).get();
+		
+		if(chargingPointEntity == null) {
+			throw BRSException.throwException(EntityType.CHARGINGSTATION, ExceptionType.VALUE_NOT_FOUND , chargingPointEntity.getChargingPointId()); 
+		}
+		
+		for(ConnectorEntity connectorEntity : chargingPointEntity.getConnectorEntities()) {
+			
+			HashMap<String, Object> hashMapQRData = new HashMap<String, Object>();
+			
+			HashMap<String, String> hashMap = new HashMap<String, String>();
+			
+			hashMap.put("chargingPointId", connectorEntity.getId());
+			hashMap.put("connectorId", chargingPointEntity.getChargingPointId());
+			hashMap.put("cId", chargingPointEntity.getId());
+			
+			byte[] qrimagedata = QRCodeGenerator.getQRCodeImage(hashMap, 250,250);
+			
+			
+			hashMapQRData.put("info", hashMap);
+			hashMapQRData.put("QR", "data:image/png;base64,"+Base64.getEncoder().encodeToString(qrimagedata));
+			
+			objects.add(hashMapQRData);
+		}
+		
+		
+		// byte[] qrimagedata = QRCodeGenerator.getQRCodeImage(chargingPointDto, 250,250);
+		
+		return objects;
+	}
+
+	@Override
+	public HashMap<String, Object> getQRCodeImage(String id, String connectorId) {
+		// TODO Auto-generated method stub
+		
+		HashMap<String, Object> hashMapQRData = new HashMap<String, Object>();
+		
+		ChargingPointEntity chargingPointEntity = chargingPointRepository.findById(id).get();
+		
+		if(chargingPointEntity == null) {
+			throw BRSException.throwException(EntityType.CHARGINGSTATION, ExceptionType.VALUE_NOT_FOUND , chargingPointEntity.getChargingPointId()); 
+		}
+		
+		for(ConnectorEntity connectorEntity : chargingPointEntity.getConnectorEntities()) {
+			
+			if(connectorEntity.getId().equals(connectorId) ) {
+			
+			
+			HashMap<String, String> hashMap = new HashMap<String, String>();
+			
+			hashMap.put("chargingPointId", connectorEntity.getId());
+			hashMap.put("connectorId", chargingPointEntity.getChargingPointId());
+			hashMap.put("cId", chargingPointEntity.getId());
+			
+			byte[] qrimagedata = QRCodeGenerator.getQRCodeImage(hashMap, 250,250);
+			
+			
+			hashMapQRData.put("info", hashMap);
+			hashMapQRData.put("QR", "data:image/png;base64,"+Base64.getEncoder().encodeToString(qrimagedata));
+			
+			}
+		}
+		
+		return hashMapQRData;
 	}
 
 
