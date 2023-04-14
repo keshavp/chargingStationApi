@@ -41,6 +41,7 @@ public class ChargingPointEntity  extends BaseEntity {
 	private String communicationtype;
 	private String powerstandards;
 	private String stationtype;
+	private String GstIn;
 	
 	@OneToOne
 	@JoinColumn(name = "fk_partner")
@@ -218,6 +219,14 @@ public class ChargingPointEntity  extends BaseEntity {
 
 	public void setPartner(PartnerInfoEntity partner) {
 		this.partner = partner;
+	}
+
+	public String getGstIn() {
+		return GstIn;
+	}
+
+	public void setGstIn(String gstIn) {
+		GstIn = gstIn;
 	}
 	
 
