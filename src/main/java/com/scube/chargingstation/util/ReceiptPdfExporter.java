@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -16,6 +17,7 @@ import java.util.Locale;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.plaf.LayerUI;
 import javax.swing.text.StyleConstants.ColorConstants;
+import javax.swing.text.StyleConstants.FontConstants;
 import javax.swing.text.html.parser.DTD;
 
 import org.apache.catalina.filters.AddDefaultCharsetFilter;
@@ -29,19 +31,28 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.itextpdf.forms.xfdf.ElementContentEncodingFormat;
+import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.Color;
 import com.itextpdf.kernel.colors.DeviceCmyk;
 import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.events.Event;
+import com.itextpdf.kernel.events.IEventHandler;
+import com.itextpdf.kernel.events.PdfDocumentEvent;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.action.PdfAction;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.kernel.pdf.canvas.draw.DottedLine;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfDocumentContentParser;
 import com.itextpdf.kernel.pdf.canvas.parser.listener.TextChunk;
+import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.Style;
 import com.itextpdf.layout.borders.Border;
@@ -50,8 +61,10 @@ import com.itextpdf.layout.borders.DashedBorder;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.Link;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.properties.BorderCollapsePropertyValue;
 import com.itextpdf.layout.properties.BorderRadius;
 import com.itextpdf.layout.properties.HorizontalAlignment;
@@ -62,19 +75,15 @@ import com.itextpdf.layout.renderer.DrawContext;
 import com.itextpdf.layout.renderer.IRenderer;
 import com.itextpdf.layout.renderer.ParagraphRenderer;
 import com.itextpdf.layout.renderer.TableRenderer;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Table;
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;   
 import com.scube.chargingstation.entity.ChargingRequestEntity;
+
 
 import net.bytebuddy.agent.builder.AgentBuilder.FallbackStrategy.Simple;
 
 @Service
 public class ReceiptPdfExporter {
+	
 	
 	private static final Logger logger = LoggerFactory.getLogger(ReceiptPdfExporter.class);  
 
@@ -167,7 +176,7 @@ public class ReceiptPdfExporter {
 		
 		// Draw Border Line
 		Table drawBorderLine = new Table(UnitValue.createPercentArray(4)).useAllAvailableWidth();
-		drawBorderLine.setWidth(500);
+		drawBorderLine.setWidth(520);
 		
 		// Cell for Border
 		drawBorderLine.addCell(new Cell().add(new Paragraph())
@@ -193,8 +202,8 @@ public class ReceiptPdfExporter {
 		layoutDocument.add(drawBorderLine);
 
 		// Drawing Line below the Logo
-/*		canvas.moveTo(100, 500);
-		canvas.lineTo(500, 300);
+/*		canvas.moveTo(100, 520);
+		canvas.lineTo(520, 300);
 		canvas.closePathStroke();
 		
 	*/	
@@ -260,17 +269,143 @@ public class ReceiptPdfExporter {
 		
 		logger.info("The Charging Date & Time is :-  " + roundOffChargingDateAndTime);
 		
+		//Table For Registered Address
+		/*
+		 * Table regeisterAddTable = new
+		 * Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
+		 * regeisterAddTable.setWidth(250);
+		 * regeisterAddTable.setTextAlignment(TextAlignment.LEFT);
+		 * regeisterAddTable.setFontSize(10);
+		 * 
+		 * regeisterAddTable.addCell(new Cell().add(new
+		 * Paragraph("Tritan EV Dock Private Limited")) .setBold()
+		 * .setBorder(Border.NO_BORDER));
+		 * 
+		 * regeisterAddTable.addCell(new Cell().add(new
+		 * Paragraph("Tritan Dreams Building, 1st Floor, Plot No. 303 Nr. Celebration Hall, Service Road, Panchpakhadi,Thane(W)"
+		 * )) .setBorder(Border.NO_BORDER));
+		 * 
+		 * 
+		 * layoutDocument.add(regeisterAddTable);
+		 */
+		
+		//financial year
+		        LocalDate currentDate = LocalDate.now();
+		        int year = currentDate.getYear();
+		        String financialYear;
+
+		        if (currentDate.getMonthValue() >= 4) {
+		            financialYear = year + "-" + (year + 1);
+		        } else {
+		            financialYear = (year - 1) + "-" + year;
+		        }
+
+		        System.out.println("----------Financial year--------: " + financialYear);
+		  
+		        
+		float[] columnWidth = {250,130,130};
+	    Table regeisterAddTable = new Table(UnitValue.createPercentArray(columnWidth)).useAllAvailableWidth();
+		 	  // regeisterAddTable.setWidth(520);
+		 	   regeisterAddTable.setFontSize(10);
+		 
+		regeisterAddTable.addCell(new Cell().add(new Paragraph())
+					      .setBorder(Border.NO_BORDER));
+		
+		regeisterAddTable.addCell(new Cell().add(new Paragraph())
+					      .setBorder(Border.NO_BORDER));
+		
+		regeisterAddTable.addCell(new Cell().add(new Paragraph())
+					      .setBorder(Border.NO_BORDER));
+		 	   	 	   
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph("Tritan EV Dock Private Limited"))
+				          .setBorder(Border.NO_BORDER)
+						  .setBold());
+		 
+		/*
+		 * regeisterAddTable.addCell(new Cell().add(new Paragraph())
+		 * .setBorder(Border.NO_BORDER));
+		 * 
+		 * regeisterAddTable.addCell(new Cell().add(new Paragraph())
+		 * .setBorder(Border.NO_BORDER));
+		 */
+		 
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph("Invoice No"))
+				  .setBold()
+			      .setBackgroundColor(new DeviceRgb(211, 211, 211)));
+
+		//regeisterAddTable.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getId() + " _ " + 
+		//RandomNumber.getRandomNumberString()+RandomStringUtil.getAlphaNumericString(4, "EVDock")))));
+		 
+	     regeisterAddTable.addCell(new Cell().add(new Paragraph("INV"+"-"+ financialYear + "-"+chargingRequestEntity.getChargingPointEntity().getChargingPointId() +"-"
+				 + RandomNumber.getRandomNumberString())));
+		 
+		 
+		  
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph("Tritan Dreams Building, 1st Floor, Plot No. 303 Nr. Celebration Hall, Service Road, Panchpakhadi,Thane(W)"))
+				          .setBorder(Border.NO_BORDER)); 
+		 
+
+		/*
+		 * regeisterAddTable.addCell(new Cell().add(new Paragraph())
+		 * .setBorder(Border.NO_BORDER));
+		 */
+		 
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph("Invoice Date"))
+					.setBold()
+					.setBackgroundColor(new DeviceRgb(211, 211, 211)));
+			
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph(String.valueOf(myInvoiceRoundOffDateAndTime))));
+		 
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph("GSTIN/UIN: 27AAJCT1560G1ZB"))
+			              .setBorder(Border.NO_BORDER));
+		 
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph("Booking ID"))
+					.setBold()
+					.setBackgroundColor(new DeviceRgb(211, 211, 211)));
+			
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getId()))));
+		 
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph("State Name: Maharashtra, Code: 27"))
+	                      .setBorder(Border.NO_BORDER));
+		 
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph(" HSN/SAC "))
+				 		  .setBold()
+					      .setBackgroundColor(new DeviceRgb(211, 211, 211)));
+			
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph(" 996911 ")));
+
+		 
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph("CIN: U40108MH2022PTC375945"))
+                 		  .setBorder(Border.NO_BORDER));
+
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph())
+			      		  .setBorder(Border.NO_BORDER));
+	
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph())
+			      		  .setBorder(Border.NO_BORDER));
+		 
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph("E-mail: evdockin@gmail.com"))
+                          .setBorder(Border.NO_BORDER));
+
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph())
+			              .setBorder(Border.NO_BORDER));
+	
+		 regeisterAddTable.addCell(new Cell().add(new Paragraph())
+			              .setBorder(Border.NO_BORDER));
+		   
+		layoutDocument.add(regeisterAddTable);
+		layoutDocument.add(new Paragraph());
 		
 		// Table for Invoice Data
 		Table invoiceDataTableVal = new Table(UnitValue.createPercentArray(4)).useAllAvailableWidth(); 
 		invoiceDataTableVal.setFontSize(10);
 		invoiceDataTableVal.setHorizontalAlignment(HorizontalAlignment.CENTER);
-		invoiceDataTableVal.setWidth(500);
+		invoiceDataTableVal.setWidth(520);
 		invoiceDataTableVal.setBorder(Border.NO_BORDER);
 		invoiceDataTableVal.setTextAlignment(TextAlignment.LEFT);
 
 		// Invoice No
-		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
+	/*	invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
 				.setBorder(Border.NO_BORDER));
 		
 		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
@@ -310,7 +445,7 @@ public class ReceiptPdfExporter {
 				.setBold()
 				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
 		
-		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getId()))));
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getId()))));*/
 		
 
 		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
@@ -350,16 +485,15 @@ public class ReceiptPdfExporter {
 				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
 		
 		
-		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(" Charge Point ID : "))
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(" Charging Station Info "))
 				.setBorder(Border.NO_BORDER)
 				.setTextAlignment(TextAlignment.LEFT)
 				.setBold()
 				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
 		
 		
-		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(chargingPointId))
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph())
 				.setBorder(Border.NO_BORDER)
-				.setTextAlignment(TextAlignment.LEFT)
 				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
 		
 		
@@ -390,7 +524,7 @@ public class ReceiptPdfExporter {
 				.setBorder(Border.NO_BORDER)
 				.setTextAlignment(TextAlignment.LEFT));
 		
-		invoiceDataTableVal.addCell(new Cell().add(new Paragraph(" Address "))
+		invoiceDataTableVal.addCell(new Cell().add(new Paragraph("Address"))
 				.setBorder(Border.NO_BORDER)
 				.setBold()
 				.setTextAlignment(TextAlignment.LEFT));
@@ -447,7 +581,7 @@ public class ReceiptPdfExporter {
 		chargingDescriptionTable.setFontSize(10);
 		chargingDescriptionTable.setTextAlignment(TextAlignment.CENTER);
 		chargingDescriptionTable.setHorizontalAlignment(HorizontalAlignment.CENTER);
-		chargingDescriptionTable.setWidth(500);		
+		chargingDescriptionTable.setWidth(520);		
 		
 		// Cell for Description Table
 		Style cellDescriptionVal = new Style();
@@ -497,10 +631,14 @@ public class ReceiptPdfExporter {
 				.setBold()
 				.setBorder(Border.NO_BORDER));
 		
+
+		
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" Description "))
 				.setTextAlignment(TextAlignment.CENTER)
 				.setBold()
 				.setBackgroundColor(new DeviceRgb(211, 211, 211)));
+		
+
 		
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" Price Per Unit (INR) "))
 				.setTextAlignment(TextAlignment.CENTER)
@@ -520,6 +658,9 @@ public class ReceiptPdfExporter {
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" Service Charges "))
 				.setTextAlignment(TextAlignment.LEFT)
 				.setBold());
+		
+
+		
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(oneKwhchargingPointConnectorRateDto.getChargingAmount()))));
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(String.format("%.3f",chargingRequestEntity.getFinalKwh())))));
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalAmountWithOutGst()))));
@@ -527,7 +668,7 @@ public class ReceiptPdfExporter {
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" CGST (9.00%)"))
 				.setTextAlignment(TextAlignment.LEFT)
 				.setBold());
-		
+
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalAmountCGST()))));
@@ -535,7 +676,7 @@ public class ReceiptPdfExporter {
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(" SGST (9.00%)"))
 				.setTextAlignment(TextAlignment.LEFT)
 				.setBold());
-		
+
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph()));
 		chargingDescriptionTable.addCell(new Cell().add(new Paragraph(String.valueOf(chargingRequestEntity.getFinalAmountSGST()))));
@@ -586,6 +727,56 @@ public class ReceiptPdfExporter {
 		
 		layoutDocument.add(totalAmtMsgTable);
 		
+		//footer
+		
+		Table table = new Table(1).useAllAvailableWidth();
+		
+  		table.addCell(new Cell().add(new Paragraph())
+				.setBold()
+				.setBorder(Border.NO_BORDER));
+  		
+		  /*Cell cell = new Cell().add(new Paragraph("For any dispute, please email us at evdockin@gmail.com or Call us on Helpline No. +91 99 0391 0391")) 
+  		.setBorder(Border.NO_BORDER) .setFontSize(10) .setFont(font)
+  		.setTextAlignment(TextAlignment.CENTER);*/
+  		
+  		/*PdfFont font = PdfFontFactory.createFont(StandardFonts.HELVETICA);
+  		Paragraph paragraph = new Paragraph();
+  		Link link = new Link("evdockin@gmail.com", PdfAction.createURI("mailto:evdockin@gmail.com"));
+  		paragraph.add(link.setFont(font).setUnderline());
+  		
+  		Cell cell = new Cell().add(new Paragraph("For any dispute, please email us at "))
+  		        .add(paragraph)
+  		        .add(new Paragraph(" or Call us on Helpline No. +91 99 0391 0391"))
+  		        .setBorder(Border.NO_BORDER)
+  		        .setFontSize(10)
+  		        .setTextAlignment(TextAlignment.CENTER);*/
+  		
+		
+		//new
+		PdfFont font = PdfFontFactory.createFont(StandardFonts.HELVETICA);
+		Paragraph paragraph = new Paragraph()
+		    .add(new Text("For any dispute, please email us at "))
+		    .add(new Link("evdockin@gmail.com", PdfAction.createURI("mailto:evdockin@gmail.com"))
+		        .setFont(font)
+		        .setUnderline()
+		        .setFontColor(new DeviceRgb(0, 102, 204)))
+		    .add(new Text(" or Call us on Helpline No. +91 99 0391 0391"))
+		    .setBorder(new SolidBorder(new DeviceRgb(255, 255, 255), 1))
+		    .setFontSize(10)
+		    .setTextAlignment(TextAlignment.CENTER);
+
+		
+		
+		Cell cell = new Cell().add(paragraph);
+  		
+  		
+  		
+  		table.addCell(cell);
+  		
+  		//layoutDocument.add(table);
+  		
+  		pdfDocument.addEventHandler(PdfDocumentEvent.END_PAGE, new TableFooterEventHandler(table));
+				
 		layoutDocument.close();
 		
 		chargingRequestEntity.setInvoiceFilePath(filename);
@@ -594,4 +785,30 @@ public class ReceiptPdfExporter {
 		return chargingRequestEntity;      
 		
 	}
+	
+
+	
+		private static class TableFooterEventHandler implements IEventHandler {
+	        private Table table;
+
+	        public TableFooterEventHandler(Table table) {
+	            this.table = table;
+	        }
+
+	        @Override
+	        public void handleEvent(Event currentEvent) {
+	            PdfDocumentEvent docEvent = (PdfDocumentEvent) currentEvent;
+	            PdfDocument pdfDocument = docEvent.getDocument();
+	            PdfPage page = docEvent.getPage();
+	            PdfCanvas canvas = new PdfCanvas(page.newContentStreamBefore(), page.getResources(), pdfDocument);
+
+	            System.out.println("======getPageSize====="+page.getPageSize().getWidth());
+	            
+	            new Canvas(canvas, new Rectangle(50, 0, page.getPageSize().getWidth() -100, 90))
+	                    .add(table)
+	                    .close();
+	        }
+
+	    }
+	
 }
