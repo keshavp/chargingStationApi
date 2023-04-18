@@ -93,7 +93,12 @@ public class ChargingRequestMapper {
 				.setChargingTime(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getChargingTime()))
 				.setStopTime(convertEndDateToString)
 				.setCustName(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getCustName()))
-				.setMobileNo(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getMobileNo()));
+				.setMobileNo(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getMobileNo()))
+				.setCgst(chargingRequestEntity.getFinalAmountCGST())
+				.setSgst(chargingRequestEntity.getFinalAmountSGST())
+				.setAmount(chargingRequestEntity.getFinalAmountWithOutGst())
+				//not implemented only for show
+				.setIgst(0);       
 	}
 	
 }

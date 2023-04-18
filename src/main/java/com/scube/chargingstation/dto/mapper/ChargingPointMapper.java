@@ -43,7 +43,8 @@ public class ChargingPointMapper {
 				.setStationtype(chargingPointEntity.getStationtype())
 				.setPartner(chargingPointEntity.getPartner().getId())
 				.setAmenities(AmenityMapper.toAmenitiesDto(chargingPointEntity.getAmenities()))
-				.setConnectors(ConnectorMapper.toConnectorsDto(chargingPointEntity.getConnectorEntities()));
+				.setConnectors(ConnectorMapper.toConnectorsDto(chargingPointEntity.getConnectorEntities()))
+				.setGstin(chargingPointEntity.getGstIn());
 								
 	}
 

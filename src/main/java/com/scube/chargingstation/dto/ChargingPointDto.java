@@ -43,6 +43,7 @@ public class ChargingPointDto {
 	private String communicationtype;
 	private String powerstandards;
 	private String stationtype;
+	private String gstin;
 	
     private Set<ChargingPointConnectorDto> connectors;
     private Set<AmenityDto> amenities ;

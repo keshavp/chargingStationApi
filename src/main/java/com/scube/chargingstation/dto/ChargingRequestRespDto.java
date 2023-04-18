@@ -43,6 +43,11 @@ import lombok.experimental.Accessors;
 		private String mobileNo;
 		private String partnerName;
 		private String  invoiceFilePath;
+		private double cgst;
+		private double sgst;
+		private double amount;
+		//not implemented only for show
+		private double igst;
 		
 	//	private String chargingTimeForUser;
 		
