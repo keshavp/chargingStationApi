@@ -66,6 +66,9 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	//@Query(value = "SELECT * FROM charging_request where fk_charging_point=(1) and ( StartTime > '2022-06-01' and StartTime <= '2022-07-20')", nativeQuery = true)
 	List<ChargingRequestEntity> getChargingRequestEntityByChargingPointEntity(String chargingPoint, String startDate, String endDate);
 	
+	@Query(value = "SELECT * FROM charging_request where StartTime >= (?1) and StartTime <= (?2) order by StartTime desc", nativeQuery = true)
+	//@Query(value = "SELECT * FROM charging_request where fk_charging_point=(1) and ( StartTime > '2022-06-01' and StartTime <= '2022-07-20')", nativeQuery = true)
+	List<ChargingRequestEntity> getChargingRequestEntityByChargingPointEntityAll(String startDate, String endDate);
 
 	 @Query(value = "SELECT * FROM charging_request where fk_charging_point = (?1) and DATE_FORMAT(StartTime, '%d%m%Y') "
 	 		+ " between DATE_FORMAT(STR_TO_DATE((?2), '%d-%M-%Y'), '%d%m%Y') and DATE_FORMAT(STR_TO_DATE((?3), '%d-%M-%Y'), '%d%m%Y')",nativeQuery = true)
