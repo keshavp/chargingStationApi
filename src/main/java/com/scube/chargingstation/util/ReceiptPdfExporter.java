@@ -356,17 +356,59 @@ public class ReceiptPdfExporter {
 			
 		 regeisterAddTable.addCell(new Cell().add(new Paragraph(String.valueOf(myInvoiceRoundOffDateAndTime))));
 		 
-		 regeisterAddTable.addCell(new Cell().add(new Paragraph("GSTIN/UIN: 27AAJCT1560G1ZB"))
-			              .setBorder(Border.NO_BORDER));
+		 /*regeisterAddTable.addCell(new Cell().add(new Paragraph("GSTIN/UIN: 27AAJCT1560G1ZB"))
+				          .setBold()
+			              .setBorder(Border.NO_BORDER));*/
 		 
+		 String text = "GSTIN/UIN: 27AAJCT1560G1ZB";
+		 Paragraph paragraph1 = new Paragraph();
+
+		 Text boldText = new Text("GSTIN/UIN: ").setBold();
+		 paragraph1.add(boldText);
+
+		 Text regularText = new Text(text.substring(10));
+		 paragraph1.add(regularText);
+
+		 Cell cell1 = new Cell().add(paragraph1).setBorder(Border.NO_BORDER);
+		 regeisterAddTable.addCell(cell1);
+ 
 		 regeisterAddTable.addCell(new Cell().add(new Paragraph("Booking ID"))
 					.setBold()
 					.setBackgroundColor(new DeviceRgb(211, 211, 211)));
 			
 		 regeisterAddTable.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getId()))));
 		 
-		 regeisterAddTable.addCell(new Cell().add(new Paragraph("State Name: Maharashtra, Code: 27"))
-	                      .setBorder(Border.NO_BORDER));
+		/* regeisterAddTable.addCell(new Cell().add(new Paragraph("State Name: Maharashtra, Code: 27"))
+				          .setBold()
+	                      .setBorder(Border.NO_BORDER));*/
+		 
+		 String text1 = "State Name: Maharashtra, Code: 27";
+		 Paragraph paragraph2 = new Paragraph();
+
+		 // Add the "State Name:" text with bold formatting
+		 Text boldText1 = new Text("State Name: ").setBold();
+		 paragraph2.add(boldText1);
+
+		 // Add the rest of the text without bold formatting up to the comma
+		 Text regularText1 = new Text(text1.substring(12, text1.indexOf(',')));
+		 paragraph2.add(regularText1);
+
+		 // Add the comma separator without bold formatting
+		 Text regularText2 = new Text(",");
+		 paragraph2.add(regularText2);
+
+		 // Add the "Code:" text with bold formatting
+		 Text boldText2 = new Text(" Code: ").setBold();
+		 paragraph2.add(boldText2);
+
+		 // Add the rest of the text without bold formatting after the comma and space
+		 Text regularText3 = new Text(text1.substring(text1.indexOf("Code: ") + 6));
+		 paragraph2.add(regularText3);
+
+		 // Add the paragraph to the cell
+		 Cell cell3 = new Cell().add(paragraph2).setBorder(Border.NO_BORDER);
+		 regeisterAddTable.addCell(cell3);
+
 		 
 		 regeisterAddTable.addCell(new Cell().add(new Paragraph(" HSN/SAC "))
 				 		  .setBold()
@@ -375,17 +417,43 @@ public class ReceiptPdfExporter {
 		 regeisterAddTable.addCell(new Cell().add(new Paragraph(" 996911 ")));
 
 		 
-		 regeisterAddTable.addCell(new Cell().add(new Paragraph("CIN: U40108MH2022PTC375945"))
-                 		  .setBorder(Border.NO_BORDER));
+		/* regeisterAddTable.addCell(new Cell().add(new Paragraph("CIN: U40108MH2022PTC375945"))
+				          .setBold()
+                 		  .setBorder(Border.NO_BORDER));*/
+		 
+		 String text3 = "CIN: U40108MH2022PTC375945";
+		 Paragraph paragraph3 = new Paragraph();
 
+		 Text boldText3 = new Text("CIN: ").setBold();
+		 paragraph3.add(boldText3);
+
+		 Text regularText31 = new Text(text3.substring(4));
+		 paragraph3.add(regularText31);
+
+		 Cell cell11 = new Cell().add(paragraph3).setBorder(Border.NO_BORDER);
+		 regeisterAddTable.addCell(cell11);
+ 
 		 regeisterAddTable.addCell(new Cell().add(new Paragraph())
 			      		  .setBorder(Border.NO_BORDER));
 	
 		 regeisterAddTable.addCell(new Cell().add(new Paragraph())
 			      		  .setBorder(Border.NO_BORDER));
 		 
-		 regeisterAddTable.addCell(new Cell().add(new Paragraph("E-mail: evdockin@gmail.com"))
-                          .setBorder(Border.NO_BORDER));
+		 /*regeisterAddTable.addCell(new Cell().add(new Paragraph("E-mail: evdockin@gmail.com"))
+				          .setBold()
+                          .setBorder(Border.NO_BORDER));*/
+		 
+		 String text31 = "E-mail: evdockin@gmail.com";
+		 Paragraph paragraph31 = new Paragraph();
+
+		 Text boldText31 = new Text("E-mail: ").setBold();
+		 paragraph31.add(boldText31);
+
+		 Text regularText311 = new Text(text31.substring(7));
+		 paragraph31.add(regularText311);
+
+		 Cell cell111 = new Cell().add(paragraph31).setBorder(Border.NO_BORDER);
+		 regeisterAddTable.addCell(cell111);
 
 		 regeisterAddTable.addCell(new Cell().add(new Paragraph())
 			              .setBorder(Border.NO_BORDER));
