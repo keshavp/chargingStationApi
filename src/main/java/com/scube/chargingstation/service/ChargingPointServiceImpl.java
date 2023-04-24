@@ -468,12 +468,12 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	}
 
 	@Override
-	public HashMap<String, Object> getQRCodeImage(String id, String connectorId) {
+	public HashMap<String, Object> getQRCodeImage(String stationId, String connectorId) {
 		// TODO Auto-generated method stub
 		
 		HashMap<String, Object> hashMapQRData = new HashMap<String, Object>();
 		
-		ChargingPointEntity chargingPointEntity = chargingPointRepository.findById(id).get();
+		ChargingPointEntity chargingPointEntity = chargingPointRepository.findById(stationId).get();
 		
 		if(chargingPointEntity == null) {
 			throw BRSException.throwException(EntityType.CHARGINGSTATION, ExceptionType.VALUE_NOT_FOUND , chargingPointEntity.getChargingPointId()); 
@@ -486,9 +486,10 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 			
 			HashMap<String, String> hashMap = new HashMap<String, String>();
 			
-			hashMap.put("chargingPointId", connectorEntity.getId());
-			hashMap.put("connectorId", chargingPointEntity.getChargingPointId());
-			hashMap.put("cId", chargingPointEntity.getId());
+			hashMap.put("connectorId", connectorEntity.getId());
+			hashMap.put("connectorCode", connectorEntity.getConnectorId());
+			hashMap.put("stationCode", chargingPointEntity.getChargingPointId());
+			hashMap.put("stationId", chargingPointEntity.getId());
 			
 			byte[] qrimagedata = QRCodeGenerator.getQRCodeImage(hashMap, 250,250);
 			

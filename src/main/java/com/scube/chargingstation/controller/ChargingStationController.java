@@ -300,11 +300,11 @@ public class ChargingStationController {
     	return Response.ok().setPayload(image);	
     }
 	
-	@GetMapping("/QRCode/{id}/{cid}")
-    public Response  getQRCode(@PathVariable("id") String id ,@PathVariable("cid") String cid){
+	@GetMapping("/QRCode/{stationId}/{cid}")
+    public Response  getQRCode(@PathVariable("stationId") String stationId ,@PathVariable("cid") String cid){
 		
     			
-		HashMap<String, Object> image = chargingPointService.getQRCodeImage(id , cid); 
+		HashMap<String, Object> image = chargingPointService.getQRCodeImage(stationId , cid); 
 		
 		//QRCodeGenerator.getQRCodeImage(codeGenerationRequestDto,250,250);
     	
