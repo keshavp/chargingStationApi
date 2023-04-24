@@ -15,11 +15,13 @@ import org.springframework.util.ResourceUtils;
 
 import com.scube.chargingstation.service.BookingRequestService;
 import com.scube.chargingstation.service.ChargingRequestService;
+import com.scube.chargingstation.service.DailyUserWalletService;
 import com.scube.chargingstation.service.DeleteFileService;
 import com.scube.chargingstation.service.PartnerService;
 import com.scube.chargingstation.service.ServerAPIResetService;
 import com.scube.chargingstation.service.TransactionsService;
 import com.scube.chargingstation.service.UserInfoOtpService;
+import com.scube.chargingstation.service.UserPaymentService;
 
 @Component
 public class Schedulers {
@@ -46,6 +48,10 @@ public class Schedulers {
 	
 	@Autowired
 	DeleteFileService deleteFileService;
+	
+	
+	@Autowired
+	DailyUserWalletService dailyUserWalletService;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	
@@ -91,6 +97,16 @@ public class Schedulers {
 	 * 
 	 * return 0; }
 	 */
+	
+	
+	@Scheduled(cron = "${transferdatafromuserwallettodailyuserwallet}")
+	public void insertdatafromuserwallettodailyuserwallet() throws Exception {
+		    
+		dailyUserWalletService.getDailyUserWalletBalance();
+	
+	//	return 0;
+	}
+	
 	
 	@Scheduled(cron = "${bookingReminder.oneHour}")
 	public int oneHourBeforeBookingReminder() throws Exception {

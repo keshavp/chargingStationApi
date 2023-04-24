@@ -16,5 +16,6 @@ public class UserWalletRequestDto{
 	private String  encResp;
 	private String  paymentFor;
 	private String booking_request;
+	private String walletdate;
 	
 }

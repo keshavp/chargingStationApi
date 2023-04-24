@@ -24,5 +24,8 @@ public interface UserWalletRepository extends JpaRepository<UserWalletEntity, Lo
 			
 			@Query(value = "SELECT * FROM emp_wallet where fk_user=? order by created_at desc limit 1", nativeQuery = true)
 			UserWalletEntity findBalanceByUserId(String userId);
+			
 			UserWalletEntity findByUserInfoEntity(UserInfoEntity userInfoEntity);
+			
+		//	UserWalletEntity findByUserInfoEntityAndDate(UserInfoEntity userInfoEntity, String walletdate);
 }
