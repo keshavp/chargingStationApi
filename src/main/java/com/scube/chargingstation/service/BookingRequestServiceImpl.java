@@ -1075,4 +1075,18 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 			
 			return true;
 	}
+
+	@Override
+	public boolean getBookingRequestDetailsByConnectorId(String chargingPointId, String connectorId) {
+		// TODO Auto-generated method stub
+		logger.info("--- BookingRequestServiceImpl getBookingRequestDetailsForAllUsers ----");
+		
+		BookingRequestEntity bookingRequestEntity = bookingRequestRepository.getBookingDetailsByChargePointDetailsAndBookingStatus(chargingPointId, connectorId);
+		
+		if(bookingRequestEntity == null) {
+			return false;
+		}
+		
+		return true;
+	}
 }

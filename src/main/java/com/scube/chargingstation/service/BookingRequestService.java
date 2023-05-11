@@ -1,7 +1,5 @@
 package com.scube.chargingstation.service;
 
-
-import java.io.IOException;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -38,4 +36,7 @@ public interface BookingRequestService {
 	public void oneHourBeforeBookingReminderSchedulers();
 
 	public boolean bookingReminderById(String bookingId);
+	
+	boolean getBookingRequestDetailsByConnectorId(String chargingPointId, String connectorId);
+	
 }	

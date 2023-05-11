@@ -87,6 +87,9 @@ import com.scube.chargingstation.util.StringNullEmpty;
 
 @Service
 public class ChargingRequestServiceImpl implements ChargingRequestService {
+	
+	@Autowired
+	BookingRequestService bookingRequestService;
 
 	@Autowired
 	ChargingRequestRepository chargingRequestRepository;
@@ -426,9 +429,9 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 	  
 	 // Set<ChargingPointConnectorDto> conEntitySet 	  =chpointdto.getConnectors();
 	  
-	  ChargingPointEntity chargingPointEnt=chargePointRepository.findByChargingPointId(chpointdto.getChargingPointId());
+	  ChargingPointEntity chargingPointEnt=chargePointRepository.findByChargingPointId(chpointdto.getChargingPointId()); // 
 	  Set<ConnectorEntity> conEntitySet 	  =chargingPointEnt.getConnectorEntities();
-	  Set<AmenitiesEntity> ameEntitySet= chargingPointEnt.getAmenities();
+	  Set<AmenitiesEntity> ameEntitySet= chargingPointEnt.getAmenities();  
 	  
 	  JsonNode jsonNode=CheckChargerStatus.callAllChargerStatusAPI(chpointdto);
 			
@@ -437,6 +440,10 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			  ChargingPointConnectorDto conDto=new ChargingPointConnectorDto();
 			  //conDto=ConnectorMapper.toConnectorDto(conEntity); conDtto.getChargerId();
 			  
+			  logger.info("Check Connector in Booking :-- " + conEntity.getId());
+			  //Booking Request
+			  boolean bookingRequestEntityList = bookingRequestService.getBookingRequestDetailsByConnectorId(chargingPointEnt.getId(),conEntity.getId());
+			  logger.info("Size :--- " + bookingRequestEntityList);
 			  
 			  if(chargerTypes==null) //input car is not selected 
 			  {
@@ -498,7 +505,7 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		 	   }
 		 	   
 		 	   
-		 	   if(connectorStatus.equals("1")) //Available
+		 	   if(connectorStatus.equals("1") && bookingRequestEntityList != true) //Available
 		 	   {
 		 		  conDto.setAvailable("Y");
 		 	   }
@@ -506,9 +513,12 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		 	   {
 			 		  conDto.setAvailable("Y");
 		 	   }
-		 		 else {
-		 			 conDto.setAvailable("N");
-				}
+
+		 	   else {
+		 		  conDto.setAvailable("N");
+		 	   }
+		 	   
+
 		 	   //  conDto.setAvailable(connectorStatus.equals("1") ? "Y":"N");	
 				  
 				  conDto.setConnectorId(conEntity.getConnectorId()); //
