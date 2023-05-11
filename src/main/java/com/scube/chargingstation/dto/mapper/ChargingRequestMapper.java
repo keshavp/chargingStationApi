@@ -35,14 +35,14 @@ public class ChargingRequestMapper {
 		String roundOfFinalAmt = String.format("%.2f", originalFinalAmt);
 		
         return new ChargingRequestRespDto()
-        		.setChargePoint(chargingRequestEntity.getChargingPointEntity().getChargingPointId())
-        		.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getAddress())
+        		.setChargePoint(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getChargingPointEntity().getChargingPointId()))
+        		.setChargePointAddr(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getChargingPointEntity().getAddress()))
         		.setActualAmt(roundOfFinalAmt)
         		.setChargedKwh(roundOfKwh)
         		.setChargingTime(String.valueOf(chargingRequestEntity.getChargingTime()))
-        		.setConnector(chargingRequestEntity.getConnectorEntity().getChargerTypeEntity().getName())
+        		.setConnector(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getConnectorEntity().getChargerTypeEntity().getName()))
         		.setRequestedAmount(chargingRequestEntity.getRequestAmount())
-        		.setVehicleNo(chargingRequestEntity.getVehicleNO());
+        		.setVehicleNo(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getVehicleNO()));
 	} 
 	
 	public static List<ChargingRequestRespDto> toChargingRequestRespDtos(List<ChargingRequestEntity> chargingRequestEntities) {
@@ -79,16 +79,18 @@ public class ChargingRequestMapper {
 		String convertEndDateToString = simpleDateFormat.format(chargeEndDateInstantToDate);
 		
 		return new ChargingRequestRespDto()  
-				.setChargePoint(chargingRequestEntity.getChargingPointEntity().getChargingPointId())
-				.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getAddress() + chargingRequestEntity.getChargingPointEntity().getAddress2() + chargingRequestEntity.getChargingPointEntity().getPincode())
+				.setChargePoint(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getChargingPointEntity().getChargingPointId()))
+				.setChargePointAddr(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getChargingPointEntity().getAddress()) + 
+						StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getChargingPointEntity().getAddress2()) + 
+						StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getChargingPointEntity().getPincode()))
 				.setActualAmt(roundOfFinalAmt)
 				.setChargedKwh(roundOfKwh)
 				.setVehicleNo(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getVehicleNO()))
-				.setName(chargingRequestEntity.getChargingPointEntity().getName())
+				.setName(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getChargingPointEntity().getName()))
 	//			.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getAddress2())
 	//			.setChargePointAddr(chargingRequestEntity.getChargingPointEntity().getPincode())
 				.setInvoiceFilePath(StaticPathContUtils.APP_URL_DIR+StaticPathContUtils.SET_RECEIPT_FILE_URL_DIR +chargingRequestEntity.getId())
-				.setMobileNo(chargingRequestEntity.getMobileNo())
+				.setMobileNo(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getMobileNo()))
 				.setStartTime(convertDateToString)
 				.setChargingTime(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getChargingTime()))
 				.setStopTime(convertEndDateToString)
