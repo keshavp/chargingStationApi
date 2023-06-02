@@ -76,4 +76,6 @@ public interface ChargingRequestService {
 
 	public boolean chargeStop(String id);
 	
+	public int getCountByChargingPointIDAndConnectorID(ChargingPointEntity chargingPointEntity, ConnectorEntity connectorEntity);
+	
 }

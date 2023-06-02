@@ -1515,5 +1515,17 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		
 		return CheckChargerStatus.callRemoteStopAPI(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getTransactionsEntity().getTransactionId());
 	}
+
+	@Override
+	public int getCountByChargingPointIDAndConnectorID(ChargingPointEntity chargingPointEntity,ConnectorEntity connectorEntity) {
+		// TODO Auto-generated method stub
+		logger.info("--------- ChargingRequestServiceImpl getCountByChargingPointIDAndConnectorID ------");
+		
+		int count = chargingRequestRepository.countByChargingPointEntityAndConnectorEntity(chargingPointEntity, connectorEntity);
+		
+		logger.info("--- Sequence Count :--- " + count);
+		
+		return count;
+	}
 	
 }

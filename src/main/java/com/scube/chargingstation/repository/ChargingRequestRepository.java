@@ -126,6 +126,10 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	 @Query(value = "SELECT * FROM charging_request where charging_status='Done' and  StartTime >= (?1) and StartTime <= (?2) order by StartTime desc", nativeQuery = true)
 		List<ChargingRequestEntity> getChargingRequestEntityByDateRange(String startDate, String endDate);
 	 
+//	 @Query(value = "SELECT count(id) FROM charging_request WHERE fk_charging_point=(?1) and fk_connector=(?2);", nativeQuery = true)
+	 int countByChargingPointEntityAndConnectorEntity(ChargingPointEntity chargingPointEntity,
+				ConnectorEntity connectorEntity);
+	 
 }
 
 
