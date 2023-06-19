@@ -16,6 +16,10 @@ public interface TransactionsRepository extends JpaRepository<TransactionsEntity
 
 	TransactionsEntity findByTransactionId(int transactionId);
 	
+	
+	@Query(value = "SELECT * FROM `ocpp.core`.transactions where TransactionId = (?1);", nativeQuery = true)
+	TransactionsEntity getbyTransactionsId(int transactionId);
+	
 //	TransactionsEntity findByStartResult(String string);
 
 }

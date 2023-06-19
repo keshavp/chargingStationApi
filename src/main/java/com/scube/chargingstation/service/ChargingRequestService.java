@@ -26,6 +26,8 @@ public interface ChargingRequestService {
 	
 	public boolean addChargingRequest(ChargingRequestDto chargingRequestDto) ;
 	
+	public boolean changeChargingStatus();
+	
 	List<ChargingRequestEntity> findChargingRequestEntityByChargingStatus(String chargingStatus);
 
 	public ChargingRequestEntity findChargingRequestEntityByChargingPointEntityAndConnectorEntityAndStatus(

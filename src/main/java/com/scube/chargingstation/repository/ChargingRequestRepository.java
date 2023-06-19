@@ -49,7 +49,8 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	
 	//,UserInfoEntity userInfoEntity
 	
-	
+	@Query(value = "SELECT * FROM charging_request WHERE charging_status = 'Starting' AND DATE(created_at) <= DATE_SUB(CURDATE(), INTERVAL 2 DAY);",nativeQuery = true)
+	List<ChargingRequestEntity> findByChargingRequestAndDate();
 	
 	@Query(value = " SELECT cr.id , cr.request_amount as requestedAmount,cr.request_kwh as requestedKwh,cs.ChargeSpeed as chargingSpeed,"
 			+ " ROUND( tr.LastMeter-tr.MeterStart,2) as currentKwh, IFNULL(cs.sOc,'' ) as chargingPercent ,  IFNULL(cr.vehicle_no,'Request') as vehicleNo ,'' as estimatedTime "

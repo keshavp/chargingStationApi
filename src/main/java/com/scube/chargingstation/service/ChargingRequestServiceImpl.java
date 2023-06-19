@@ -37,7 +37,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
+import com.google.gson.Gson;import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.styledxmlparser.jsoup.select.Evaluator.IsEmpty;
 import com.scube.chargingstation.dto.AmenityDto;
 import com.scube.chargingstation.dto.ChargingHistoryDto;
@@ -1527,5 +1527,38 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		
 		return count;
 	}
+
+	@Override
+	public boolean changeChargingStatus() {
+	    List<ChargingRequestEntity> chargingRequestEntities = chargingRequestRepository.findByChargingRequestAndDate();
+ 
+	    for (ChargingRequestEntity entity : chargingRequestEntities) {        
+			logger.info("--------- ChargingRequestServiceImpl changeChargingStatus ------"+entity.getTransactionsEntity().getTransactionId());
+	    	int transactionId = entity.getTransactionsEntity().getTransactionId();
+	        
+	        System.out.println("Transaction ID: " + transactionId);
+	        
+	        
+	        TransactionsEntity transactionsEntity = transactionsRepository.getbyTransactionsId(transactionId);
+	        
+	        System.out.println("Transaction ID23: " + transactionsEntity.getTransactionId());
+	       
+            transactionsEntity.setMeterStop(transactionsEntity.getLastMeter());
+      
+	        transactionsEntity.setStopReason("Remote");
+	        
+//	        String stopTimeString = "1970-12-31T10:30:00Z";
+//	        Instant stopTime = Instant.parse(stopTimeString);
+
+	        transactionsEntity.setStopTime(transactionsEntity.getStartTime());
+	        	      
+	        transactionsRepository.save(transactionsEntity);
+	    }
+	    
+
+	    return true;
+	}
+
+
 	
 }

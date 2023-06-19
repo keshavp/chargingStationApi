@@ -80,6 +80,17 @@ public class Schedulers {
 		return 0;
 	}
 	
+	
+	@Scheduled(cron = "${changeChargingstatus.cronTime}")
+	public int changeChargingstaus() throws Exception{
+		
+		log.info("changeChargingstaus");
+		chargingRequestService.changeChargingStatus();
+		
+		return 0;
+	}
+	
+	
 	@Scheduled(cron = "${bookingAuto.cronTime}")
 	public void bookingAutoCancellation() throws Exception {
 
