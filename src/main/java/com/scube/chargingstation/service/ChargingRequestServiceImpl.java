@@ -1536,22 +1536,18 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 			logger.info("--------- ChargingRequestServiceImpl changeChargingStatus ------"+entity.getTransactionsEntity().getTransactionId());
 	    	int transactionId = entity.getTransactionsEntity().getTransactionId();
 	        
-	        System.out.println("Transaction ID: " + transactionId);
-	        
+	    	logger.info("Check Transaction ID: " + transactionId);
 	        
 	        TransactionsEntity transactionsEntity = transactionsRepository.getbyTransactionsId(transactionId);
 	        
-	        System.out.println("Transaction ID23: " + transactionsEntity.getTransactionId());
+	        logger.info("Check Transaction ID23: " + transactionsEntity.getTransactionId());
 	       
             transactionsEntity.setMeterStop(transactionsEntity.getLastMeter());
       
 	        transactionsEntity.setStopReason("Remote");
 	        
-//	        String stopTimeString = "1970-12-31T10:30:00Z";
-//	        Instant stopTime = Instant.parse(stopTimeString);
-
 	        transactionsEntity.setStopTime(transactionsEntity.getStartTime());
-	        	      
+	            
 	        transactionsRepository.save(transactionsEntity);
 	    }
 	    
