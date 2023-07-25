@@ -10,4 +10,6 @@ public class ChargingStationWiseReportIncomingDto{
 	private String startDate;
 	private String endDate;
 	private String partnerName;
+	private String role;
+	private String userId;
 }  

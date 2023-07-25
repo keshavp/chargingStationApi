@@ -1117,20 +1117,69 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		System.out.println("End input Date :---->>> " + convertEndInputDate);
 		
 		List<ChargingRequestEntity> chargingRequestEntities = new ArrayList<ChargingRequestEntity>();
-		if(chargingStationWiseReportIncomingDto.getChargePointId().equals("All")) {
+		
+		System.out.println("Role-" + chargingStationWiseReportIncomingDto.getRole());
+		System.out.println("chargingPointID-" + chargingStationWiseReportIncomingDto.getChargePointId());
+		System.out.println("UserId-" + chargingStationWiseReportIncomingDto.getUserId());
+		System.out.println("startDate-" + chargingStationWiseReportIncomingDto.getStartDate());
+		System.out.println("endDate-" + convertEndInputDate);
+		
+		if(chargingStationWiseReportIncomingDto.getRole().equals("AU") && chargingStationWiseReportIncomingDto.getChargePointId().equals("All") || chargingStationWiseReportIncomingDto.getRole().equals("MGU") && chargingStationWiseReportIncomingDto.getChargePointId().equals("All") ) {
 		 chargingRequestEntities = chargingRequestRepository.getChargingRequestEntityByChargingPointEntityAll(chargingStationWiseReportIncomingDto.getStartDate(), convertEndInputDate);
-		}else {
+		 System.out.println("ALL=====" );
+		
+		}else if(chargingStationWiseReportIncomingDto.getRole().equals("PU") && chargingStationWiseReportIncomingDto.getChargePointId().equals("All")) {
 			
-			ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(chargingStationWiseReportIncomingDto.getChargePointId());
-//			ChargingRequestEntity entity = chargingRequestEntity.get();
-
-			if (chargingPointEntity == null) {
-				throw BRSException.throwException("Error: No Charging Point present");
-			}
+			 System.out.println("PU==All===" );
+			UserInfoEntity userInfoEntity = userInfoRepository.findById(chargingStationWiseReportIncomingDto.getUserId());
 			
-			chargingRequestEntities = chargingRequestRepository.getChargingRequestEntityByChargingPointEntity(chargingPointEntity.getId(), chargingStationWiseReportIncomingDto.getStartDate(), convertEndInputDate);
+			chargingRequestEntities = chargingRequestRepository.getChargingRequestEntityByPartnerId(userInfoEntity.getPartner(), chargingStationWiseReportIncomingDto.getStartDate(), convertEndInputDate);
 			
+			
+		}else if(chargingStationWiseReportIncomingDto.getRole().equals("AU") && !chargingStationWiseReportIncomingDto.getChargePointId().equals("All") || chargingStationWiseReportIncomingDto.getRole().equals("MGU") && !chargingStationWiseReportIncomingDto.getChargePointId().equals("All")) {
+			System.out.println("=====" );
+			
+			 ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(chargingStationWiseReportIncomingDto.getChargePointId()); 
+			 //ChargingRequestEntity entity = chargingRequestEntity.get();
+			  
+			  if (chargingPointEntity == null) { 
+				  
+				  throw BRSException.throwException("Error: No Charging Point present"); 
+			  }
+			 
+			  chargingRequestEntities = chargingRequestRepository.getChargingRequestEntityByChargingPointEntity(chargingPointEntity.getId(),chargingStationWiseReportIncomingDto.getStartDate(), convertEndInputDate);
+				
+		}else if(chargingStationWiseReportIncomingDto.getRole().equals("PU") && !chargingStationWiseReportIncomingDto.getChargePointId().equals("All")) {
+			System.out.println("==PU===" );
+			
+			 ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(chargingStationWiseReportIncomingDto.getChargePointId()); 
+			 //ChargingRequestEntity entity = chargingRequestEntity.get();
+			  
+			  if (chargingPointEntity == null) { 
+				  
+				  throw BRSException.throwException("Error: No Charging Point present"); 
+			  }
+			 
+			  chargingRequestEntities = chargingRequestRepository.getChargingRequestEntityByChargingPointEntity(chargingPointEntity.getId(),chargingStationWiseReportIncomingDto.getStartDate(), convertEndInputDate);
+				
 		}
+		
+		/* else{
+			 
+			 System.out.println("ELSEEEEEEEE=====" );
+		  
+		  ChargingPointEntity chargingPointEntity = chargingPointService.getChargingPointEntityByChargingPointId(chargingStationWiseReportIncomingDto.getChargePointId()); 
+		 //ChargingRequestEntity entity = chargingRequestEntity.get();
+		  
+		  if (chargingPointEntity == null) { 
+			  
+			  throw BRSException.throwException("Error: No Charging Point present"); 
+		  }
+		 
+		  chargingRequestEntities = chargingRequestRepository.getChargingRequestEntityByChargingPointEntity(chargingPointEntity.getId(),chargingStationWiseReportIncomingDto.getStartDate(), convertEndInputDate);
+		 
+		 }*/
+		 
 	//	ChargingRequestMapper.toChargingRequestRespDtos(chargingRequestEntities);
 		
 	//	 ChargingRequestEntity chargingRequestEntity = chargingRequestRepository.findByChargingPointEntityAndConnectorEntityAndStatus();

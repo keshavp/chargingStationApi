@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JacksonInject.Value;
 import com.scube.chargingstation.entity.ChargingPointEntity;
 import com.scube.chargingstation.entity.ChargingRequestEntity;
 import com.scube.chargingstation.entity.ConnectorEntity;
+import com.scube.chargingstation.entity.PartnerInfoEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
 
 @Repository
@@ -125,6 +126,9 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	 
 	 @Query(value = "SELECT * FROM charging_request where charging_status='Done' and  StartTime >= (?1) and StartTime <= (?2) order by StartTime desc", nativeQuery = true)
 		List<ChargingRequestEntity> getChargingRequestEntityByDateRange(String startDate, String endDate);
+	 
+	 @Query(value = "SELECT * FROM charging_request as cr where fk_charging_point in (select id from mst_charging_point where fk_partner = (?1)) and DATE_FORMAT(cr.StartTime , '%Y-%m-%d') >= (?2) and DATE_FORMAT(cr.StartTime , '%Y-%m-%d') <= (?3) order by StartTime desc", nativeQuery = true)
+	 List<ChargingRequestEntity> getChargingRequestEntityByPartnerId(PartnerInfoEntity partnerInfoEntity,String startDate, String endDate);
 	 
 }
 
