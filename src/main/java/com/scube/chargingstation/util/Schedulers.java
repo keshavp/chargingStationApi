@@ -80,6 +80,17 @@ public class Schedulers {
 		return 0;
 	}
 	
+	
+	@Scheduled(cron = "${changeChargingstatus.cronTime}")
+	public int changeChargingstaus() throws Exception{
+		
+		log.info("changeChargingstaus");
+		chargingRequestService.changeChargingStatus();
+		
+		return 0;
+	}
+	
+	
 	@Scheduled(cron = "${bookingAuto.cronTime}")
 	public void bookingAutoCancellation() throws Exception {
 
@@ -98,14 +109,11 @@ public class Schedulers {
 	 * return 0; }
 	 */
 	
-	
-	@Scheduled(cron = "${transferdatafromuserwallettodailyuserwallet}")
-	public void insertdatafromuserwallettodailyuserwallet() throws Exception {
-		    
-		dailyUserWalletService.getDailyUserWalletBalance();
-	
-	//	return 0;
-	}
+// comment by keshav now we use MYSQL Scheduler 
+//	@Scheduled(cron = "${transferdatafromuserwallettodailyuserwallet}")
+//	public void insertdatafromuserwallettodailyuserwallet() throws Exception {
+//		dailyUserWalletService.getDailyUserWalletBalance();
+//	}
 	
 	
 	@Scheduled(cron = "${bookingReminder.oneHour}")

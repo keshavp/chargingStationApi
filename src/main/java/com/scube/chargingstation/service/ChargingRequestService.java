@@ -26,6 +26,8 @@ public interface ChargingRequestService {
 	
 	public boolean addChargingRequest(ChargingRequestDto chargingRequestDto) ;
 	
+	public boolean changeChargingStatus();
+	
 	List<ChargingRequestEntity> findChargingRequestEntityByChargingStatus(String chargingStatus);
 
 	public ChargingRequestEntity findChargingRequestEntityByChargingPointEntityAndConnectorEntityAndStatus(
@@ -75,5 +77,7 @@ public interface ChargingRequestService {
 	public boolean stopChargingOnTime();
 
 	public boolean chargeStop(String id);
+	
+	public int getCountByChargingPointIDAndConnectorID(ChargingPointEntity chargingPointEntity, ConnectorEntity connectorEntity);
 	
 }

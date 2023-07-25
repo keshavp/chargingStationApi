@@ -50,7 +50,8 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	
 	//,UserInfoEntity userInfoEntity
 	
-	
+	@Query(value = "SELECT * FROM charging_request WHERE charging_status = 'Starting' AND DATE(created_at) <= DATE_SUB(CURDATE(), INTERVAL 2 DAY);",nativeQuery = true)
+	List<ChargingRequestEntity> findByChargingRequestAndDate();
 	
 	@Query(value = " SELECT cr.id , cr.request_amount as requestedAmount,cr.request_kwh as requestedKwh,cs.ChargeSpeed as chargingSpeed,"
 			+ " ROUND( tr.LastMeter-tr.MeterStart,2) as currentKwh, IFNULL(cs.sOc,'' ) as chargingPercent ,  IFNULL(cr.vehicle_no,'Request') as vehicleNo ,'' as estimatedTime "
@@ -129,6 +130,10 @@ public interface ChargingRequestRepository extends JpaRepository<ChargingRequest
 	 
 	 @Query(value = "SELECT * FROM charging_request as cr where fk_charging_point in (select id from mst_charging_point where fk_partner = (?1)) and DATE_FORMAT(cr.StartTime , '%Y-%m-%d') >= (?2) and DATE_FORMAT(cr.StartTime , '%Y-%m-%d') <= (?3) order by StartTime desc", nativeQuery = true)
 	 List<ChargingRequestEntity> getChargingRequestEntityByPartnerId(PartnerInfoEntity partnerInfoEntity,String startDate, String endDate);
+	 
+//	 @Query(value = "SELECT count(id) FROM charging_request WHERE fk_charging_point=(?1) and fk_connector=(?2);", nativeQuery = true)
+	 int countByChargingPointEntityAndConnectorEntity(ChargingPointEntity chargingPointEntity,
+				ConnectorEntity connectorEntity);
 	 
 }
 

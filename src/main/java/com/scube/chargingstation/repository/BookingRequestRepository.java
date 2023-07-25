@@ -1,6 +1,7 @@
 package com.scube.chargingstation.repository;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -57,13 +58,13 @@ public interface BookingRequestRepository extends JpaRepository<BookingRequestEn
 	List<BookingRequestEntity> oneHourBeforeBookingReminderSchedulersByScheduled(int hour);
 	
 	@Query(value = "SELECT NOW() < (?1)", nativeQuery = true) 
-	int givenDateGreaterThanCurrentDate(Instant bookingTime);
+	int givenDateGreaterThanCurrentDate(Date bookingTime);
 	
 	
-	@Query(value = "select count(id) as count FROM booking_request where booking_status = (?1)  and fk_charging_point = (?2)  and  fk_connector = (?3)   "
-			+ " and (date_add((?4),interval 1 second) between booking_time and booking_endtime "
-			+ " or date_sub((?5),interval 1 second) between booking_time and booking_endtime)", nativeQuery = true)
-	int isBookingSlotIsAvailable(String bookingStatus ,String cp ,String connector , Instant bookingStartTime, Instant bookingEndTime);
+	@Query(value = " select count(id) as count FROM booking_request where booking_status = (?1) and fk_charging_point = (?2)  and  fk_connector = (?3) 	"
+			+ "and date_add((?4),interval 1 second)  between booking_time and booking_endtime "
+			+ "or date_sub(date_add((?4),interval (?5) minute),interval 1 second) between booking_time and booking_endtime;", nativeQuery = true)		 
+	int isBookingSlotIsAvailable(String bookingStatus ,String cp ,String connector , String bookingStartTime, String bookingEndTime);
 	
 	//charging point and time to be added in this query
 	@Query(value = "SELECT * FROM booking_request WHERE fk_charging_point=(?1) and fk_connector=(?2) and current_timestamp() between date_sub(booking_time, INTERVAL 10 MINUTE) and\r\n"

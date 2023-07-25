@@ -65,5 +65,13 @@ public class ChargingRequestController {
 	public Response getChargingHistoryDetailsByStation(@RequestBody ChargingStationWiseReportIncomingDto chargingStationWiseReportIncomingDto) throws Exception{
 		return Response.ok().setPayload(chargingRequestService.getChargingHistoryDetailsByStation(chargingStationWiseReportIncomingDto));
 	}
+	
+//	@GetMapping( value = "/getAll" )
+//	public Response getAllUser() {
+//		logger.info("***UserInfoController findAllUsers***");
+//		return Response.ok().setPayload(chargingRequestService.changeChargingStatus());
+//		
+//	}
+	
 	 	
 }

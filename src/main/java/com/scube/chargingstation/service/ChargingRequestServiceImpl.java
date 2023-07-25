@@ -37,7 +37,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
+import com.google.gson.Gson;import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.styledxmlparser.jsoup.select.Evaluator.IsEmpty;
 import com.scube.chargingstation.dto.AmenityDto;
 import com.scube.chargingstation.dto.ChargingHistoryDto;
@@ -1564,5 +1564,46 @@ public class ChargingRequestServiceImpl implements ChargingRequestService {
 		
 		return CheckChargerStatus.callRemoteStopAPI(chargingRequestEntity.getChargingPointEntity().getChargingPointId(),chargingRequestEntity.getTransactionsEntity().getTransactionId());
 	}
+
+	@Override
+	public int getCountByChargingPointIDAndConnectorID(ChargingPointEntity chargingPointEntity,ConnectorEntity connectorEntity) {
+		// TODO Auto-generated method stub
+		logger.info("--------- ChargingRequestServiceImpl getCountByChargingPointIDAndConnectorID ------");
+		
+		int count = chargingRequestRepository.countByChargingPointEntityAndConnectorEntity(chargingPointEntity, connectorEntity);
+		
+		logger.info("--- Sequence Count :--- " + count);
+		
+		return count;
+	}
+
+	@Override
+	public boolean changeChargingStatus() {
+	    List<ChargingRequestEntity> chargingRequestEntities = chargingRequestRepository.findByChargingRequestAndDate();
+ 
+	    for (ChargingRequestEntity entity : chargingRequestEntities) {        
+			logger.info("--------- ChargingRequestServiceImpl changeChargingStatus ------"+entity.getTransactionsEntity().getTransactionId());
+	    	int transactionId = entity.getTransactionsEntity().getTransactionId();
+	        
+	    	logger.info("Check Transaction ID: " + transactionId);
+	        
+	        TransactionsEntity transactionsEntity = transactionsRepository.getbyTransactionsId(transactionId);
+	        
+	        logger.info("Check Transaction ID23: " + transactionsEntity.getTransactionId());
+	       
+            transactionsEntity.setMeterStop(transactionsEntity.getLastMeter());
+      
+	        transactionsEntity.setStopReason("Remote");
+	        
+	        transactionsEntity.setStopTime(transactionsEntity.getStartTime());
+	            
+	        transactionsRepository.save(transactionsEntity);
+	    }
+	    
+
+	    return true;
+	}
+
+
 	
 }

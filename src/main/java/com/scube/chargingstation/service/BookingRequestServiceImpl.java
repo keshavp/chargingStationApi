@@ -155,8 +155,11 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		logger.info("Hiiii" + inputBookDateInInstant);
 		
+		logger.info("Hiiii=================formattedInstantToSimpleDateTimeFormat========================" + DateUtils.formattedInstantToSimpleDateTimeFormat(inputBookDateInInstant));
 		
-		int timeVal = bookingRequestRepository.givenDateGreaterThanCurrentDate(inputBookDateInInstant);
+		DateUtils.formattedInstantToSimpleDateTimeFormat(inputBookDateInInstant);
+		
+		int timeVal = bookingRequestRepository.givenDateGreaterThanCurrentDate(convertInputBookDate);
 		
 		if(timeVal == 0) {
 			
@@ -222,9 +225,12 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		logger.info("-----" + "Rates are : " + chargingPointConnectorRateDto.getCancelBookingAmount() + "-----");
 		
 		int isSlotAvailable = bookingRequestRepository.isBookingSlotIsAvailable("SCHEDULED", bookingRequestIncomingDto.getChargingPointId(), bookingRequestIncomingDto.getConnectorId(),
-				inputBookDateInInstant, endTime);
+				inputBookTime, slotIntervalVal);
+		
+		logger.info("-----" + "isSlotAvailable are : "+ isSlotAvailable+":-" +inputBookTime +":- " +slotIntervalVal);
 		
 		if(isSlotAvailable == 1) {
+			
 			throw BRSException.throwException(EntityType.BOOKING, ExceptionType.NOT_AVAILABLE , inputBookTime); 
 		}
 		

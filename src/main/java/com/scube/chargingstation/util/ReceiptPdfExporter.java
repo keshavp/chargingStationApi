@@ -28,6 +28,7 @@ import org.apache.poi.hssf.util.HSSFColor.WHITE;
 import org.apache.poi.ss.format.CellFormatPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.itextpdf.forms.xfdf.ElementContentEncodingFormat;
@@ -77,13 +78,12 @@ import com.itextpdf.layout.renderer.ParagraphRenderer;
 import com.itextpdf.layout.renderer.TableRenderer;
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;   
 import com.scube.chargingstation.entity.ChargingRequestEntity;
-
+import com.scube.chargingstation.service.ChargingRequestService;
 
 import net.bytebuddy.agent.builder.AgentBuilder.FallbackStrategy.Simple;
 
 @Service
 public class ReceiptPdfExporter {
-	
 	
 	private static final Logger logger = LoggerFactory.getLogger(ReceiptPdfExporter.class);  
 
@@ -91,8 +91,11 @@ public class ReceiptPdfExporter {
 	
 	private final String fileBaseLocation;
 	
+	@Autowired
+	ChargingRequestService chargingRequestService;
 	
-	 private static final DecimalFormat df = new DecimalFormat("0.00");
+	
+	private static final DecimalFormat df = new DecimalFormat("0.00");
 	
 	
 	/*
@@ -139,9 +142,28 @@ public class ReceiptPdfExporter {
 		
 		logger.info("file dest: "+dest);
 		
-		String receiptNo = chargingRequestEntity.getId()+"_"+RandomNumber.getRandomNumberString()+RandomStringUtil.getAlphaNumericString(4, "EVDock");
+/*		String receiptNo = chargingRequestEntity.getId()+"_"+RandomNumber.getRandomNumberString()+RandomStringUtil.getAlphaNumericString(4, "EVDock");
+		logger.info("Receipt No : "+ receiptNo); */
 		
-		logger.info("Receipt No : "+ receiptNo);
+		//financial year
+		LocalDate currentDate = LocalDate.now();
+		int year = currentDate.getYear();
+		String financialYear;
+
+		if (currentDate.getMonthValue() >= 4) {
+		    financialYear = year + "-" + (year + 1);
+		} else {
+		    financialYear = (year - 1) + "-" + year;
+		}
+
+		System.out.println("----------Financial year--------: " + financialYear);
+		
+		// Get Count for Sequence
+		int sequenceNo = chargingRequestService.getCountByChargingPointIDAndConnectorID(chargingRequestEntity.getChargingPointEntity(), 
+				chargingRequestEntity.getConnectorEntity()) + 1;
+		
+		String invoiceNO = "INV"+"-"+ financialYear + "-"+chargingRequestEntity.getChargingPointEntity().getChargingPointId() + "-" +
+				chargingRequestEntity.getConnectorEntity().getConnectorId() + "_" + sequenceNo;
 		
 		// PDF Creation		
 		PdfWriter writer = new PdfWriter(dest);
@@ -287,22 +309,7 @@ public class ReceiptPdfExporter {
 		 * 
 		 * 
 		 * layoutDocument.add(regeisterAddTable);
-		 */
-		
-		//financial year
-		        LocalDate currentDate = LocalDate.now();
-		        int year = currentDate.getYear();
-		        String financialYear;
-
-		        if (currentDate.getMonthValue() >= 4) {
-		            financialYear = year + "-" + (year + 1);
-		        } else {
-		            financialYear = (year - 1) + "-" + year;
-		        }
-
-		        System.out.println("----------Financial year--------: " + financialYear);
-		  
-		        
+		 */		        
 		float[] columnWidth = {250,130,130};
 	    Table regeisterAddTable = new Table(UnitValue.createPercentArray(columnWidth)).useAllAvailableWidth();
 		 	  // regeisterAddTable.setWidth(520);
@@ -336,10 +343,7 @@ public class ReceiptPdfExporter {
 		//regeisterAddTable.addCell(new Cell().add(new Paragraph(StringNullEmpty.stringNullAndEmptyToBlank(chargingRequestEntity.getId() + " _ " + 
 		//RandomNumber.getRandomNumberString()+RandomStringUtil.getAlphaNumericString(4, "EVDock")))));
 		 
-	     regeisterAddTable.addCell(new Cell().add(new Paragraph("INV"+"-"+ financialYear + "-"+chargingRequestEntity.getChargingPointEntity().getChargingPointId() +"-"
-				 + RandomNumber.getRandomNumberString())));
-		 
-		 
+	     regeisterAddTable.addCell(new Cell().add(new Paragraph(invoiceNO)));
 		  
 		 regeisterAddTable.addCell(new Cell().add(new Paragraph("Tritan Dreams Building, 1st Floor, Plot No. 303 Nr. Celebration Hall, Service Road, Panchpakhadi,Thane(W)"))
 				          .setBorder(Border.NO_BORDER)); 
@@ -848,7 +852,7 @@ public class ReceiptPdfExporter {
 		layoutDocument.close();
 		
 		chargingRequestEntity.setInvoiceFilePath(filename);
-		chargingRequestEntity.setReceiptNo(receiptNo);
+		chargingRequestEntity.setReceiptNo(invoiceNO);
 		
 		return chargingRequestEntity;      
 		
