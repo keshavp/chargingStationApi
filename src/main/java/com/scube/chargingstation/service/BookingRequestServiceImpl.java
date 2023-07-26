@@ -27,6 +27,7 @@ import com.scube.chargingstation.dto.BookingSlotsRespDto;
 import com.scube.chargingstation.dto.ChargingPointConnectorRateDto;
 import com.scube.chargingstation.dto.incoming.BookingRequestIncomingDto;
 import com.scube.chargingstation.dto.incoming.NotificationReqDto;
+import com.scube.chargingstation.dto.incoming.UserPreviousBookingHistoryDetailsIncomingDto;
 import com.scube.chargingstation.dto.incoming.UserWalletRequestDto;
 import com.scube.chargingstation.dto.mapper.BookingMapper;
 import com.scube.chargingstation.entity.BookingRequestEntity;
@@ -824,25 +825,54 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 	}
 
 	@Override
-	public List<BookingResponseDto> getAllUserPreviousBookingHistoryDetails() {
+	public List<BookingResponseDto> getAllUserPreviousBookingHistoryDetailsByRole(UserPreviousBookingHistoryDetailsIncomingDto userPreviousBookingHistoryDetailsIncomingDto) {
 		// TODO Auto-generated method stub
 		
 		logger.info("***BookingRequestServiceImpl getAllUserPreviousBookingHistoryDetails***");
 		
-		List<BookingRequestEntity> bookingRequestEntity = bookingRequestRepository.getAllPreviousBookingDetailsFromBookingRequestEntities();
+		List<BookingRequestEntity> bookingRequestEntities = new ArrayList<BookingRequestEntity>();
 		
-		return BookingMapper.toBookingResponseDtos(bookingRequestEntity);
+		if (userPreviousBookingHistoryDetailsIncomingDto.getRole().equals("AU") || userPreviousBookingHistoryDetailsIncomingDto.getRole().equals("MGU")) {
+			
+			bookingRequestEntities = bookingRequestRepository.getAllPreviousBookingDetailsFromBookingRequestEntities();
+			
+		}else if (userPreviousBookingHistoryDetailsIncomingDto.getRole().equals("PU")) {
+			
+			UserInfoEntity userInfoEntity = userInfoRepository.findById(userPreviousBookingHistoryDetailsIncomingDto.getUserId());
+			
+			bookingRequestEntities = bookingRequestRepository.getAllPreviousBookingDetailsFromBookingRequestEntitiesForPartner(userInfoEntity.getPartner());
+			
+		}else {
+			
+			bookingRequestEntities = bookingRequestRepository.getAllPreviousBookingDetailsFromBookingRequestEntities();
+		}
+			
+		return BookingMapper.toBookingResponseDtos(bookingRequestEntities);
 	}
 
 	@Override
-	public List<BookingResponseDto> getAllUpcomingBookingDetailsInfo() {
+	public List<BookingResponseDto> getAllUpcomingBookingDetailsInfoByRole(UserPreviousBookingHistoryDetailsIncomingDto userPreviousBookingHistoryDetailsIncomingDto) {
 		// TODO Auto-generated method stub
 		
 		logger.info("***BookingRequestServiceImpl getAllUpcomingBookingDetailsInfo***");
 		
-		List<BookingRequestEntity> bookingRequestEntity = bookingRequestRepository.getAllUpcomingBookingDetailsFromBookingRequestEntities();
+		List<BookingRequestEntity> bookingRequestEntities = new ArrayList<BookingRequestEntity>();
 		
-		return BookingMapper.toBookingResponseDtos(bookingRequestEntity);
+		if (userPreviousBookingHistoryDetailsIncomingDto.getRole().equals("AU") || userPreviousBookingHistoryDetailsIncomingDto.getRole().equals("MGU")) {
+			
+			bookingRequestEntities = bookingRequestRepository.getAllUpcomingBookingDetailsFromBookingRequestEntities();
+			
+		}else if (userPreviousBookingHistoryDetailsIncomingDto.getRole().equals("PU")) {
+			
+			UserInfoEntity userInfoEntity = userInfoRepository.findById(userPreviousBookingHistoryDetailsIncomingDto.getUserId());
+			
+			bookingRequestEntities = bookingRequestRepository.getAllUpcomingBookingDetailsFromBookingRequestEntitiesForPartner(userInfoEntity.getPartner());
+		}else {
+			
+			bookingRequestEntities = bookingRequestRepository.getAllUpcomingBookingDetailsFromBookingRequestEntities();
+		}
+				
+		return BookingMapper.toBookingResponseDtos(bookingRequestEntities);
 	}
 	 
 	@Override

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.scube.chargingstation.dto.DailyUserWalletReportDto;
 import com.scube.chargingstation.entity.DailyUserWalletEntity;
+import com.scube.chargingstation.util.StringNullEmpty;
 
 public class DailyUserWalletMapper {
 	
@@ -22,8 +23,10 @@ public static List<DailyUserWalletReportDto> toDailyUserWalletReportDto(List<Dai
 public static DailyUserWalletReportDto toDailyUserWalletRepDto(DailyUserWalletEntity dailyUserWalletEntity) { 
 	
 	return new DailyUserWalletReportDto()
-	.setName(dailyUserWalletEntity.getUserInfoEntity().getUsername())
-	.setMobileno(dailyUserWalletEntity.getUserInfoEntity().getMobilenumber())
+	.setName(StringNullEmpty.stringNullAndEmptyToBlank(dailyUserWalletEntity.getUserInfoEntity() != null ?
+			dailyUserWalletEntity.getUserInfoEntity().getUsername() : ""))
+	.setMobileno(StringNullEmpty.stringNullAndEmptyToBlank(dailyUserWalletEntity.getUserInfoEntity() != null ?
+			dailyUserWalletEntity.getUserInfoEntity().getMobilenumber() : ""))
 	.setWalletBalance(dailyUserWalletEntity.getCurrentBalance())
 	.setLatestDate(dailyUserWalletEntity.getLatest_Date().trim());
 }

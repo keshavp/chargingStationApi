@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scube.chargingstation.dto.incoming.BookingRequestIncomingDto;
+import com.scube.chargingstation.dto.incoming.ChargingStationWiseReportIncomingDto;
+import com.scube.chargingstation.dto.incoming.UserPreviousBookingHistoryDetailsIncomingDto;
 //import com.scube.chargingstation.dto.incoming.BookingSlotsDummyIncomingDto;
 import com.scube.chargingstation.dto.response.Response;
 import com.scube.chargingstation.service.BookingRequestService;
@@ -81,21 +83,27 @@ public class BookingRequestController {
 	
 	
 	// Get All Previous Booking History
-	@GetMapping (value = "/getAllUserPreviousBookingHistoryDetails")
+	/*@GetMapping (value = "/getAllUserPreviousBookingHistoryDetails")
 	public Response getAllBookingHistoryDetails() {
 		
 		logger.info("***BookingRequestController getAllUserPreviousBookingHistoryDetails***");
 		return Response.ok().setPayload(bookingRequestService.getAllUserPreviousBookingHistoryDetails());
 		
+	}*/
+	
+	@PostMapping(value ="/getAllUserPreviousBookingHistoryDetailsByRole", consumes = APPLICATION_JSON_VALUE)
+	public Response getChargingHistoryDetailsByStation(@RequestBody UserPreviousBookingHistoryDetailsIncomingDto userPreviousBookingHistoryDetailsIncomingDto) throws Exception{
+		logger.info("***BookingRequestController getAllUserPreviousBookingHistoryDetailsByRole***");
+		return Response.ok().setPayload(bookingRequestService.getAllUserPreviousBookingHistoryDetailsByRole(userPreviousBookingHistoryDetailsIncomingDto));
 	}
 	
 	
 	// Get All Upcoming Booking History
-	@GetMapping (value = "/getAllUpcomingBookingDetailsInfo")
-	public Response getAllUpcomingBookingDetailsInfo() {
+	@PostMapping (value = "/getAllUpcomingBookingDetailsInfoByRole", consumes = APPLICATION_JSON_VALUE)
+	public Response getAllUpcomingBookingDetailsInfoByRole(@RequestBody UserPreviousBookingHistoryDetailsIncomingDto userPreviousBookingHistoryDetailsIncomingDto)throws Exception{
 		
-		logger.info("***BookingRequestController getAllUpcomingBookingDetailsInfo***");
-		return Response.ok().setPayload(bookingRequestService.getAllUpcomingBookingDetailsInfo());
+		logger.info("***BookingRequestController getAllUpcomingBookingDetailsInfoByRole***");
+		return Response.ok().setPayload(bookingRequestService.getAllUpcomingBookingDetailsInfoByRole(userPreviousBookingHistoryDetailsIncomingDto));
 		
 	}
 

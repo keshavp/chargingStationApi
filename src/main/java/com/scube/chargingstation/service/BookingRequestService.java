@@ -6,7 +6,10 @@ import javax.validation.Valid;
 
 import com.scube.chargingstation.dto.BookingResponseDto;
 import com.scube.chargingstation.dto.BookingSlotsRespDto;
+import com.scube.chargingstation.dto.ChargingRequestRespDto;
 import com.scube.chargingstation.dto.incoming.BookingRequestIncomingDto;
+import com.scube.chargingstation.dto.incoming.ChargingStationWiseReportIncomingDto;
+import com.scube.chargingstation.dto.incoming.UserPreviousBookingHistoryDetailsIncomingDto;
 import com.scube.chargingstation.entity.BookingRequestEntity;
 
 public interface BookingRequestService {
@@ -27,9 +30,10 @@ public interface BookingRequestService {
 
 	public String getUpcomingBookingCancelById(String bookingId) throws Exception;
 	
-	List<BookingResponseDto> getAllUserPreviousBookingHistoryDetails();
+	//List<BookingResponseDto> getAllUserPreviousBookingHistoryDetails();
+	List<BookingResponseDto> getAllUserPreviousBookingHistoryDetailsByRole(UserPreviousBookingHistoryDetailsIncomingDto userPreviousBookingHistoryDetailsIncomingDto);
 	
-	List<BookingResponseDto> getAllUpcomingBookingDetailsInfo();
+	List<BookingResponseDto> getAllUpcomingBookingDetailsInfoByRole(UserPreviousBookingHistoryDetailsIncomingDto userPreviousBookingHistoryDetailsIncomingDto);
 
 	public void oneDayBeforeBookingReminderSchedulers();
 
@@ -38,5 +42,7 @@ public interface BookingRequestService {
 	public boolean bookingReminderById(String bookingId);
 	
 	boolean getBookingRequestDetailsByConnectorId(String chargingPointId, String connectorId);
+	
+	
 	
 }	

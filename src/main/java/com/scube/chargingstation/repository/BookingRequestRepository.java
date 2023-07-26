@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.scube.chargingstation.entity.BookingRequestEntity;
+import com.scube.chargingstation.entity.PartnerInfoEntity;
 import com.scube.chargingstation.entity.UserInfoEntity;
 
 @Repository
@@ -70,6 +71,12 @@ public interface BookingRequestRepository extends JpaRepository<BookingRequestEn
 	@Query(value = "SELECT * FROM booking_request WHERE fk_charging_point=(?1) and fk_connector=(?2) and current_timestamp() between date_sub(booking_time, INTERVAL 10 MINUTE) and\r\n"
 			+ "date_add(booking_time, INTERVAL 10 MINUTE) and  booking_status='SCHEDULED';", nativeQuery = true)
 	BookingRequestEntity getBookingDetailsByChargePointDetailsAndBookingStatus(String chargingPointId, String connectorId);
+	
+	@Query(value = "SELECT * from booking_request where fk_charging_point in (select id from mst_charging_point where fk_partner = (?1)) and date_format(booking_time, \"%Y-%m-%d %H:%i:%s\") <= CURDATE() order by booking_time desc;", nativeQuery = true)
+	List<BookingRequestEntity> getAllPreviousBookingDetailsFromBookingRequestEntitiesForPartner(PartnerInfoEntity partnerInfoEntity);
+	
+	@Query(value = "SELECT * from booking_request where fk_charging_point in (select id from mst_charging_point where fk_partner = (?1)) and date_format(booking_time, \"%Y-%m-%d %H:%i:%s\") >= CURDATE() order by booking_time asc;", nativeQuery = true)
+	List<BookingRequestEntity> getAllUpcomingBookingDetailsFromBookingRequestEntitiesForPartner(PartnerInfoEntity partnerInfoEntity);
 			
 }
 
