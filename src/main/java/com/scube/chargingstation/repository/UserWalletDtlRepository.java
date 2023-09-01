@@ -36,7 +36,7 @@ public interface UserWalletDtlRepository extends JpaRepository<UserWalletDtlEnti
 	 * + " order by created_at desc ",nativeQuery = true)
 	 */
 	@Query(value="SELECT amount , DATE_FORMAT(created_at, '%Y-%m-%d %T %p') as transactionDate ,transaction_type as transactionType, payment_for as remark, \r\n"
-			+ "fk_chargingreq as chargingRequestId , fk_booking_request as bookingRequestId ,transaction_id as transactionId,order_id as orderId FROM emp_wallet_dtl where fk_user=(?1)"
+			+ "fk_chargingreq as chargingRequestId , fk_booking_request as bookingRequestId ,transaction_id as transactionId,order_id as orderId FROM emp_wallet_details where fk_user=(?1)"
 			+ "order by DATE_FORMAT(created_at, '%Y-%m-%d %T %p') desc;",nativeQuery = true)
 	List<Map<String, String>> getUserTrHistory(String userId);
 	
@@ -60,7 +60,7 @@ public interface UserWalletDtlRepository extends JpaRepository<UserWalletDtlEnti
 			"from (SELECT * ,'Added Money'as remark FROM  emp_wallet_dtl ewd where transaction_type='Credit' and ewd.transaction_id is not null\r\n" + 
 			" union \r\n" + 
 			"SELECT *,  CASE WHEN ewd.transaction_type='Debit' THEN 'For Charging' WHEN ewd.transaction_type='Credit' THEN 'Refund' ELSE ''  END AS remark\r\n" + 
-			"FROM  emp_wallet_dtl ewd where ewd.fk_chargingreq is not null) as trhistory \r\n" + 
+			"FROM  emp_wallet_details ewd where ewd.fk_chargingreq is not null) as trhistory \r\n" + 
 			"order by created_at desc; ",nativeQuery = true)
 //	@Query(value = "SELECT * FROM `ocpp.core`.emp_wallet_dtl;",nativeQuery = true)
 	List<Map<String, String>> getUserTrHistoryForAllUser();

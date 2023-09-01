@@ -248,12 +248,7 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		
 		
-		userWalletRequestDto.setMobileUser_Id(userInfoEntity.getMobilenumber());
-		userWalletRequestDto.setTransactionType("Debit");
-		userWalletRequestDto.setRequestAmount(String.valueOf(chargingPointConnectorRateDto.getCancelBookingAmount()));
-		userWalletRequestDto.setPaymentFor("Debit -Booking amount");
-		
-		userPaymentService.processWalletMoney(userWalletRequestDto);
+
 		
 		BookingRequestEntity bookingRequestEntity = new BookingRequestEntity();
 		
@@ -274,8 +269,13 @@ public class BookingRequestServiceImpl implements BookingRequestService{
 		
 		 bookingRequestRepository.save(bookingRequestEntity);
 		
+		userWalletRequestDto.setMobileUser_Id(userInfoEntity.getMobilenumber());
+		userWalletRequestDto.setTransactionType("Debit");
+		userWalletRequestDto.setRequestAmount(String.valueOf(chargingPointConnectorRateDto.getCancelBookingAmount()));
+		userWalletRequestDto.setPaymentFor("Debit -Booking amount");
+		userWalletRequestDto.setBooking_request(bookingRequestEntity.getId());
 		
-		
+		userPaymentService.processWalletMoney(userWalletRequestDto);
 		
 		return true;
 	}

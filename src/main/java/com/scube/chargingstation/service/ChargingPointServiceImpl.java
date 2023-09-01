@@ -38,6 +38,7 @@ import com.scube.chargingstation.repository.ChargingPointConnectorRateRepository
 import com.scube.chargingstation.repository.ChargingPointRepository;
 import com.scube.chargingstation.repository.ConnectorStatusRepository;
 import com.scube.chargingstation.repository.RoleRepository;
+import org.springframework.beans.factory.annotation.Value;
 import com.scube.chargingstation.util.CheckChargerStatus;
 import com.scube.chargingstation.util.QRCodeGenerator;
 
@@ -74,6 +75,8 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 	
 	@Autowired
 	RoleRepository roleRepository;
+	
+	@Value("${charging.point.limit}") private int limit;
 	
 	@Override
 	public ChargingPointDto getChargingPointById(String id) {
@@ -418,7 +421,7 @@ public class ChargingPointServiceImpl implements ChargingPointService {
 		// TODO Auto-generated method stub
 		
 		
-		List<Map<String, String>> listDtl=chargingPointRepository.getNearByChargingStations(lat, longi);
+		List<Map<String, String>> listDtl=chargingPointRepository.getNearByChargingStations(lat, longi , limit);
 		List<ChargingPointDto> chargingPointDtoLst = ChargingPointMapper.toChargingPointDtoLst(listDtl);
 		
 		return chargingPointDtoLst;

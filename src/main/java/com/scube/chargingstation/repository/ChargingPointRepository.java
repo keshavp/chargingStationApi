@@ -22,8 +22,8 @@ public interface ChargingPointRepository extends JpaRepository<ChargingPointEnti
 	List<ChargingPointEntity> findChargingStationsByPartnerId(String id);
 	
 	
-	@Query(value="select *,FN_GET_DISTANCE((?1),(?2),latitude,longitude) as fardistance from mst_charging_point order by fardistance ",nativeQuery = true)
-	List<Map<String, String>> getNearByChargingStations(Double lat,Double longi);
+	@Query(value="select *,FN_GET_DISTANCE((?1),(?2),latitude,longitude) as fardistance from mst_charging_point order by fardistance LIMIT ?3 ",nativeQuery = true)
+	List<Map<String, String>> getNearByChargingStations(Double lat,Double longi , int limit);
 	
 	ChargingPointEntity findChargingPointEntityByChargingPointId (String chargingPointId);
 
